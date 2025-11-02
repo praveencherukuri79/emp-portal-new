@@ -1,0 +1,49 @@
+/**
+ * Breakpoint Tokens - Responsive breakpoints
+ */
+
+:root {
+  /* Breakpoints */
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1920px;
+
+  /* Container max widths */
+  --container-sm: 540px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1140px;
+}
+
+/* Breakpoint Mixins for SCSS */
+@mixin breakpoint-up($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: 0) { @content; }
+  } @else if $breakpoint == sm {
+    @media (min-width: 600px) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: 960px) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: 1280px) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: 1920px) { @content; }
+  }
+}
+
+@mixin breakpoint-down($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: 599px) { @content; }
+  } @else if $breakpoint == sm {
+    @media (max-width: 959px) { @content; }
+  } @else if $breakpoint == md {
+    @media (max-width: 1279px) { @content; }
+  } @else if $breakpoint == lg {
+    @media (max-width: 1919px) { @content; }
+  }
+}
+
+@mixin breakpoint-between($min, $max) {
+  @media (min-width: $min) and (max-width: $max) { @content; }
+}

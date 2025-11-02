@@ -1,0 +1,51 @@
+/**
+ * Dark Theme
+ * CRITICAL: Uses ONLY CSS variables from tokens - NO hardcoded colors
+ */
+
+@import '../tokens/colors.scss';
+
+.theme-dark {
+  /* Background colors */
+  --background-primary: var(--color-neutral-900);
+  --background-secondary: var(--color-neutral-800);
+  --background-tertiary: var(--color-neutral-700);
+  --background-elevated: var(--color-neutral-800);
+  --background-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Text colors */
+  --text-primary: var(--color-neutral-50);
+  --text-secondary: var(--color-neutral-300);
+  --text-tertiary: var(--color-neutral-400);
+  --text-disabled: var(--color-neutral-600);
+  --text-inverse: var(--color-neutral-900);
+
+  /* Border colors */
+  --border-primary: var(--color-neutral-700);
+  --border-secondary: var(--color-neutral-800);
+  --border-focus: var(--color-primary-400);
+
+  /* Action colors */
+  --action-primary: var(--color-primary-400);
+  --action-primary-hover: var(--color-primary-300);
+  --action-primary-active: var(--color-primary-200);
+  --action-disabled: var(--color-neutral-700);
+
+  /* Status colors */
+  --status-success: var(--color-success-400);
+  --status-warning: var(--color-warning-400);
+  --status-error: var(--color-error-400);
+  --status-info: var(--color-info-400);
+
+  /* Component-specific */
+  --card-background: var(--color-neutral-800);
+  --card-shadow: var(--shadow-xl);
+  --input-background: var(--color-neutral-800);
+  --input-border: var(--color-neutral-700);
+  --sidebar-background: var(--color-neutral-800);
+  --header-background: var(--color-neutral-900);
+  --header-text: var(--color-neutral-50);
+  --table-header-background: var(--color-neutral-700);
+  --table-row-hover: var(--color-neutral-700);
+  --table-border: var(--color-neutral-700);
+}

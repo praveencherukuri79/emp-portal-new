@@ -1,0 +1,45 @@
+<button 
+  mat-icon-button 
+  [matMenuTriggerFor]="notificationMenu"
+  class="notification-button">
+  <mat-icon [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0">
+    notifications
+  </mat-icon>
+</button>
+
+<mat-menu #notificationMenu="matMenu" class="notification-menu">
+  <div class="notification-header">
+    <h3>Notifications</h3>
+    <button mat-button (click)="viewAll(); $event.stopPropagation()">View All</button>
+  </div>
+
+  @if (loading) {
+    <div class="notification-loading">
+      <p>Loading...</p>
+    </div>
+  }
+
+  @if (!loading && notifications.length === 0) {
+    <div class="notification-empty">
+      <mat-icon>notifications_none</mat-icon>
+      <p>No new notifications</p>
+    </div>
+  }
+
+  @if (!loading && notifications.length > 0) {
+    <mat-list class="notification-list">
+      @for (notification of notifications; track notification._id) {
+        <mat-list-item 
+          (click)="markAsRead(notification._id, notification.actionUrl); $event.stopPropagation()"
+          class="notification-item">
+          <div class="notification-content">
+            <strong>{{ notification.title }}</strong>
+            <p>{{ notification.message }}</p>
+            <small>{{ notification.createdAt | date:'short' }}</small>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</mat-menu>
+

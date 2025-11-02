@@ -1,0 +1,40 @@
+<mat-toolbar class="app-header">
+  <div class="header-content">
+    <div class="header-left">
+      <button mat-icon-button class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1 class="app-title">Employee Portal</h1>
+    </div>
+
+    <div class="header-right">
+      <app-theme-switcher />
+      <app-notification-bell />
+
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="user-info">
+          <strong>{{ user()?.firstName }} {{ user()?.lastName }}</strong>
+          <small>{{ user()?.email }}</small>
+        </div>
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon>
+          <span>My Profile</span>
+        </button>
+        <button mat-menu-item routerLink="/settings">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
+

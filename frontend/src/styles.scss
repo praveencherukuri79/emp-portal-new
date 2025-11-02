@@ -1,0 +1,115 @@
+/* Import design tokens */
+@import './styles/tokens/colors.scss';
+@import './styles/tokens/spacing.scss';
+@import './styles/tokens/typography.scss';
+@import './styles/tokens/breakpoints.scss';
+
+/* Import themes */
+@import './styles/themes/light.scss';
+@import './styles/themes/dark.scss';
+
+/* Import mixins */
+@import './styles/mixins/layout.scss';
+@import './styles/mixins/components.scss';
+
+/* Angular Material theme */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Global styles using design tokens - NO HARDCODED COLORS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--background-primary);
+}
+
+body {
+  margin: 0;
+}
+
+/* Default to light theme */
+body {
+  @extend .theme-light;
+}
+
+/* Apply dark theme when body has .theme-dark class */
+body.theme-dark {
+  @extend .theme-dark;
+}
+
+/* Utility classes using tokens */
+.container {
+  @include container;
+}
+
+.card {
+  @include card;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+.flex-column {
+  @include flex-column;
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-error {
+  color: var(--status-error);
+}
+
+.text-success {
+  color: var(--status-success);
+}
+
+.mt-4 {
+  margin-top: var(--spacing-4);
+}
+
+.mb-4 {
+  margin-bottom: var(--spacing-4);
+}
+
+.p-4 {
+  padding: var(--spacing-4);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--background-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-primary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-tertiary);
+}
+

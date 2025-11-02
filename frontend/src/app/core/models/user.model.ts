@@ -1,0 +1,82 @@
+export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  TENANT_ADMIN = 'tenant_admin',
+  MANAGER = 'manager',
+  EMPLOYEE = 'employee'
+}
+
+export enum EmploymentType {
+  FULL_TIME = 'full_time',
+  PART_TIME = 'part_time',
+  CONTRACT = 'contract',
+  INTERN = 'intern'
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other'
+}
+
+export interface User {
+  _id: string;
+  tenantId: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  role: UserRole;
+  department?: string;
+  designation?: string;
+  dateOfJoining?: Date;
+  dateOfBirth?: Date;
+  gender?: Gender;
+  address?: string;
+  employmentType?: EmploymentType;
+  reportingManagerId?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  tenantId: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  department?: string;
+  designation?: string;
+  role?: UserRole;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}

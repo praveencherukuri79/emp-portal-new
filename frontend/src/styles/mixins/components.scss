@@ -1,0 +1,99 @@
+/**
+ * Component Mixins
+ */
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-button-padding);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  gap: var(--spacing-2);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--opacity-disabled);
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: var(--action-primary);
+  color: var(--text-inverse);
+
+  &:hover:not(:disabled) {
+    background-color: var(--action-primary-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--action-primary-active);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: transparent;
+  color: var(--action-primary);
+  border: var(--border-width-thin) solid var(--action-primary);
+
+  &:hover:not(:disabled) {
+    background-color: var(--action-primary);
+    color: var(--text-inverse);
+  }
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: var(--spacing-input-padding);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+  background-color: var(--input-background);
+  border: var(--border-width-thin) solid var(--input-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--border-focus);
+  }
+
+  &:disabled {
+    background-color: var(--background-tertiary);
+    cursor: not-allowed;
+    opacity: var(--opacity-disabled);
+  }
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+@mixin badge($color-var) {
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  background-color: $color-var;
+  color: var(--text-inverse);
+}
+
+@mixin status-badge($status) {
+  @if $status == 'success' {
+    @include badge(var(--status-success));
+  } @else if $status == 'warning' {
+    @include badge(var(--status-warning));
+  } @else if $status == 'error' {
+    @include badge(var(--status-error));
+  } @else if $status == 'info' {
+    @include badge(var(--status-info));
+  }
+}

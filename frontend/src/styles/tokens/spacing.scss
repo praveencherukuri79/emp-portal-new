@@ -1,0 +1,62 @@
+/**
+ * Spacing Tokens - Consistent spacing throughout the app
+ * Based on 8px grid system
+ */
+
+:root {
+  /* Base spacing unit (8px) */
+  --spacing-unit: 8px;
+
+  /* Spacing scale */
+  --spacing-0: 0;
+  --spacing-1: calc(var(--spacing-unit) * 0.5);   /* 4px */
+  --spacing-2: var(--spacing-unit);                /* 8px */
+  --spacing-3: calc(var(--spacing-unit) * 1.5);   /* 12px */
+  --spacing-4: calc(var(--spacing-unit) * 2);     /* 16px */
+  --spacing-5: calc(var(--spacing-unit) * 2.5);   /* 20px */
+  --spacing-6: calc(var(--spacing-unit) * 3);     /* 24px */
+  --spacing-7: calc(var(--spacing-unit) * 3.5);   /* 28px */
+  --spacing-8: calc(var(--spacing-unit) * 4);     /* 32px */
+  --spacing-10: calc(var(--spacing-unit) * 5);    /* 40px */
+  --spacing-12: calc(var(--spacing-unit) * 6);    /* 48px */
+  --spacing-16: calc(var(--spacing-unit) * 8);    /* 64px */
+  --spacing-20: calc(var(--spacing-unit) * 10);   /* 80px */
+  --spacing-24: calc(var(--spacing-unit) * 12);   /* 96px */
+
+  /* Component-specific spacing */
+  --spacing-page-padding: var(--spacing-6);
+  --spacing-card-padding: var(--spacing-4);
+  --spacing-section-gap: var(--spacing-8);
+  --spacing-element-gap: var(--spacing-4);
+  --spacing-input-padding: var(--spacing-3);
+  --spacing-button-padding: var(--spacing-4) var(--spacing-6);
+
+  /* Border radius */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Border widths */
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 4px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Z-index layers */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
