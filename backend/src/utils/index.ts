@@ -3,9 +3,50 @@
  * Central export point for all utility modules
  */
 
+// Response handling
 export { ApiResponse } from './response.util';
+export { 
+  ApiResponse as EnhancedApiResponse, 
+  HttpStatus, 
+  IApiResponse 
+} from './response-handler.util';
+
+// Authentication & Security
 export { TokenUtil } from './token.util';
 export { PasswordUtil } from './password.util';
+
+// Date utilities
 export { DateUtil } from './date.util';
+
+// Validation
 export { ValidationUtil } from './validation.util';
+
+// Email
 export { EmailUtil } from './email.util';
+
+// Query building
+export { 
+  QueryBuilder, 
+  getTenantId, 
+  getUserId, 
+  getPaginationParams,
+  DateRangeFilter 
+} from './query-builder.util';
+
+// Async error handling
+export { asyncHandler, createHandler } from './async-handler.util';
+
+// DTO utilities
+export {
+  exclude,
+  pick,
+  sanitizeUser,
+  toDTO,
+  toDTOArray,
+  sanitizePaginationParams,
+  parseSortString,
+  buildDateRangeFilter,
+  cleanObject,
+  parseBoolean,
+  parseArray
+} from './dto.util';
