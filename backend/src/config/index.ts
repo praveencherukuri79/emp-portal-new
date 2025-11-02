@@ -16,7 +16,10 @@ export const config = {
 
   // Database
   mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/emp-portal',
+    // Construct MongoDB Atlas URI if cloud credentials are provided
+    uri: process.env.DB_CLUSTER && process.env.DB_USER_NAME && process.env.DB_PASSWORD
+      ? `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority${process.env.DB_APP_NAME ? `&appName=${process.env.DB_APP_NAME}` : ''}`
+      : (process.env.MONGODB_URI || 'mongodb://localhost:27017/emp-portal'),
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true

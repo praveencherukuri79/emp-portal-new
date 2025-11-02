@@ -1,6 +1,5 @@
 import { Response } from 'express';
-import TimesheetEntry from '@models/timesheet.model';
-import User from '@models/user.model';
+import { TimesheetEntry, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, TimesheetStatus } from '../types';
 import moment from 'moment';

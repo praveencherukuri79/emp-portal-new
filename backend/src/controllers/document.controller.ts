@@ -2,7 +2,7 @@ import { Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import Document from '@models/document.model';
+import { Document } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, DocumentCategory, UserRole } from '../types';
 import moment from 'moment';

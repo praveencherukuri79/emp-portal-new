@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import User from '@models/user.model';
+import { User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest } from '../types';
 

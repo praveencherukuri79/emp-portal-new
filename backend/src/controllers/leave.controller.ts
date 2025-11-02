@@ -1,6 +1,5 @@
 import { Response } from 'express';
-import LeaveRequest from '@models/leave.model';
-import User from '@models/user.model';
+import { LeaveRequest, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, LeaveStatus, LeaveType, UserRole } from '../types';
 import moment from 'moment';
