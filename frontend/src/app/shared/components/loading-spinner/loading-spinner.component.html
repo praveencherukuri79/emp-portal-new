@@ -1,0 +1,13 @@
+@if (overlay) {
+  <div class="loading-overlay">
+    <div class="loading-spinner">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-message">{{ message }}</p>
+    </div>
+  </div>
+} @else {
+  <div class="loading-spinner loading-spinner--inline">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p class="loading-message">{{ message }}</p>
+  </div>
+}

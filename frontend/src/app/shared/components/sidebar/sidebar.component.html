@@ -1,0 +1,50 @@
+<aside class="sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar__header">
+    <div class="sidebar__logo">
+      <mat-icon>business</mat-icon>
+      @if (!collapsed()) {
+        <span>Employee Portal</span>
+      }
+    </div>
+    <button mat-icon-button (click)="toggleSidebar()" class="sidebar__toggle">
+      <mat-icon>{{ collapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+  </div>
+
+  <nav class="sidebar__nav">
+    @for (item of navItems; track item.route) {
+      @if (hasAccess(item.roles)) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="sidebar__nav-item"
+          [title]="item.label"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          @if (!collapsed()) {
+            <span>{{ item.label }}</span>
+          }
+        </a>
+      }
+    }
+  </nav>
+
+  <div class="sidebar__footer">
+    @if (currentUser()) {
+      <div class="sidebar__user">
+        <div class="sidebar__user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        @if (!collapsed()) {
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</div>
+            <div class="sidebar__user-role">{{ currentUser()?.role }}</div>
+          </div>
+        }
+      </div>
+      <button mat-icon-button (click)="logout()" class="sidebar__logout" [title]="'Logout'">
+        <mat-icon>logout</mat-icon>
+      </button>
+    }
+  </div>
+</aside>
