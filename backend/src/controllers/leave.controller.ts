@@ -18,6 +18,25 @@ export class LeaveController {
         return;
       }
 
+      // Calculate total days
+      const start = moment(startDate);
+      const end = moment(endDate);
+      let totalDays = 0;
+      
+      const current = start.clone();
+      while (current.isSameOrBefore(end)) {
+        const dayOfWeek = current.day();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip weekends
+          totalDays++;
+        }
+        current.add(1, 'day');
+      }
+      
+      // Adjust for half-day
+      if (isHalfDay) {
+        totalDays = 0.5;
+      }
+
       // Check leave balance
       const user = await User.findById(req.user?.userId);
       if (!user) {
@@ -31,6 +50,7 @@ export class LeaveController {
         leaveType,
         startDate,
         endDate,
+        totalDays,
         isHalfDay: isHalfDay ?? false,
         halfDayPeriod,
         reason,

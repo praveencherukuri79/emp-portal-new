@@ -17,6 +17,7 @@ import reportRoutes from './routes/report.routes';
 import notificationRoutes from './routes/notification.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import adminRoutes from './routes/admin.routes';
+import projectRoutes from './routes/project.routes';
 
 const app: Application = express();
 
@@ -74,6 +75,7 @@ const apiPrefix = config.apiPrefix;
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/users`, userRoutes);
 app.use(`${apiPrefix}/timesheets`, timesheetRoutes);
+app.use(`${apiPrefix}/projects`, projectRoutes);
 app.use(`${apiPrefix}/leaves`, leaveRoutes);
 app.use(`${apiPrefix}/documents`, documentRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);

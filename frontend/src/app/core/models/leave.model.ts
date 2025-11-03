@@ -50,7 +50,8 @@ export interface CreateLeaveRequest {
   leaveType: LeaveType;
   startDate: string;
   endDate: string;
-  halfDay: HalfDayPeriod;
+  isHalfDay?: boolean;
+  halfDayPeriod?: string;
   reason: string;
 }
 

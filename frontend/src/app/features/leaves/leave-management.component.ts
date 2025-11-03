@@ -117,7 +117,8 @@ export class LeaveManagementComponent implements OnInit {
       leaveType: formValue.leaveType,
       startDate: this.formatDate(formValue.startDate),
       endDate: this.formatDate(formValue.endDate),
-      halfDay: formValue.halfDay,
+      isHalfDay: formValue.halfDay !== HalfDayPeriod.FULL_DAY,
+      halfDayPeriod: formValue.halfDay !== HalfDayPeriod.FULL_DAY ? formValue.halfDay : undefined,
       reason: formValue.reason
     }).subscribe({
       next: () => {

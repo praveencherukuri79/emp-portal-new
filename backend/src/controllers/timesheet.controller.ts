@@ -12,6 +12,11 @@ export class TimesheetController {
     try {
       const { date, project, task, description, hours, isBillable } = req.body;
 
+      // Calculate week information
+      const entryDate = moment(date);
+      const weekStart = entryDate.clone().startOf('isoWeek');
+      const weekEnd = entryDate.clone().endOf('isoWeek');
+
       // Check if entry already exists for this date and project
       const existingEntry = await TimesheetEntry.findOne({
         tenantId: req.user?.tenantId,
@@ -29,6 +34,10 @@ export class TimesheetController {
         tenantId: req.user?.tenantId,
         userId: req.user?.userId,
         date,
+        weekStartDate: weekStart.toDate(),
+        weekEndDate: weekEnd.toDate(),
+        year: entryDate.year(),
+        weekNumber: entryDate.isoWeek(),
         project,
         task,
         description,
@@ -60,6 +69,11 @@ export class TimesheetController {
       const createdEntries = [];
       
       for (const entryData of entries) {
+        // Calculate week information for each entry
+        const entryDate = moment(entryData.date);
+        const weekStart = entryDate.clone().startOf('isoWeek');
+        const weekEnd = entryDate.clone().endOf('isoWeek');
+
         // Check if entry already exists
         const existing = await TimesheetEntry.findOne({
           tenantId: req.user?.tenantId,
@@ -73,6 +87,10 @@ export class TimesheetController {
             ...entryData,
             tenantId: req.user?.tenantId,
             userId: req.user?.userId,
+            weekStartDate: weekStart.toDate(),
+            weekEndDate: weekEnd.toDate(),
+            year: entryDate.year(),
+            weekNumber: entryDate.isoWeek(),
             status: TimesheetStatus.DRAFT
           });
           await entry.save();
