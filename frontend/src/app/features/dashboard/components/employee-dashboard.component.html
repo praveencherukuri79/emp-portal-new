@@ -1,0 +1,79 @@
+<div class="employee-dashboard">
+  <div class="dashboard-header">
+    <h1>My Dashboard</h1>
+  </div>
+
+  <div class="stats-grid">
+    <app-stats-card 
+      *ngFor="let stat of stats()"
+      [data]="stat"
+    ></app-stats-card>
+  </div>
+
+  <div class="quick-actions">
+    <mat-card class="action-card">
+      <h3>
+        <mat-icon>schedule</mat-icon>
+        Timesheet
+      </h3>
+      <p>Log your hours for this week</p>
+      <button mat-raised-button color="primary" routerLink="/timesheets">
+        <mat-icon>add</mat-icon>
+        Add Time Entry
+      </button>
+    </mat-card>
+
+    <mat-card class="action-card">
+      <h3>
+        <mat-icon>event</mat-icon>
+        Leave Request
+      </h3>
+      <p>Request time off</p>
+      <button mat-raised-button color="primary" routerLink="/leaves">
+        <mat-icon>add</mat-icon>
+        Request Leave
+      </button>
+    </mat-card>
+
+    <mat-card class="action-card">
+      <h3>
+        <mat-icon>upload_file</mat-icon>
+        Documents
+      </h3>
+      <p>Upload a new document</p>
+      <button mat-raised-button color="primary" routerLink="/documents/upload">
+        <mat-icon>add</mat-icon>
+        Upload Document
+      </button>
+    </mat-card>
+  </div>
+
+  <div class="recent-activity">
+    <mat-card>
+      <h3>Recent Activity</h3>
+      <div class="activity-list">
+        <div class="activity-item">
+          <mat-icon class="activity-icon success">check_circle</mat-icon>
+          <div class="activity-content">
+            <p class="activity-title">Timesheet Approved</p>
+            <p class="activity-time">2 hours ago</p>
+          </div>
+        </div>
+        <div class="activity-item">
+          <mat-icon class="activity-icon info">upload</mat-icon>
+          <div class="activity-content">
+            <p class="activity-title">Document Uploaded</p>
+            <p class="activity-time">1 day ago</p>
+          </div>
+        </div>
+        <div class="activity-item">
+          <mat-icon class="activity-icon warning">pending</mat-icon>
+          <div class="activity-content">
+            <p class="activity-title">Leave Request Pending</p>
+            <p class="activity-time">3 days ago</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

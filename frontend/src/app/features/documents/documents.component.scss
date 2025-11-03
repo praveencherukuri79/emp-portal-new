@@ -1,0 +1,30 @@
+.documents-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .header-card { margin-bottom: 24px; background: var(--card-background); }
+  mat-card-title { color: var(--text-primary); font-size: 24px; font-weight: 500; }
+  .documents-tabs { background: var(--card-background); border-radius: 8px; }
+  .tab-content { padding: 24px; }
+  .upload-card { max-width: 800px; margin: 0 auto; }
+  .upload-form { padding: 16px 0; }
+  .form-row { margin-bottom: 16px; }
+  .full-width { width: 100%; }
+  .file-upload-section { display: flex; gap: 16px; margin: 24px 0; padding: 20px; border: 2px dashed var(--border-color); }
+  .select-file-btn, button { display: flex; align-items: center; gap: 8px; }
+  .form-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
+  .loading-container, .empty-state { display: flex; justify-content: center; padding: 40px; }
+  .empty-state { flex-direction: column; align-items: center; color: var(--text-secondary); }
+  .documents-table, .expiry-table { width: 100%; }
+  .doc-name { display: flex; align-items: center; gap: 8px; }
+  .status-valid { background-color: var(--status-success); color: white; }
+  .status-warning { background-color: var(--status-warning); color: white; }
+  .status-expired { background-color: var(--status-error); color: white; }
+  .expired { color: var(--status-error); font-weight: 600; }
+}
+
+@media (max-width: 768px) {
+  .documents-container { padding: 16px; }
+  .file-upload-section { flex-direction: column; }
+}

@@ -1,0 +1,235 @@
+<div class="documents-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>Document Management</mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-tab-group class="documents-tabs">
+    <!-- Upload Document Tab -->
+    <mat-tab label="Upload Document">
+      <div class="tab-content">
+        <mat-card class="upload-card">
+          <mat-card-header>
+            <mat-card-title>Upload New Document</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="upload-form">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Document Category</mat-label>
+                  <mat-select formControlName="category">
+                    <mat-option *ngFor="let category of documentCategories" [value]="category">
+                      {{ category }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>Document category is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Document Title</mat-label>
+                  <input matInput formControlName="title" placeholder="e.g., Passport, Visa, etc.">
+                  <mat-error>Document title is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Expiry Date (Optional)</mat-label>
+                  <input matInput type="date" formControlName="expiryDate">
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Notes (Optional)</mat-label>
+                  <textarea matInput formControlName="notes" rows="3"></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="file-upload-section">
+                <input
+                  type="file"
+                  id="file-input"
+                  style="display: none"
+                  (change)="onFileSelected($event)"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                >
+                <button
+                  type="button"
+                  mat-stroked-button
+                  color="primary"
+                  onclick="document.getElementById('file-input')?.click()"
+                  class="select-file-btn"
+                >
+                  <mat-icon>attach_file</mat-icon>
+                  Select File
+                </button>
+                <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="!uploadForm.valid || !selectedFile || uploading()"
+                >
+                  <mat-icon>cloud_upload</mat-icon>
+                  {{ uploading() ? 'Uploading...' : 'Upload Document' }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- My Documents Tab -->
+    <mat-tab label="My Documents">
+      <div class="tab-content">
+        <mat-card class="documents-list-card">
+          <mat-card-content>
+            <div *ngIf="loading()" class="loading-container">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <div *ngIf="!loading() && documents().length === 0" class="empty-state">
+              <mat-icon>description</mat-icon>
+              <p>No documents uploaded yet</p>
+            </div>
+
+            <table mat-table [dataSource]="documents()" *ngIf="!loading() && documents().length > 0" class="documents-table">
+              <!-- Document Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Document Title</th>
+                <td mat-cell *matCellDef="let doc">
+                  <div class="doc-name">
+                    <mat-icon>description</mat-icon>
+                    {{ doc.title }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Document Category Column -->
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let doc">
+                  <mat-chip>{{ doc.category }}</mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Upload Date Column -->
+              <ng-container matColumnDef="uploadedAt">
+                <th mat-header-cell *matHeaderCellDef>Uploaded</th>
+                <td mat-cell *matCellDef="let doc">{{ formatDate(doc.uploadedAt) }}</td>
+              </ng-container>
+
+              <!-- Expiry Date Column -->
+              <ng-container matColumnDef="expiryDate">
+                <th mat-header-cell *matHeaderCellDef>Expiry Date</th>
+                <td mat-cell *matCellDef="let doc">{{ formatDate(doc.expiryDate) }}</td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let doc">
+                  <mat-chip [class]="'status-' + getExpiryStatus(doc.expiryDate)">
+                    {{ getExpiryStatus(doc.expiryDate) | uppercase }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let doc">
+                  <button mat-icon-button (click)="downloadDocument(doc)" matTooltip="Download">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteDocument(doc._id)" matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Expiry Alerts Tab -->
+    <mat-tab label="Expiry Alerts">
+      <div class="tab-content">
+        <mat-card class="expiry-alerts-card">
+          <mat-card-header>
+            <mat-card-title>Documents Expiring Soon</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="expiringDocuments().length === 0" class="empty-state">
+              <mat-icon>check_circle</mat-icon>
+              <p>No documents expiring soon</p>
+            </div>
+
+            <table mat-table [dataSource]="expiringDocuments()" *ngIf="expiringDocuments().length > 0" class="expiry-table">
+              <!-- Document Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Document Title</th>
+                <td mat-cell *matCellDef="let doc">
+                  <div class="doc-name">
+                    <mat-icon>warning</mat-icon>
+                    {{ doc.title }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Document Category Column -->
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let doc">
+                  <mat-chip>{{ doc.category }}</mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Expiry Date Column -->
+              <ng-container matColumnDef="expiryDate">
+                <th mat-header-cell *matHeaderCellDef>Expiry Date</th>
+                <td mat-cell *matCellDef="let doc">{{ formatDate(doc.expiryDate) }}</td>
+              </ng-container>
+
+              <!-- Days Remaining Column -->
+              <ng-container matColumnDef="daysRemaining">
+                <th mat-header-cell *matHeaderCellDef>Days Remaining</th>
+                <td mat-cell *matCellDef="let doc">
+                  <span [class.expired]="getDaysRemaining(doc.expiryDate!) < 0" [class.warning]="getDaysRemaining(doc.expiryDate!) <= 7">
+                    {{ getDaysRemaining(doc.expiryDate!) }} days
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let doc">
+                  <button mat-raised-button color="primary" size="small">
+                    <mat-icon>refresh</mat-icon>
+                    Renew
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="expiryColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: expiryColumns"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,39 @@
+.timesheet-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
+.week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 20px; background: var(--card-background); border-radius: 12px; }
+.week-nav h2 { margin: 0; font-size: 20px; color: var(--text-primary); }
+.week-nav__controls, .week-nav__range, .week-nav__actions { display: flex; gap: 16px; align-items: center; }
+.week-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.summary-card { padding: 20px; background: var(--card-background); border-radius: 12px; }
+.summary-card__label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+.summary-card__value { font-size: 32px; font-weight: 700; color: var(--text-primary); }
+.summary-card__value.success { color: var(--status-success); }
+.quick-entry { margin-bottom: 24px; padding: 24px; background: var(--card-background); border-radius: 12px; border: 2px dashed var(--border-primary); }
+.quick-entry__title { display: flex; gap: 8px; margin: 0 0 20px; font-size: 18px; color: var(--text-primary); }
+.quick-entry__form { display: flex; flex-direction: column; gap: 20px; }
+.quick-entry__days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+.day-input { display: flex; flex-direction: column; gap: 8px; }
+.day-input label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-align: center; }
+.day-input input { padding: 12px; border: 1px solid var(--input-border); border-radius: 8px; text-align: center; background: var(--input-background); color: var(--text-primary); }
+.day-input input:focus { outline: none; border-color: var(--border-focus); }
+.quick-entry__actions { display: flex; gap: 12px; justify-content: flex-end; }
+.entries-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; min-height: 400px; }
+.day-column { display: flex; flex-direction: column; background: var(--card-background); border-radius: 12px; overflow: hidden; }
+.day-column__header { padding: 16px; background: var(--background-tertiary); border-bottom: 1px solid var(--border-primary); }
+.day-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.day-date { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+.day-total { font-size: 16px; font-weight: 700; color: var(--action-primary); }
+.day-column__entries { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.entry-card { padding: 12px; background: var(--background-secondary); border-radius: 8px; border: 1px solid var(--border-primary); }
+.entry-card.billable { border-left: 3px solid var(--status-success); }
+.entry-card__header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.entry-card__project { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.entry-card__hours { font-size: 24px; font-weight: 700; color: var(--action-primary); }
+
+@media (max-width: 1024px) {
+  .entries-grid, .quick-entry__days { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 768px) {
+  .entries-grid { grid-template-columns: repeat(2, 1fr); }
+  .quick-entry__days { grid-template-columns: repeat(3, 1fr); }
+  .week-nav { flex-direction: column; gap: 16px; }
+}

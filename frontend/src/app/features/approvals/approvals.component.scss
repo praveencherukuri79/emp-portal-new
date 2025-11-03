@@ -1,0 +1,131 @@
+.approvals-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .header-card {
+    margin-bottom: 24px;
+    background: var(--card-background);
+
+    mat-card-title {
+      color: var(--text-primary);
+      font-size: 24px;
+      font-weight: 500;
+    }
+  }
+
+  .approvals-tabs {
+    background: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .tab-content {
+    padding: 24px;
+  }
+
+  .approvals-card {
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+
+      mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+        color: var(--status-success);
+      }
+
+      p {
+        font-size: 16px;
+        margin: 0;
+      }
+    }
+
+    .approvals-table {
+      width: 100%;
+
+      mat-chip {
+        font-size: 12px;
+      }
+
+      .status-success {
+        background-color: var(--status-success);
+        color: white;
+      }
+
+      .status-warning {
+        background-color: var(--status-warning);
+        color: white;
+      }
+
+      .status-error {
+        background-color: var(--status-error);
+        color: white;
+      }
+
+      .status-neutral {
+        background-color: var(--surface-background);
+        color: var(--text-secondary);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+          padding: 6px 16px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .approvals-container {
+    padding: 16px;
+
+    .approvals-table {
+      font-size: 12px;
+
+      th,
+      td {
+        padding: 8px 4px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+
+        button {
+          width: 100%;
+          font-size: 12px;
+          padding: 4px 12px;
+        }
+      }
+    }
+  }
+}

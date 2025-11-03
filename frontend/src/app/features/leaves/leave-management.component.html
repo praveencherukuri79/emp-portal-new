@@ -1,0 +1,165 @@
+<div class="leave-management">
+  <div class="page-header">
+    <h1>
+      <mat-icon>event_available</mat-icon>
+      Leave Management
+    </h1>
+  </div>
+
+  <mat-tab-group>
+    <!-- Request Leave Tab -->
+    <mat-tab label="Request Leave">
+      <div class="tab-content">
+        <mat-card class="request-card">
+          <h2>New Leave Request</h2>
+          
+          <form [formGroup]="leaveForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Leave Type</mat-label>
+                <mat-select formControlName="leaveType" required>
+                  <mat-option *ngFor="let type of leaveTypes" [value]="type">
+                    {{ type | titlecase }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Half Day</mat-label>
+                <mat-select formControlName="halfDay" required>
+                  <mat-option [value]="'full_day'">Full Day</mat-option>
+                  <mat-option [value]="'morning'">Morning</mat-option>
+                  <mat-option [value]="'afternoon'">Afternoon</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="startDate" required />
+                <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="endDate" required />
+                <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Reason</mat-label>
+              <textarea matInput formControlName="reason" rows="3" maxlength="500" required></textarea>
+              <mat-hint align="end">{{ leaveForm.get('reason')?.value?.length || 0 }}/500</mat-hint>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button type="button" mat-button (click)="leaveForm.reset({ halfDay: 'full_day' })">
+                Reset
+              </button>
+              <button type="submit" mat-raised-button color="primary" [disabled]="leaveForm.invalid || submitting()">
+                <mat-icon>send</mat-icon>
+                {{ submitting() ? 'Submitting...' : 'Submit Request' }}
+              </button>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Leave Balance Tab -->
+    <mat-tab label="My Balance">
+      <div class="tab-content">
+        <div class="balance-grid">
+          <mat-card *ngFor="let balance of balances()" class="balance-card">
+            <div class="balance-header">
+              <mat-icon>event</mat-icon>
+              <h3>{{ balance.leaveType | titlecase }}</h3>
+            </div>
+            
+            <div class="balance-stats">
+              <div class="stat">
+                <span class="label">Total</span>
+                <span class="value">{{ balance.totalDays }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Used</span>
+                <span class="value used">{{ balance.usedDays }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Remaining</span>
+                <span class="value remaining">{{ balance.remainingDays }}</span>
+              </div>
+            </div>
+
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="getUsagePercentage(balance)"
+              [class]="getUsagePercentage(balance) > 75 ? 'high-usage' : ''">
+            </mat-progress-bar>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Leave History Tab -->
+    <mat-tab label="My Leaves">
+      <div class="tab-content">
+        <mat-card class="history-card">
+          <table mat-table [dataSource]="leaves()" class="leaves-table">
+            <ng-container matColumnDef="leaveType">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let leave">{{ leave.leaveType | titlecase }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="dates">
+              <th mat-header-cell *matHeaderCellDef>Dates</th>
+              <td mat-cell *matCellDef="let leave">
+                {{ leave.startDate | date:'MMM d' }} - {{ leave.endDate | date:'MMM d, y' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="days">
+              <th mat-header-cell *matHeaderCellDef>Days</th>
+              <td mat-cell *matCellDef="let leave">{{ leave.days || 1 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let leave">
+                <mat-chip [class]="'status-' + getStatusColor(leave.status)">
+                  {{ leave.status | titlecase }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let leave">
+                <button 
+                  *ngIf="leave.status === 'pending'" 
+                  mat-icon-button 
+                  color="warn"
+                  (click)="cancelLeave(leave)"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <div class="no-data" *ngIf="leaves().length === 0 && !loading()">
+            <mat-icon>inbox</mat-icon>
+            <p>No leave requests found</p>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

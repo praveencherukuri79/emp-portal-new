@@ -1,0 +1,202 @@
+// Leave Management Component - uses only CSS variables
+
+.leave-management {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+
+    mat-icon {
+      color: var(--action-primary);
+    }
+  }
+}
+
+.tab-content {
+  padding: 24px 0;
+}
+
+.request-card,
+.history-card {
+  background: var(--card-background);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+
+  h2 {
+    margin: 0 0 24px 0;
+    color: var(--text-primary);
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.balance-card {
+  background: var(--card-background);
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+
+  .balance-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    mat-icon {
+      color: var(--action-primary);
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+
+    h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .balance-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+
+    .stat {
+      text-align: center;
+
+      .label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+
+      .value {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+
+        &.used {
+          color: var(--status-warning);
+        }
+
+        &.remaining {
+          color: var(--status-success);
+        }
+      }
+    }
+  }
+
+  mat-progress-bar {
+    ::ng-deep .mdc-linear-progress__bar-inner {
+      border-color: var(--status-success);
+    }
+
+    &.high-usage ::ng-deep .mdc-linear-progress__bar-inner {
+      border-color: var(--status-error);
+    }
+  }
+}
+
+.leaves-table {
+  width: 100%;
+
+  th {
+    background: var(--table-header-background);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 16px;
+  }
+
+  td {
+    padding: 16px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--table-border);
+  }
+
+  tr:hover {
+    background: var(--table-row-hover);
+  }
+}
+
+.status-success {
+  background: var(--color-success-100);
+  color: var(--status-success);
+}
+
+.status-warning {
+  background: var(--color-warning-100);
+  color: var(--status-warning);
+}
+
+.status-error {
+  background: var(--color-error-100);
+  color: var(--status-error);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  color: var(--text-tertiary);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
