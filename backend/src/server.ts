@@ -38,7 +38,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging
 if (config.env === 'development') {
-  app.use(morgan('dev'));
+  // Skip logging for Chrome DevTools polling requests
+  app.use(morgan('dev', {
+    skip: (req: Request) => {
+      const skipPaths = ['/json/list', '/json/version', '/devtools/browser'];
+      return skipPaths.some(path => req.path.includes(path));
+    }
+  }));
 }
 
 // Rate limiting
@@ -87,6 +93,13 @@ app.use(`${apiPrefix}/admin`, adminRoutes); // Secure admin routes
 
 // 404 handler
 app.use((req: Request, res: Response, _next: NextFunction) => {
+  // Silently ignore Chrome DevTools polling requests
+  const devToolsPaths = ['/json/list', '/json/version', '/devtools/browser'];
+  if (devToolsPaths.some(path => req.path.includes(path))) {
+    res.status(404).end();
+    return;
+  }
+  
   res.status(404).json({
     status: 'error',
     message: `Route ${req.originalUrl} not found`

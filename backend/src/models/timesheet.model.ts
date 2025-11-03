@@ -1,6 +1,9 @@
 import { Schema, model } from 'mongoose';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { ITimesheetEntry, TimesheetStatus } from '../types';
+
+dayjs.extend(isoWeek);
 
 const timesheetEntrySchema = new Schema<ITimesheetEntry>({
   // Multi-tenant field
@@ -120,12 +123,12 @@ timesheetEntrySchema.index({ tenantId: 1, userId: 1, date: 1, project: 1 }, { un
 
 // Calculate week number and dates before saving
 timesheetEntrySchema.pre('save', function(next) {
-  const date = moment(this.date);
+  const date = dayjs(this.date);
   
   this.year = date.year();
-  this.weekNumber = date.week();
-  this.weekStartDate = date.clone().startOf('week').toDate();
-  this.weekEndDate = date.clone().endOf('week').toDate();
+  this.weekNumber = date.isoWeek();
+  this.weekStartDate = date.startOf('isoWeek').toDate();
+  this.weekEndDate = date.endOf('isoWeek').toDate();
   
   next();
 });

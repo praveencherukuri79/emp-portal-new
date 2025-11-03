@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { User, TimesheetEntry, LeaveRequest, Document } from '../models';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest, UserRole } from '../types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export class DashboardController {
   /**
@@ -45,8 +45,8 @@ export class DashboardController {
    */
   static async getEmployeeDashboard(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const today = moment().startOf('day').toDate();
-      const monthStart = moment().startOf('month').toDate();
+      const today = dayjs().startOf('day').toDate();
+      const monthStart = dayjs().startOf('month').toDate();
 
       // Get timesheet stats
       const timesheetStats = await TimesheetEntry.aggregate([
@@ -91,7 +91,7 @@ export class DashboardController {
       }
 
       // Get expiring documents
-      const thirtyDaysFromNow = moment().add(30, 'days').toDate();
+      const thirtyDaysFromNow = dayjs().add(30, 'days').toDate();
       const expiringDocuments = await Document.find({
         tenantId: req.user?.tenantId,
         userId: req.user?.userId,
@@ -155,7 +155,7 @@ export class DashboardController {
       }).populate('userId', 'firstName lastName email employeeId');
 
       // Team timesheet summary (this month)
-      const monthStart = moment().startOf('month').toDate();
+      const monthStart = dayjs().startOf('month').toDate();
       const teamTimesheetStats = await TimesheetEntry.aggregate([
         {
           $match: {
@@ -205,8 +205,8 @@ export class DashboardController {
    */
   static async getHRDashboard(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const today = moment().startOf('day').toDate();
-      const monthStart = moment().startOf('month').toDate();
+      const today = dayjs().startOf('day').toDate();
+      const monthStart = dayjs().startOf('month').toDate();
 
       // Total employees
       const totalEmployees = await User.countDocuments({
@@ -247,7 +247,7 @@ export class DashboardController {
       });
 
       // Expiring documents (next 30 days)
-      const thirtyDaysFromNow = moment().add(30, 'days').toDate();
+      const thirtyDaysFromNow = dayjs().add(30, 'days').toDate();
       const expiringDocuments = await Document.find({
         tenantId: req.user?.tenantId,
         expiryDate: {
@@ -299,7 +299,7 @@ export class DashboardController {
    */
   static async getAdminDashboard(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const monthStart = moment().startOf('month').toDate();
+      const monthStart = dayjs().startOf('month').toDate();
 
       // User statistics
       const userStats = await User.aggregate([
@@ -359,8 +359,8 @@ export class DashboardController {
    */
   static async getEmployerDashboard(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const monthStart = moment().startOf('month').toDate();
-      const yearStart = moment().startOf('year').toDate();
+      const monthStart = dayjs().startOf('month').toDate();
+      const yearStart = dayjs().startOf('year').toDate();
 
       // Total employees
       const totalEmployees = await User.countDocuments({

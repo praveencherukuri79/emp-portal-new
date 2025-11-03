@@ -2,7 +2,12 @@ import { Response } from 'express';
 import { LeaveRequest, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, LeaveStatus, LeaveType, UserRole } from '../types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isoWeek);
 
 export class LeaveController {
   /**
@@ -19,17 +24,17 @@ export class LeaveController {
       }
 
       // Calculate total days
-      const start = moment(startDate);
-      const end = moment(endDate);
+      const start = dayjs(startDate);
+      const end = dayjs(endDate);
       let totalDays = 0;
       
-      const current = start.clone();
-      while (current.isSameOrBefore(end)) {
+      let current = start;
+      while (current.isSameOrBefore(end, 'day')) {
         const dayOfWeek = current.day();
         if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip weekends
           totalDays++;
         }
-        current.add(1, 'day');
+        current = current.add(1, 'day');
       }
       
       // Adjust for half-day
@@ -107,8 +112,8 @@ export class LeaveController {
       }
 
       // Calculate used leaves for current year
-      const yearStart = moment().startOf('year').toDate();
-      const yearEnd = moment().endOf('year').toDate();
+      const yearStart = dayjs().startOf('year').toDate();
+      const yearEnd = dayjs().endOf('year').toDate();
 
       const leaveRequests = await LeaveRequest.find({
         tenantId: req.user?.tenantId,
@@ -377,8 +382,8 @@ export class LeaveController {
    */
   static async getLeaveStatistics(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const yearStart = moment().startOf('year').toDate();
-      const yearEnd = moment().endOf('year').toDate();
+      const yearStart = dayjs().startOf('year').toDate();
+      const yearEnd = dayjs().endOf('year').toDate();
 
       const leaves = await LeaveRequest.find({
         tenantId: req.user?.tenantId,

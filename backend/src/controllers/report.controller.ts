@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import { TimesheetEntry, LeaveRequest, User } from '../models';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest, UserRole, LeaveStatus } from '../types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export class ReportController {
   /**
@@ -169,7 +169,7 @@ export class ReportController {
       const users = await User.find(query).select('-password');
 
       // Get timesheet summary for each user (last 30 days)
-      const thirtyDaysAgo = moment().subtract(30, 'days').toDate();
+      const thirtyDaysAgo = dayjs().subtract(30, 'days').toDate();
       const teamData = await Promise.all(
         users.map(async (user) => {
           const timesheetEntries = await TimesheetEntry.find({
@@ -258,7 +258,7 @@ export class ReportController {
         doc.addPage();
       }
       doc.text(
-        `${moment(entry.date).format('YYYY-MM-DD')} | ${entry.userId?.firstName} ${entry.userId?.lastName} | ${entry.hoursWorked}h | ${entry.projectId?.name || 'N/A'}`
+        `${dayjs(entry.date).format('YYYY-MM-DD')} | ${entry.userId?.firstName} ${entry.userId?.lastName} | ${entry.hoursWorked}h | ${entry.projectId?.name || 'N/A'}`
       );
     });
 
@@ -285,7 +285,7 @@ export class ReportController {
     // Data
     data.entries.forEach((entry: any) => {
       worksheet.addRow({
-        date: moment(entry.date).format('YYYY-MM-DD'),
+        date: dayjs(entry.date).format('YYYY-MM-DD'),
         employee: `${entry.userId?.firstName} ${entry.userId?.lastName}`,
         project: entry.projectId?.name || 'N/A',
         hours: entry.hoursWorked,
@@ -340,7 +340,7 @@ export class ReportController {
         doc.addPage();
       }
       doc.text(
-        `${moment(leave.startDate).format('YYYY-MM-DD')} to ${moment(leave.endDate).format('YYYY-MM-DD')} | ${leave.userId?.firstName} ${leave.userId?.lastName} | ${leave.leaveType} | ${leave.totalDays} days | ${leave.status}`
+        `${dayjs(leave.startDate).format('YYYY-MM-DD')} to ${dayjs(leave.endDate).format('YYYY-MM-DD')} | ${leave.userId?.firstName} ${leave.userId?.lastName} | ${leave.leaveType} | ${leave.totalDays} days | ${leave.status}`
       );
     });
 
@@ -368,8 +368,8 @@ export class ReportController {
       worksheet.addRow({
         employee: `${leave.userId?.firstName} ${leave.userId?.lastName}`,
         leaveType: leave.leaveType,
-        startDate: moment(leave.startDate).format('YYYY-MM-DD'),
-        endDate: moment(leave.endDate).format('YYYY-MM-DD'),
+        startDate: dayjs(leave.startDate).format('YYYY-MM-DD'),
+        endDate: dayjs(leave.endDate).format('YYYY-MM-DD'),
         days: leave.totalDays,
         status: leave.status,
         reason: leave.reason

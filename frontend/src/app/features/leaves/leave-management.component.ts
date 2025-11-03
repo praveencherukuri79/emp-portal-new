@@ -15,6 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LeaveService } from '../../core/services/leave.service';
 import { LeaveType, LeaveRequest, LeaveBalance, HalfDayPeriod } from '../../core/models/leave.model';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-leave-management',
@@ -86,7 +87,7 @@ export class LeaveManagementComponent implements OnInit {
             totalDays: balanceData[key].total,
             usedDays: balanceData[key].used,
             remainingDays: balanceData[key].remaining,
-            year: new Date().getFullYear()
+            year: dayjs().year()
           });
         });
         
@@ -141,7 +142,7 @@ export class LeaveManagementComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    return dayjs(date).format('YYYY-MM-DD');
   }
 
   getStatusColor(status: string): string {

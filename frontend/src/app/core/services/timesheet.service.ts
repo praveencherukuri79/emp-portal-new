@@ -10,6 +10,10 @@ import {
   UpdateTimesheetRequest,
   SubmitWeekRequest
 } from '../models/timesheet.model';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +48,13 @@ export class TimesheetService {
   }
 
   /**
+   * Batch create multiple timesheet entries
+   */
+  batchCreateEntries(entries: CreateTimesheetRequest[]): Observable<{ data: TimesheetEntry[] }> {
+    return this.http.post<{ data: TimesheetEntry[] }>(`${this.API_URL}/entries/batch`, { entries });
+  }
+
+  /**
    * Update an existing timesheet entry (only if Draft or Rejected)
    */
   updateEntry(entry: UpdateTimesheetRequest): Observable<{ data: TimesheetEntry }> {
@@ -65,59 +76,66 @@ export class TimesheetService {
   }
 
   /**
+   * Get timesheet history with optional filters
+   */
+  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<{ data: TimesheetEntry[] }> {
+    let queryParams = '';
+    if (params) {
+      const queryArray: string[] = [];
+      if (params.startDate) queryArray.push(`startDate=${params.startDate}`);
+      if (params.endDate) queryArray.push(`endDate=${params.endDate}`);
+      if (params.status) queryArray.push(`status=${params.status}`);
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    return this.http.get<{ data: TimesheetEntry[] }>(`${this.API_URL}/history${queryParams}`);
+  }
+
+  /**
    * Get current week date range (Mon-Sun)
    */
   getCurrentWeekRange(): { start: Date; end: Date } {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday as start
+    const today = dayjs();
+    const monday = today.startOf('isoWeek');
+    const sunday = monday.add(6, 'days').endOf('day');
 
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-
-    return { start: monday, end: sunday };
+    return { 
+      start: monday.toDate(), 
+      end: sunday.toDate() 
+    };
   }
 
   /**
    * Get previous week range
    */
   getPreviousWeek(currentStart: Date): { start: Date; end: Date } {
-    const start = new Date(currentStart);
-    start.setDate(start.getDate() - 7);
-    
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    end.setHours(23, 59, 59, 999);
+    const start = dayjs(currentStart).subtract(7, 'days');
+    const end = start.add(6, 'days').endOf('day');
 
-    return { start, end };
+    return { 
+      start: start.toDate(), 
+      end: end.toDate() 
+    };
   }
 
   /**
    * Get next week range
    */
   getNextWeek(currentStart: Date): { start: Date; end: Date } {
-    const start = new Date(currentStart);
-    start.setDate(start.getDate() + 7);
-    
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    end.setHours(23, 59, 59, 999);
+    const start = dayjs(currentStart).add(7, 'days');
+    const end = start.add(6, 'days').endOf('day');
 
-    return { start, end };
+    return { 
+      start: start.toDate(), 
+      end: end.toDate() 
+    };
   }
 
   /**
    * Format date to YYYY-MM-DD for API
    */
   formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return dayjs(date).format('YYYY-MM-DD');
   }
 }

@@ -8,26 +8,34 @@
 .mat-mdc-button,
 .mat-mdc-raised-button,
 .mat-mdc-flat-button,
-.mat-mdc-stroked-button {
+.mat-mdc-stroked-button,
+.mat-mdc-icon-button {
   font-family: inherit !important;
   letter-spacing: 0.5px;
+  transition: all 0.2s ease-in-out !important;
 }
 
 .mat-mdc-raised-button.mat-primary {
   background-color: var(--action-primary) !important;
   color: var(--text-inverse) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   
   &:hover:not([disabled]) {
     background-color: var(--action-primary-hover) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-1px);
   }
   
   &:active:not([disabled]) {
     background-color: var(--action-primary-active) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(0);
   }
   
   &[disabled] {
     background-color: var(--action-disabled) !important;
     color: var(--text-disabled) !important;
+    box-shadow: none !important;
   }
 }
 
@@ -55,6 +63,13 @@
   color: var(--text-primary) !important;
   box-shadow: var(--card-shadow) !important;
   border: 1px solid var(--border-secondary);
+  border-radius: 12px !important;
+  transition: all 0.3s ease-in-out !important;
+  
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-2px);
+  }
 }
 
 .mat-mdc-card-title {
@@ -451,4 +466,31 @@
 
 .mat-mdc-list-item-meta {
   color: var(--text-secondary) !important;
+}
+
+/* Snackbar Overrides */
+.mat-mdc-snack-bar-container {
+  &.success-snackbar {
+    --mdc-snackbar-container-color: var(--status-success);
+    --mat-snack-bar-button-color: var(--text-inverse);
+    --mdc-snackbar-supporting-text-color: var(--text-inverse);
+  }
+  
+  &.error-snackbar {
+    --mdc-snackbar-container-color: var(--status-error);
+    --mat-snack-bar-button-color: var(--text-inverse);
+    --mdc-snackbar-supporting-text-color: var(--text-inverse);
+  }
+  
+  &.warning-snackbar {
+    --mdc-snackbar-container-color: var(--status-warning);
+    --mat-snack-bar-button-color: var(--text-inverse);
+    --mdc-snackbar-supporting-text-color: var(--text-inverse);
+  }
+  
+  &.info-snackbar {
+    --mdc-snackbar-container-color: var(--action-primary);
+    --mat-snack-bar-button-color: var(--text-inverse);
+    --mdc-snackbar-supporting-text-color: var(--text-inverse);
+  }
 }

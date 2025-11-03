@@ -1,6 +1,9 @@
 import { Schema, model } from 'mongoose';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { ILeaveRequest, LeaveType, LeaveStatus } from '../types';
+
+dayjs.extend(isSameOrBefore);
 
 const leaveRequestSchema = new Schema<ILeaveRequest>({
   // Multi-tenant field
@@ -114,19 +117,19 @@ leaveRequestSchema.pre('save', function(next) {
     return next();
   }
 
-  const start = moment(this.startDate);
-  const end = moment(this.endDate);
+  const start = dayjs(this.startDate);
+  const end = dayjs(this.endDate);
   
   // Calculate business days
   let days = 0;
-  let current = start.clone();
+  let current = start;
   
-  while (current.isSameOrBefore(end)) {
+  while (current.isSameOrBefore(end, 'day')) {
     // Skip weekends (Saturday=6, Sunday=0)
     if (current.day() !== 0 && current.day() !== 6) {
       days++;
     }
-    current.add(1, 'day');
+    current = current.add(1, 'day');
   }
   
   // If half-day, divide by 2

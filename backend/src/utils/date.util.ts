@@ -1,4 +1,14 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+// Extend dayjs with plugins
+dayjs.extend(isoWeek);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(customParseFormat);
 
 /**
  * Reusable Date Utilities
@@ -10,28 +20,28 @@ export class DateUtil {
    * Get start of week (Monday)
    */
   static getWeekStart(date: Date = new Date()): Date {
-    return moment(date).startOf('week').toDate();
+    return dayjs(date).startOf('isoWeek').toDate();
   }
 
   /**
    * Get end of week (Sunday)
    */
   static getWeekEnd(date: Date = new Date()): Date {
-    return moment(date).endOf('week').toDate();
+    return dayjs(date).endOf('isoWeek').toDate();
   }
 
   /**
    * Get week number
    */
   static getWeekNumber(date: Date = new Date()): number {
-    return moment(date).week();
+    return dayjs(date).isoWeek();
   }
 
   /**
    * Get year
    */
   static getYear(date: Date = new Date()): number {
-    return moment(date).year();
+    return dayjs(date).year();
   }
 
   /**
@@ -39,15 +49,15 @@ export class DateUtil {
    */
   static calculateBusinessDays(startDate: Date, endDate: Date): number {
     let days = 0;
-    const current = moment(startDate);
-    const end = moment(endDate);
+    let current = dayjs(startDate);
+    const end = dayjs(endDate);
 
     while (current.isSameOrBefore(end, 'day')) {
       // Skip Saturday (6) and Sunday (0)
       if (current.day() !== 0 && current.day() !== 6) {
         days++;
       }
-      current.add(1, 'day');
+      current = current.add(1, 'day');
     }
 
     return days;
@@ -57,7 +67,7 @@ export class DateUtil {
    * Check if date is weekend
    */
   static isWeekend(date: Date): boolean {
-    const day = moment(date).day();
+    const day = dayjs(date).day();
     return day === 0 || day === 6;
   }
 
@@ -65,56 +75,56 @@ export class DateUtil {
    * Check if date is in the past
    */
   static isPast(date: Date): boolean {
-    return moment(date).isBefore(moment(), 'day');
+    return dayjs(date).isBefore(dayjs(), 'day');
   }
 
   /**
    * Check if date is in the future
    */
   static isFuture(date: Date): boolean {
-    return moment(date).isAfter(moment(), 'day');
+    return dayjs(date).isAfter(dayjs(), 'day');
   }
 
   /**
    * Check if date is today
    */
   static isToday(date: Date): boolean {
-    return moment(date).isSame(moment(), 'day');
+    return dayjs(date).isSame(dayjs(), 'day');
   }
 
   /**
    * Format date
    */
   static format(date: Date, format: string = 'YYYY-MM-DD'): string {
-    return moment(date).format(format);
+    return dayjs(date).format(format);
   }
 
   /**
    * Parse date string
    */
   static parse(dateString: string, format: string = 'YYYY-MM-DD'): Date {
-    return moment(dateString, format).toDate();
+    return dayjs(dateString, format).toDate();
   }
 
   /**
    * Add days to date
    */
   static addDays(date: Date, days: number): Date {
-    return moment(date).add(days, 'days').toDate();
+    return dayjs(date).add(days, 'days').toDate();
   }
 
   /**
    * Subtract days from date
    */
   static subtractDays(date: Date, days: number): Date {
-    return moment(date).subtract(days, 'days').toDate();
+    return dayjs(date).subtract(days, 'days').toDate();
   }
 
   /**
    * Get days until expiry
    */
   static getDaysUntilExpiry(expiryDate: Date): number {
-    return moment(expiryDate).diff(moment(), 'days');
+    return dayjs(expiryDate).diff(dayjs(), 'days');
   }
 
   /**
@@ -140,10 +150,10 @@ export class DateUtil {
    */
   static getWeekDates(date: Date = new Date()): Date[] {
     const dates: Date[] = [];
-    const start = moment(this.getWeekStart(date));
+    const start = dayjs(this.getWeekStart(date));
 
     for (let i = 0; i < 7; i++) {
-      dates.push(start.clone().add(i, 'days').toDate());
+      dates.push(start.add(i, 'days').toDate());
     }
 
     return dates;
@@ -153,6 +163,6 @@ export class DateUtil {
    * Validate date range
    */
   static isValidDateRange(startDate: Date, endDate: Date): boolean {
-    return moment(startDate).isSameOrBefore(moment(endDate));
+    return dayjs(startDate).isSameOrBefore(dayjs(endDate));
   }
 }

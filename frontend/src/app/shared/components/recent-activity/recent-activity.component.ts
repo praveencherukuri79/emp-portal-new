@@ -4,6 +4,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export interface RecentActivity {
   icon: string;
@@ -185,16 +189,14 @@ export class RecentActivityComponent {
   @Input() viewAllRoute?: string;
 
   formatTimestamp(timestamp: Date): string {
-    const now = new Date();
-    const diff = now.getTime() - new Date(timestamp).getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
+    const now = dayjs();
+    const then = dayjs(timestamp);
+    const diff = now.diff(then, 'minutes');
 
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return new Date(timestamp).toLocaleDateString();
+    if (diff < 1) return 'Just now';
+    if (diff < 60) return `${diff}m ago`;
+    if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+    if (diff < 10080) return `${Math.floor(diff / 1440)}d ago`;
+    return then.format('MMM D, YYYY');
   }
 }

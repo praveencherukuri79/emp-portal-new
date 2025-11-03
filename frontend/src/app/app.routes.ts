@@ -54,6 +54,11 @@ export const routes: Routes = [
         title: 'Timesheets - Employee Portal'
       },
       {
+        path: 'timesheets/history',
+        loadComponent: () => import('./features/timesheets/components/timesheet-history.component').then(m => m.TimesheetHistoryComponent),
+        title: 'Timesheet History - Employee Portal'
+      },
+      {
         path: 'leaves',
         loadComponent: () => import('./features/leaves/leave-management.component').then(m => m.LeaveManagementComponent),
         title: 'Leave Management - Employee Portal'

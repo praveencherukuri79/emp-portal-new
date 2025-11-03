@@ -12,7 +12,7 @@
       
       <div class="week-nav__range">
         <h2>{{ weekStart() | date:'MMM d' }} - {{ weekEnd() | date:'MMM d, y' }}</h2>
-        <mat-chip [color]="getStatusColor(weekStatus())" highlighted>{{ weekStatus() | uppercase }}</mat-chip>
+        <mat-chip [class]="'status-badge ' + weekStatus()">{{ weekStatus() }}</mat-chip>
       </div>
       
       <button mat-icon-button (click)="nextWeek()" matTooltip="Next Week">
@@ -26,120 +26,211 @@
         Current Week
       </button>
       
-      @if (canEdit()) {
-        <button mat-raised-button color="primary" (click)="submitWeek()" [disabled]="entries().length === 0">
-          <mat-icon>send</mat-icon>
-          Submit Week
-        </button>
-      }
+      <button mat-stroked-button (click)="viewHistory()">
+        <mat-icon>history</mat-icon>
+        View History
+      </button>
     </div>
   </div>
 
   <!-- Week Summary -->
   <div class="week-summary">
-    <div class="summary-card">
-      <div class="summary-card__label">Total Hours</div>
-      <div class="summary-card__value">{{ getTotalWeekHours() }}</div>
+    <div class="week-summary__card">
+      <div class="week-summary__card__label">Total Hours</div>
+      <div class="week-summary__card__value">{{ getTotalWeekHours() }}</div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card__label">Billable</div>
-      <div class="summary-card__value success">{{ getBillableHours() }}</div>
+    <div class="week-summary__card">
+      <div class="week-summary__card__label">Billable</div>
+      <div class="week-summary__card__value success">{{ getBillableHours() }}</div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card__label">Non-Billable</div>
-      <div class="summary-card__value">{{ getTotalWeekHours() - getBillableHours() }}</div>
+    <div class="week-summary__card">
+      <div class="week-summary__card__label">Non-Billable</div>
+      <div class="week-summary__card__value warning">{{ getTotalWeekHours() - getBillableHours() }}</div>
+    </div>
+    <div class="week-summary__card">
+      <div class="week-summary__card__label">Projects</div>
+      <div class="week-summary__card__value">{{ projectEntries().length }}</div>
     </div>
   </div>
 
-  <!-- Quick Entry Form -->
-  @if (canEdit()) {
-    <div class="quick-entry">
-      <h3 class="quick-entry__title">
-        <mat-icon>flash_on</mat-icon>
-        Quick Entry (Enter hours for all 7 days)
+  <!-- Weekly Time Entry Grid -->
+  <div class="time-entry-grid">
+    <div class="time-entry-grid__header">
+      <h3>
+        <mat-icon>grid_on</mat-icon>
+        Weekly Time Entry
       </h3>
-      
-      <div class="quick-entry__form">
-        <mat-form-field class="quick-entry__project">
-          <mat-label>Project</mat-label>
-          <mat-select [(ngModel)]="selectedProject" required>
-            @for (project of projects(); track project._id) {
-              <mat-option [value]="project._id">{{ project.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <div class="quick-entry__days">
-          @for (day of weekDays(); track $index; let i = $index) {
-            <div class="day-input">
-              <label>{{ day | date:'EEE' }}</label>
-              <input type="number" [(ngModel)]="quickHours[i]" min="0" max="24" step="0.5" />
-            </div>
-          }
-        </div>
-
-        <mat-form-field class="quick-entry__description">
-          <mat-label>Description</mat-label>
-          <input matInput [(ngModel)]="quickDescription" />
-        </mat-form-field>
-
-        <div class="quick-entry__options">
-          <mat-checkbox [(ngModel)]="quickBillable">Billable</mat-checkbox>
-        </div>
-
-        <div class="quick-entry__actions">
-          <button mat-stroked-button (click)="resetQuickEntry()">Clear</button>
-          <button mat-raised-button color="primary" (click)="saveQuickEntry()">
-            <mat-icon>save</mat-icon>
-            Save All
-          </button>
-        </div>
-      </div>
     </div>
-  }
 
-  <!-- Daily Entries Grid -->
-  <div class="entries-grid">
-    @for (day of weekDays(); track day; let dayIndex = $index) {
-      <div class="day-column">
-        <div class="day-column__header">
-          <div class="day-name">{{ day | date:'EEEE' }}</div>
-          <div class="day-date">{{ day | date:'MMM d' }}</div>
-          <div class="day-total">{{ getTotalHoursForDay(day) }}h</div>
-        </div>
-
-        <div class="day-column__entries">
-          @for (entry of getEntriesForDay(day); track entry._id) {
-            <div class="entry-card" [class.billable]="entry.billable">
-              <div class="entry-card__header">
-                <span class="entry-card__project">{{ entry.projectName || 'Project' }}</span>
-                @if (canEdit()) {
-                  <button mat-icon-button (click)="deleteEntry(entry._id)" class="entry-card__delete">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-              
-              <div class="entry-card__hours">{{ entry.hours }}h</div>
-              
-              @if (entry.description) {
-                <div class="entry-card__description">{{ entry.description }}</div>
-              }
-              
-              <div class="entry-card__badges">
-                @if (entry.billable) {
-                  <mat-chip color="accent" class="entry-badge">Billable</mat-chip>
-                }
-                <mat-chip [color]="getStatusColor(entry.status)" class="entry-badge">
-                  {{ entry.status }}
-                </mat-chip>
-              </div>
-            </div>
-          } @empty {
-            <div class="day-column__empty">No entries</div>
-          }
-        </div>
+    @if (projectEntries().length === 0) {
+      <div class="empty-state">
+        <mat-icon>event_note</mat-icon>
+        <h3>No projects added yet</h3>
+        <p>Add a project below to start tracking your time</p>
       </div>
     }
+
+    @if (projectEntries().length > 0) {
+      <table class="time-entry-grid__table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+            <th>Total</th>
+            @if (canEdit()) {
+              <th>Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (projectEntry of projectEntries(); track projectEntry.projectId) {
+            <tr>
+              <td class="project-cell">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: var(--action-primary);">
+                    folder
+                  </mat-icon>
+                  {{ projectEntry.projectName }}
+                </div>
+              </td>
+              @for (day of weekDays(); track day; let dayIndex = $index) {
+                <td class="hours-cell">
+                  <input 
+                    type="number" 
+                    [(ngModel)]="projectEntry.hours[dayIndex]"
+                    (change)="onHoursChange(projectEntry.projectId, dayIndex)"
+                    min="0" 
+                    max="24" 
+                    step="0.5"
+                    [disabled]="!canEdit()"
+                    placeholder="0" />
+                </td>
+              }
+              <td class="total-cell">{{ getProjectTotal(projectEntry) }}h</td>
+              @if (canEdit()) {
+                <td>
+                  <div class="project-row-controls">
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="removeProject(projectEntry.projectId)"
+                      matTooltip="Remove project">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+          
+          <!-- Total Row -->
+          <tr class="total-row">
+            <td><strong>Daily Total</strong></td>
+            @for (day of weekDays(); track day; let dayIndex = $index) {
+              <td class="total-cell">{{ getDayTotal(dayIndex) }}h</td>
+            }
+            <td class="total-cell">{{ getTotalWeekHours() }}h</td>
+            @if (canEdit()) {
+              <td></td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    }
+
+    <!-- Add Project Section -->
+    @if (canEdit()) {
+      <div class="add-project-section">
+        <mat-form-field appearance="outline">
+          <mat-label>Select or Enter Project</mat-label>
+          <mat-select [(ngModel)]="selectedProject">
+            @for (project of projects(); track project._id) {
+              <mat-option [value]="project._id">
+                <mat-icon style="vertical-align: middle; margin-right: 8px; font-size: 18px;">folder</mat-icon>
+                {{ project.name }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-hint>Select a project from the list</mat-hint>
+        </mat-form-field>
+
+        <span style="align-self: center; color: var(--text-secondary); font-weight: 600;">OR</span>
+
+        <mat-form-field appearance="outline">
+          <mat-label>New Project Name</mat-label>
+          <input matInput [(ngModel)]="customProjectName" placeholder="Enter new project name">
+          <mat-hint>Type a new project name if not in list</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Description</mat-label>
+          <input matInput [(ngModel)]="projectDescription" placeholder="Optional description">
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="projectBillable">Billable</mat-checkbox>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="addProject()"
+          [disabled]="!selectedProject() && !customProjectName()">
+          <mat-icon>add</mat-icon>
+          Add Project
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Week Actions -->
+  <div class="week-actions">
+    <div class="week-actions__info">
+      <div class="week-actions__info__item">
+        <label>Total Hours</label>
+        <span>{{ getTotalWeekHours() }}h</span>
+      </div>
+      <div class="week-actions__info__item">
+        <label>Status</label>
+        <span>
+          <mat-chip [class]="'status-badge ' + weekStatus()">{{ weekStatus() }}</mat-chip>
+        </span>
+      </div>
+    </div>
+
+    <div class="week-actions__buttons">
+      @if (canEdit()) {
+        <button 
+          mat-stroked-button 
+          (click)="saveDraft()"
+          [disabled]="projectEntries().length === 0">
+          <mat-icon>save</mat-icon>
+          Save Draft
+        </button>
+        
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="submitWeek()"
+          [disabled]="projectEntries().length === 0 || getTotalWeekHours() === 0">
+          <mat-icon>send</mat-icon>
+          Submit Week
+        </button>
+      }
+      
+      @if (weekStatus() === 'rejected') {
+        <button 
+          mat-raised-button 
+          color="accent"
+          (click)="resubmitWeek()">
+          <mat-icon>refresh</mat-icon>
+          Resubmit
+        </button>
+      }
+    </div>
   </div>
 </div>

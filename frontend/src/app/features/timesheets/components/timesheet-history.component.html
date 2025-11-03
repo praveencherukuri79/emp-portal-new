@@ -1,0 +1,168 @@
+<div class="history-container">
+  <div class="history-header">
+    <div class="history-header__title">
+      <button mat-icon-button (click)="backToCurrent()" matTooltip="Back to Current Week">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>
+        <mat-icon>history</mat-icon>
+        Timesheet History
+      </h1>
+    </div>
+    
+    <button mat-raised-button color="primary" (click)="backToCurrent()">
+      <mat-icon>event_note</mat-icon>
+      Current Week
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <div class="filters-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter" (selectionChange)="onFilterChange()">
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input 
+          matInput 
+          [matDatepicker]="startPicker"
+          [(ngModel)]="startDateFilter"
+          (dateChange)="onFilterChange()">
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input 
+          matInput 
+          [matDatepicker]="endPicker"
+          [(ngModel)]="endDateFilter"
+          (dateChange)="onFilterChange()">
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <button 
+        mat-stroked-button 
+        (click)="statusFilter.set('all'); startDateFilter.set(null); endDateFilter.set(null); onFilterChange()">
+        <mat-icon>clear</mat-icon>
+        Clear Filters
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Results Summary -->
+  <div class="results-summary">
+    <p>
+      <strong>{{ totalRecords }}</strong> week(s) found
+    </p>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading timesheet history...</p>
+    </div>
+  }
+
+  <!-- Data Table -->
+  @if (!loading()) {
+    <mat-card class="table-card">
+      <table mat-table [dataSource]="getPaginatedData()" class="history-table">
+        <!-- Week Range Column -->
+        <ng-container matColumnDef="weekRange">
+          <th mat-header-cell *matHeaderCellDef>Week</th>
+          <td mat-cell *matCellDef="let week">
+            <div class="week-cell">
+              <mat-icon>calendar_month</mat-icon>
+              <span>{{ week.weekStart | date:'MMM d' }} - {{ week.weekEnd | date:'MMM d, y' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Total Hours Column -->
+        <ng-container matColumnDef="totalHours">
+          <th mat-header-cell *matHeaderCellDef>Total Hours</th>
+          <td mat-cell *matCellDef="let week">
+            <span class="hours-badge">{{ week.totalHours }}h</span>
+          </td>
+        </ng-container>
+
+        <!-- Billable Hours Column -->
+        <ng-container matColumnDef="billableHours">
+          <th mat-header-cell *matHeaderCellDef>Billable</th>
+          <td mat-cell *matCellDef="let week">
+            <span class="hours-badge billable">{{ week.billableHours }}h</span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let week">
+            <mat-chip [class]="'status-badge ' + getStatusClass(week.status)">
+              {{ week.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Submitted At Column -->
+        <ng-container matColumnDef="submittedAt">
+          <th mat-header-cell *matHeaderCellDef>Submitted</th>
+          <td mat-cell *matCellDef="let week">
+            @if (week.submittedAt) {
+              <span>{{ week.submittedAt | date:'MMM d, y h:mm a' }}</span>
+            } @else {
+              <span class="text-muted">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let week">
+            <button 
+              mat-icon-button 
+              color="primary"
+              (click)="viewWeek(week)"
+              matTooltip="View Week">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+      @if (getPaginatedData().length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <h3>No timesheets found</h3>
+          <p>Try adjusting your filters or submit your first timesheet!</p>
+        </div>
+      }
+
+      <!-- Pagination -->
+      @if (totalRecords > 0) {
+        <mat-paginator
+          [length]="totalRecords"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      }
+    </mat-card>
+  }
+</div>

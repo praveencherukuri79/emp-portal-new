@@ -2,7 +2,10 @@ import { Response } from 'express';
 import { TimesheetEntry, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, TimesheetStatus } from '../types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 export class TimesheetController {
   /**
@@ -13,9 +16,9 @@ export class TimesheetController {
       const { date, project, task, description, hours, isBillable } = req.body;
 
       // Calculate week information
-      const entryDate = moment(date);
-      const weekStart = entryDate.clone().startOf('isoWeek');
-      const weekEnd = entryDate.clone().endOf('isoWeek');
+      const entryDate = dayjs(date);
+      const weekStart = entryDate.startOf('isoWeek');
+      const weekEnd = entryDate.endOf('isoWeek');
 
       // Check if entry already exists for this date and project
       const existingEntry = await TimesheetEntry.findOne({
@@ -59,7 +62,7 @@ export class TimesheetController {
    */
   static async batchCreateEntries(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { entries } = req.body; // Array of entries with same project
+      const { entries } = req.body; // Array of entries
 
       if (!Array.isArray(entries) || entries.length === 0) {
         return ApiResponse.error(res, 'Entries array is required');
@@ -70,28 +73,37 @@ export class TimesheetController {
       
       for (const entryData of entries) {
         // Calculate week information for each entry
-        const entryDate = moment(entryData.date);
-        const weekStart = entryDate.clone().startOf('isoWeek');
-        const weekEnd = entryDate.clone().endOf('isoWeek');
+        const entryDate = dayjs(entryData.date);
+        const weekStart = entryDate.startOf('isoWeek');
+        const weekEnd = entryDate.endOf('isoWeek');
+
+        // Map frontend fields to backend fields
+        const project = entryData.projectId || entryData.project;
+        const isBillable = entryData.billable !== undefined ? entryData.billable : (entryData.isBillable !== undefined ? entryData.isBillable : true);
 
         // Check if entry already exists
         const existing = await TimesheetEntry.findOne({
           tenantId: req.user?.tenantId,
           userId: req.user?.userId,
           date: entryData.date,
-          project: entryData.project
+          project
         });
 
-        if (!existing) {
+        if (!existing && entryData.hours > 0) {
           const entry = new TimesheetEntry({
-            ...entryData,
             tenantId: req.user?.tenantId,
             userId: req.user?.userId,
+            date: entryData.date,
             weekStartDate: weekStart.toDate(),
             weekEndDate: weekEnd.toDate(),
             year: entryDate.year(),
             weekNumber: entryDate.isoWeek(),
-            status: TimesheetStatus.DRAFT
+            project,
+            task: entryData.description || '',
+            description: entryData.description || '',
+            hours: entryData.hours,
+            isBillable,
+            status: TimesheetStatus.DRAFT // Always create as DRAFT
           });
           await entry.save();
           createdEntries.push(entry);
@@ -100,6 +112,7 @@ export class TimesheetController {
 
       return ApiResponse.created(res, createdEntries, `${createdEntries.length} entries created successfully`);
     } catch (error) {
+      console.error('Batch create error:', error);
       return ApiResponse.error(res, 'Failed to create timesheet entries');
     }
   }
@@ -111,8 +124,9 @@ export class TimesheetController {
     try {
       const { weekStartDate } = req.params;
 
-      const startDate = moment(weekStartDate).startOf('week').toDate();
-      const endDate = moment(weekStartDate).endOf('week').toDate();
+      // Use isoWeek to treat Monday as start of week (not Sunday)
+      const startDate = dayjs(weekStartDate).startOf('isoWeek').toDate();
+      const endDate = dayjs(weekStartDate).endOf('isoWeek').toDate();
 
       const entries = await TimesheetEntry.find({
         tenantId: req.user?.tenantId,
@@ -120,18 +134,33 @@ export class TimesheetController {
         date: { $gte: startDate, $lte: endDate }
       }).sort({ date: 1 });
 
+      // Determine week status based on entries
+      let weekStatus = TimesheetStatus.DRAFT;
+      if (entries.length > 0) {
+        // Check if all entries have the same status
+        const statuses = [...new Set(entries.map(e => e.status))];
+        if (statuses.length === 1) {
+          weekStatus = statuses[0];
+        } else if (statuses.includes(TimesheetStatus.SUBMITTED)) {
+          weekStatus = TimesheetStatus.SUBMITTED;
+        } else if (statuses.includes(TimesheetStatus.REJECTED)) {
+          weekStatus = TimesheetStatus.REJECTED;
+        }
+      }
+
       // Calculate summary
       const totalHours = entries.reduce((sum, entry) => sum + entry.hours, 0);
       const billableHours = entries.reduce((sum, entry) => entry.isBillable ? sum + entry.hours : sum, 0);
       const nonBillableHours = totalHours - billableHours;
 
       return ApiResponse.success(res, {
-        entries, summary: {
-          totalHours,
-          billableHours,
-          nonBillableHours,
-          entriesCount: entries.length
-        }
+        weekStart: startDate,
+        weekEnd: endDate,
+        status: weekStatus,
+        entries,
+        totalHours,
+        billableHours,
+        nonBillableHours
       }, 'Week entries retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve timesheet entries');
@@ -214,10 +243,17 @@ export class TimesheetController {
    */
   static async submitWeek(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { weekStartDate } = req.body;
+      const { weekStart, weekStartDate } = req.body;
 
-      const startDate = moment(weekStartDate).startOf('week').toDate();
-      const endDate = moment(weekStartDate).endOf('week').toDate();
+      // Support both weekStart and weekStartDate for backward compatibility
+      const dateToUse = weekStart || weekStartDate;
+      if (!dateToUse) {
+        return ApiResponse.error(res, 'Week start date is required');
+      }
+
+      // Use isoWeek to treat Monday as start of week
+      const startDate = dayjs(dateToUse).startOf('isoWeek').toDate();
+      const endDate = dayjs(dateToUse).endOf('isoWeek').toDate();
 
       // Find all draft entries for the week
       const entries = await TimesheetEntry.find({
@@ -229,7 +265,6 @@ export class TimesheetController {
 
       if (entries.length === 0) {
         return ApiResponse.error(res, 'No draft entries found for this week');
-        return;
       }
 
       // Update all entries to submitted
@@ -244,6 +279,7 @@ export class TimesheetController {
 
       return ApiResponse.success(res, { count: entries.length }, `${entries.length} entries submitted for approval`);
     } catch (error) {
+      console.error('Submit week error:', error);
       return ApiResponse.error(res, 'Failed to submit timesheet');
     }
   }

@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Document } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, DocumentCategory, UserRole } from '../types';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -99,7 +99,7 @@ export class DocumentController {
       if (category) query.category = category;
 
       if (expiringSoon === 'true') {
-        const thirtyDaysFromNow = moment().add(30, 'days').toDate();
+        const thirtyDaysFromNow = dayjs().add(30, 'days').toDate();
         query.expiryDate = {
           $gte: new Date(),
           $lte: thirtyDaysFromNow
@@ -130,7 +130,7 @@ export class DocumentController {
       if (category) query.category = category;
 
       if (expiringSoon === 'true') {
-        const thirtyDaysFromNow = moment().add(30, 'days').toDate();
+        const thirtyDaysFromNow = dayjs().add(30, 'days').toDate();
         query.expiryDate = {
           $gte: new Date(),
           $lte: thirtyDaysFromNow
@@ -152,7 +152,7 @@ export class DocumentController {
    */
   static async getExpiringDocuments(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const thirtyDaysFromNow = moment().add(30, 'days').toDate();
+      const thirtyDaysFromNow = dayjs().add(30, 'days').toDate();
 
       const documents = await Document.find({
         tenantId: req.user?.tenantId,
@@ -167,9 +167,9 @@ export class DocumentController {
 
       // Categorize by urgency
       const categorized = {
-        critical: documents.filter(d => d.expiryDate && moment(d.expiryDate).diff(moment(), 'days') <= 7),
-        warning: documents.filter(d => d.expiryDate && moment(d.expiryDate).diff(moment(), 'days') > 7 && moment(d.expiryDate).diff(moment(), 'days') <= 15),
-        notice: documents.filter(d => d.expiryDate && moment(d.expiryDate).diff(moment(), 'days') > 15)
+        critical: documents.filter(d => d.expiryDate && dayjs(d.expiryDate).diff(dayjs(), 'days') <= 7),
+        warning: documents.filter(d => d.expiryDate && dayjs(d.expiryDate).diff(dayjs(), 'days') > 7 && dayjs(d.expiryDate).diff(dayjs(), 'days') <= 15),
+        notice: documents.filter(d => d.expiryDate && dayjs(d.expiryDate).diff(dayjs(), 'days') > 15)
       };
 
       return ApiResponse.success(res, categorized, 'Expiring documents retrieved successfully');
