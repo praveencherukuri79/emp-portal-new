@@ -357,18 +357,18 @@ export interface IRegisterDTO {
   password: string;
   firstName: string;
   lastName: string;
-  tenantDomain: string;
+  // Single-tenant deployment - no tenantDomain needed
 }
 
 export interface ILoginDTO {
   email: string;
   password: string;
-  tenantDomain: string;
+  // Single-tenant deployment - no tenantDomain needed
 }
 
 export interface IPasswordResetRequestDTO {
   email: string;
-  tenantDomain: string;
+  // Single-tenant deployment - no tenantDomain needed
 }
 
 export interface IPasswordResetDTO {

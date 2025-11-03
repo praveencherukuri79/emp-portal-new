@@ -56,11 +56,7 @@ export const ValidationRules = {
     .notEmpty().withMessage('Last name is required')
     .isLength({ min: 2, max: 50 }).withMessage('Last name must be 2-50 characters'),
 
-  tenantDomain: body('tenantDomain')
-    .trim()
-    .notEmpty().withMessage('Tenant domain is required')
-    .isLength({ min: 3, max: 50 }).withMessage('Tenant domain must be 3-50 characters')
-    .matches(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/).withMessage('Invalid tenant domain format'),
+  // Single-tenant deployment - tenantDomain validation removed
 
   // MongoDB ObjectId validation
   objectId: (field: string = 'id') => param(field)

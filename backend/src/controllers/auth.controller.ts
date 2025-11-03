@@ -13,15 +13,16 @@ export class AuthController {
   /**
    * Register new user
    * POST /api/v1/auth/register
+   * Single-tenant deployment - automatically uses the single tenant in the database
    */
   static async register(req: Request, res: Response): Promise<Response> {
     try {
-      const { email, password, firstName, lastName, tenantDomain }: IRegisterDTO = req.body;
+      const { email, password, firstName, lastName }: IRegisterDTO = req.body;
 
-      // Find tenant by domain
-      const tenant = await Tenant.findOne({ domain: tenantDomain, isActive: true });
+      // Single-tenant deployment - get the only tenant in the database
+      const tenant = await Tenant.findOne({ isActive: true });
       if (!tenant) {
-        return ApiResponse.error(res, 'Organization not found', 404);
+        return ApiResponse.error(res, 'Organization not configured. Please contact administrator.', 500);
       }
 
       // Check if user already exists
@@ -80,15 +81,16 @@ export class AuthController {
   /**
    * Login user
    * POST /api/v1/auth/login
+   * Single-tenant deployment - automatically uses the single tenant in the database
    */
   static async login(req: Request, res: Response): Promise<Response> {
     try {
-      const { email, password, tenantDomain }: ILoginDTO = req.body;
+      const { email, password }: ILoginDTO = req.body;
 
-      // Find tenant
-      const tenant = await Tenant.findOne({ domain: tenantDomain, isActive: true });
+      // Single-tenant deployment - get the only tenant in the database
+      const tenant = await Tenant.findOne({ isActive: true });
       if (!tenant) {
-        return ApiResponse.error(res, 'Organization not found', 404);
+        return ApiResponse.error(res, 'Organization not configured. Please contact administrator.', 500);
       }
 
       // Find user with password field
@@ -201,15 +203,16 @@ export class AuthController {
   /**
    * Request password reset
    * POST /api/v1/auth/forgot-password
+   * Single-tenant deployment - automatically uses the single tenant in the database
    */
   static async forgotPassword(req: Request, res: Response): Promise<Response> {
     try {
-      const { email, tenantDomain }: IPasswordResetRequestDTO = req.body;
+      const { email }: IPasswordResetRequestDTO = req.body;
 
-      // Find tenant
-      const tenant = await Tenant.findOne({ domain: tenantDomain, isActive: true });
+      // Single-tenant deployment - get the only tenant in the database
+      const tenant = await Tenant.findOne({ isActive: true });
       if (!tenant) {
-        // Don't reveal if tenant exists or not
+        // Don't reveal configuration issues
         return ApiResponse.success(res, null, 'If the email exists, a reset link has been sent');
       }
 

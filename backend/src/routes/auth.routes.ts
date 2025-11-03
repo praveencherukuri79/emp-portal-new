@@ -15,6 +15,7 @@ const router = Router();
  * @route   POST /api/v1/auth/register
  * @desc    Register new user
  * @access  Public
+ * @note    Single-tenant deployment - no tenantDomain needed
  */
 router.post(
   '/register',
@@ -22,8 +23,8 @@ router.post(
     ValidationRules.email,
     ValidationRules.password,
     ValidationRules.firstName,
-    ValidationRules.lastName,
-    ValidationRules.tenantDomain
+    ValidationRules.lastName
+    // Single-tenant: no tenantDomain validation
   ]),
   AuthController.register
 );
@@ -32,13 +33,14 @@ router.post(
  * @route   POST /api/v1/auth/login
  * @desc    Login user
  * @access  Public
+ * @note    Single-tenant deployment - no tenantDomain needed
  */
 router.post(
   '/login',
   validate([
     ValidationRules.email,
-    body('password').trim().notEmpty().withMessage('Password is required'),
-    ValidationRules.tenantDomain
+    body('password').trim().notEmpty().withMessage('Password is required')
+    // Single-tenant: no tenantDomain validation
   ]),
   AuthController.login
 );
@@ -75,8 +77,8 @@ router.post(
 router.post(
   '/forgot-password',
   validate([
-    ValidationRules.email,
-    ValidationRules.tenantDomain
+    ValidationRules.email
+    // Single-tenant: no tenantDomain validation
   ]),
   AuthController.forgotPassword
 );
