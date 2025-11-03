@@ -46,7 +46,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  tenantId: string;
+  // Single-tenant deployment - no tenantId needed
   email: string;
   password: string;
   firstName: string;
