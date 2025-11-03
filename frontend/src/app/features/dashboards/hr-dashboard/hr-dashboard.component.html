@@ -1,0 +1,148 @@
+<div class="hr-dashboard">
+  <div class="dashboard-header">
+    <h1>HR Dashboard</h1>
+    <p class="subtitle">Manage organization-wide HR operations</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card employees">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats().totalEmployees }}</h3>
+        <p>Total Employees</p>
+      </div>
+    </div>
+
+    <div class="stat-card leaves">
+      <div class="stat-icon">
+        <i class="fas fa-calendar-times"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats().pendingLeaves }}</h3>
+        <p>Pending Leave Requests</p>
+      </div>
+    </div>
+
+    <div class="stat-card alerts">
+      <div class="stat-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats().documentAlerts }}</h3>
+        <p>Document Alerts</p>
+      </div>
+    </div>
+
+    <div class="stat-card compliance">
+      <div class="stat-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats().complianceRate }}%</h3>
+        <p>Compliance Rate</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Leave Summary -->
+    <div class="content-card leave-summary">
+      <div class="card-header">
+        <h2><i class="fas fa-calendar-alt"></i> Leave Summary</h2>
+        <button class="btn btn-link" routerLink="/hr/leaves">View All</button>
+      </div>
+      <div class="card-body">
+        <div class="leave-stats">
+          <div class="leave-stat approved">
+            <div class="stat-value">{{ leaveStats().approvedThisMonth }}</div>
+            <div class="stat-label">Approved This Month</div>
+          </div>
+          <div class="leave-stat pending">
+            <div class="stat-value">{{ leaveStats().pendingApproval }}</div>
+            <div class="stat-label">Pending Approval</div>
+          </div>
+          <div class="leave-stat rejected">
+            <div class="stat-value">{{ leaveStats().rejectedThisMonth }}</div>
+            <div class="stat-label">Rejected This Month</div>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary" routerLink="/hr/leaves">Manage Leaves</button>
+          <button class="btn btn-secondary" routerLink="/hr/leave-policies">Leave Policies</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Alerts -->
+    <div class="content-card alerts-card">
+      <div class="card-header">
+        <h2><i class="fas fa-file-alt"></i> Document Alerts</h2>
+        <button class="btn btn-link" routerLink="/hr/documents">View All</button>
+      </div>
+      <div class="card-body">
+        <div class="alerts-list">
+          @if (documentAlerts().length === 0) {
+            <div class="empty-state">
+              <i class="fas fa-check-circle"></i>
+              <p>No document alerts</p>
+            </div>
+          } @else {
+            @for (alert of documentAlerts(); track alert.id) {
+              <div class="alert-item">
+                <div class="alert-info">
+                  <span class="status-badge" [class]="alert.status">
+                    @switch (alert.status) {
+                      @case ('expired') { EXPIRED }
+                      @case ('expiring-soon') { EXPIRING SOON }
+                      @case ('missing') { MISSING }
+                    }
+                  </span>
+                  <div class="details">
+                    <strong>{{ alert.employeeName }}</strong>
+                    <span class="document-type">{{ alert.documentType }}</span>
+                    @if (alert.status !== 'missing') {
+                      <span class="expiry-date">Expires: {{ alert.expiryDate | date:'mediumDate' }}</span>
+                    }
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-primary" (click)="handleAlert(alert.id)">
+                  <i class="fas fa-bell"></i> Notify
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employee Management -->
+  <div class="content-card full-width">
+    <div class="card-header">
+      <h2><i class="fas fa-user-cog"></i> Employee Management</h2>
+    </div>
+    <div class="card-body">
+      <div class="management-actions">
+        <button class="action-btn" routerLink="/hr/employees">
+          <i class="fas fa-users"></i>
+          <span>View All Employees</span>
+        </button>
+        <button class="action-btn" routerLink="/hr/employees/add">
+          <i class="fas fa-user-plus"></i>
+          <span>Add New Employee</span>
+        </button>
+        <button class="action-btn" routerLink="/hr/documents">
+          <i class="fas fa-file-contract"></i>
+          <span>Document Compliance</span>
+        </button>
+        <button class="action-btn" routerLink="/hr/reports">
+          <i class="fas fa-chart-line"></i>
+          <span>HR Reports</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

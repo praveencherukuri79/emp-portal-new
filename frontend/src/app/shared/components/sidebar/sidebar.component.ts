@@ -25,53 +25,136 @@ export class SidebarComponent {
   currentUser = computed(() => this.authService.currentUser());
 
   navItems: NavItem[] = [
+    // Prospect Navigation
     {
       label: 'Dashboard',
       icon: 'dashboard',
-      route: '/dashboard',
-      roles: [UserRole.SUPER_ADMIN, UserRole.TENANT_ADMIN, UserRole.MANAGER, UserRole.EMPLOYEE]
+      route: '/prospect/dashboard',
+      roles: [UserRole.PROSPECT]
+    },
+    
+    // Employee Navigation
+    {
+      label: 'Dashboard',
+      icon: 'dashboard',
+      route: '/employee/dashboard',
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
       label: 'Timesheets',
       icon: 'schedule',
-      route: '/timesheets',
-      roles: [UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      route: '/employee/timesheets',
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
       label: 'Leave Requests',
       icon: 'event_available',
-      route: '/leaves',
-      roles: [UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      route: '/employee/leaves',
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
       label: 'Documents',
       icon: 'folder',
-      route: '/documents',
-      roles: [UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      route: '/employee/documents',
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    
+    // Supervisor Navigation
+    {
+      label: 'Supervisor Dashboard',
+      icon: 'supervisor_account',
+      route: '/supervisor/dashboard',
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
       label: 'Approvals',
       icon: 'approval',
-      route: '/approvals',
-      roles: [UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      route: '/supervisor/approvals',
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
-      label: 'Employees',
+      label: 'Team Management',
+      icon: 'groups',
+      route: '/supervisor/team',
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    
+    // HR Navigation
+    {
+      label: 'HR Dashboard',
+      icon: 'business_center',
+      route: '/hr/dashboard',
+      roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    {
+      label: 'Employee Management',
       icon: 'people',
-      route: '/employees',
-      roles: [UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      route: '/hr/employees',
+      roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
-      label: 'Reports',
-      icon: 'assessment',
-      route: '/reports',
-      roles: [UserRole.MANAGER, UserRole.TENANT_ADMIN, UserRole.SUPER_ADMIN]
+      label: 'Leave Management',
+      icon: 'event_available',
+      route: '/hr/leaves',
+      roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     {
-      label: 'Settings',
+      label: 'Document Compliance',
+      icon: 'folder_special',
+      route: '/hr/documents',
+      roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    
+    // Admin Navigation
+    {
+      label: 'Admin Dashboard',
+      icon: 'admin_panel_settings',
+      route: '/admin/dashboard',
+      roles: [UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    {
+      label: 'User Management',
+      icon: 'manage_accounts',
+      route: '/admin/users',
+      roles: [UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    {
+      label: 'Role Management',
+      icon: 'shield',
+      route: '/admin/roles',
+      roles: [UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    {
+      label: 'System Settings',
       icon: 'settings',
-      route: '/settings',
-      roles: [UserRole.SUPER_ADMIN, UserRole.TENANT_ADMIN]
+      route: '/admin/settings',
+      roles: [UserRole.ADMIN, UserRole.EMPLOYER]
+    },
+    
+    // Employer Navigation
+    {
+      label: 'Executive Dashboard',
+      icon: 'insights',
+      route: '/employer/dashboard',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Financial Reports',
+      icon: 'attach_money',
+      route: '/employer/financial',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Business Analytics',
+      icon: 'analytics',
+      route: '/employer/analytics',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Workforce Management',
+      icon: 'work',
+      route: '/employer/workforce',
+      roles: [UserRole.EMPLOYER]
     }
   ];
 

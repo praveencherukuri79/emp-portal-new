@@ -1,0 +1,454 @@
+/**
+ * Angular Material Theme Override
+ * Uses ONLY theme variables - NO hardcoded colors
+ * Import this AFTER Angular Material styles in styles.scss
+ */
+
+/* Button Overrides */
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-stroked-button {
+  font-family: inherit !important;
+  letter-spacing: 0.5px;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--action-primary) !important;
+  color: var(--text-inverse) !important;
+  
+  &:hover:not([disabled]) {
+    background-color: var(--action-primary-hover) !important;
+  }
+  
+  &:active:not([disabled]) {
+    background-color: var(--action-primary-active) !important;
+  }
+  
+  &[disabled] {
+    background-color: var(--action-disabled) !important;
+    color: var(--text-disabled) !important;
+  }
+}
+
+.mat-mdc-raised-button.mat-accent {
+  background-color: var(--color-accent-500) !important;
+  color: var(--text-inverse) !important;
+  
+  &:hover:not([disabled]) {
+    background-color: var(--color-accent-600) !important;
+  }
+}
+
+.mat-mdc-raised-button.mat-warn {
+  background-color: var(--status-error) !important;
+  color: var(--text-inverse) !important;
+  
+  &:hover:not([disabled]) {
+    background-color: var(--color-error-600) !important;
+  }
+}
+
+/* Card Overrides */
+.mat-mdc-card {
+  background-color: var(--card-background) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--card-shadow) !important;
+  border: 1px solid var(--border-secondary);
+}
+
+.mat-mdc-card-title {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-card-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Form Field Overrides */
+.mat-mdc-form-field {
+  font-family: inherit !important;
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: var(--input-background) !important;
+}
+
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: var(--input-background) !important;
+  
+  .mdc-line-ripple::after {
+    border-bottom-color: var(--border-focus) !important;
+  }
+}
+
+.mat-mdc-form-field-error {
+  color: var(--status-error) !important;
+}
+
+.mat-mdc-form-field.mat-focused {
+  .mdc-text-field__input {
+    caret-color: var(--border-focus) !important;
+  }
+  
+  .mat-mdc-form-field-floating-label {
+    color: var(--border-focus) !important;
+  }
+}
+
+/* Input Overrides */
+.mat-mdc-input-element {
+  color: var(--text-primary) !important;
+  
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 1;
+  }
+  
+  &:disabled {
+    color: var(--text-disabled) !important;
+  }
+}
+
+/* Select Overrides */
+.mat-mdc-select {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-select-value {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-select-arrow {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--background-elevated) !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-primary) !important;
+  
+  &:hover:not(.mat-mdc-option-disabled) {
+    background-color: rgba(var(--color-primary-500-rgb), var(--opacity-hover)) !important;
+  }
+  
+  &.mat-mdc-option-active {
+    background-color: rgba(var(--color-primary-500-rgb), var(--opacity-selected)) !important;
+  }
+}
+
+.mat-mdc-option.mat-selected:not(.mat-mdc-option-multiple) {
+  background-color: rgba(var(--color-primary-500-rgb), var(--opacity-selected)) !important;
+}
+
+/* Checkbox Overrides */
+.mat-mdc-checkbox {
+  .mdc-checkbox__background {
+    border-color: var(--border-primary) !important;
+  }
+  
+  &.mat-mdc-checkbox-checked {
+    .mdc-checkbox__background {
+      background-color: var(--action-primary) !important;
+      border-color: var(--action-primary) !important;
+    }
+  }
+  
+  &.mat-mdc-checkbox-disabled {
+    .mdc-checkbox__background {
+      border-color: var(--action-disabled) !important;
+      background-color: var(--action-disabled) !important;
+    }
+  }
+}
+
+/* Radio Button Overrides */
+.mat-mdc-radio-button {
+  .mdc-radio__outer-circle {
+    border-color: var(--border-primary) !important;
+  }
+  
+  &.mat-mdc-radio-checked {
+    .mdc-radio__outer-circle {
+      border-color: var(--action-primary) !important;
+    }
+    
+    .mdc-radio__inner-circle {
+      border-color: var(--action-primary) !important;
+    }
+  }
+}
+
+/* Slide Toggle Overrides */
+.mat-mdc-slide-toggle {
+  .mdc-switch__track::after {
+    background-color: var(--border-primary) !important;
+  }
+  
+  &.mat-mdc-slide-toggle-checked {
+    .mdc-switch__track::after {
+      background-color: var(--action-primary) !important;
+    }
+    
+    .mdc-switch__handle::after {
+      background-color: var(--action-primary) !important;
+    }
+  }
+}
+
+/* Table Overrides */
+.mat-mdc-table {
+  background-color: var(--card-background) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-header-row {
+  background-color: var(--table-header-background) !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  border-bottom-color: var(--table-border) !important;
+}
+
+.mat-mdc-cell {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--table-border) !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: var(--table-row-hover) !important;
+}
+
+/* Paginator Overrides */
+.mat-mdc-paginator {
+  background-color: var(--card-background) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-paginator-icon {
+  fill: var(--text-primary) !important;
+}
+
+/* Toolbar Overrides */
+.mat-toolbar {
+  background-color: var(--header-background) !important;
+  color: var(--header-text) !important;
+}
+
+.mat-toolbar.mat-primary {
+  background-color: var(--action-primary) !important;
+  color: var(--text-inverse) !important;
+}
+
+/* Sidenav Overrides */
+.mat-drawer {
+  background-color: var(--sidebar-background) !important;
+  color: var(--text-primary) !important;
+  border-right-color: var(--border-secondary) !important;
+}
+
+.mat-drawer-backdrop {
+  background-color: var(--background-overlay) !important;
+}
+
+/* Menu Overrides */
+.mat-mdc-menu-panel {
+  background-color: var(--background-elevated) !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--text-primary) !important;
+  
+  &:hover:not([disabled]) {
+    background-color: var(--table-row-hover) !important;
+  }
+  
+  &[disabled] {
+    color: var(--text-disabled) !important;
+  }
+}
+
+.mat-mdc-menu-item .mat-icon {
+  color: var(--text-secondary) !important;
+}
+
+/* Dialog Overrides */
+.mat-mdc-dialog-container {
+  background-color: var(--card-background) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-dialog-title {
+  color: var(--text-primary) !important;
+}
+
+/* Snackbar Overrides */
+.mat-mdc-snack-bar-container {
+  background-color: var(--color-neutral-800) !important;
+  color: var(--text-inverse) !important;
+}
+
+.mat-mdc-simple-snack-bar .mat-mdc-button {
+  color: var(--color-primary-200) !important;
+}
+
+/* Progress Bar Overrides */
+.mat-mdc-progress-bar {
+  .mdc-linear-progress__bar-inner {
+    border-color: var(--action-primary) !important;
+  }
+  
+  .mdc-linear-progress__buffer-bar {
+    background-color: var(--color-primary-100) !important;
+  }
+}
+
+/* Progress Spinner Overrides */
+.mat-mdc-progress-spinner circle,
+.mat-mdc-spinner circle {
+  stroke: var(--action-primary) !important;
+}
+
+/* Chip Overrides */
+.mat-mdc-chip {
+  background-color: var(--background-tertiary) !important;
+  color: var(--text-primary) !important;
+  
+  &.mat-mdc-chip-selected.mat-primary {
+    background-color: var(--action-primary) !important;
+    color: var(--text-inverse) !important;
+  }
+  
+  &.mat-mdc-chip-selected.mat-accent {
+    background-color: var(--color-accent-500) !important;
+    color: var(--text-inverse) !important;
+  }
+  
+  &.mat-mdc-chip-selected.mat-warn {
+    background-color: var(--status-error) !important;
+    color: var(--text-inverse) !important;
+  }
+}
+
+/* Badge Overrides */
+.mat-badge-content {
+  background-color: var(--status-error) !important;
+  color: var(--text-inverse) !important;
+}
+
+.mat-badge.mat-badge-accent .mat-badge-content {
+  background-color: var(--color-accent-500) !important;
+}
+
+.mat-badge.mat-badge-warn .mat-badge-content {
+  background-color: var(--status-warning) !important;
+}
+
+/* Tabs Overrides */
+.mat-mdc-tab-group {
+  background-color: var(--card-background) !important;
+}
+
+.mat-mdc-tab {
+  color: var(--text-secondary) !important;
+  
+  &.mat-mdc-tab-active {
+    color: var(--action-primary) !important;
+  }
+}
+
+.mat-mdc-tab-header {
+  border-bottom-color: var(--border-secondary) !important;
+}
+
+.mat-mdc-tab-label-active {
+  color: var(--action-primary) !important;
+  opacity: 1 !important;
+}
+
+.mat-ink-bar {
+  background-color: var(--action-primary) !important;
+}
+
+/* Tooltip Overrides */
+.mat-mdc-tooltip {
+  background-color: var(--color-neutral-800) !important;
+  color: var(--text-inverse) !important;
+}
+
+/* Datepicker Overrides */
+.mat-datepicker-content {
+  background-color: var(--card-background) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-calendar {
+  background-color: var(--card-background) !important;
+}
+
+.mat-calendar-body-cell-content {
+  color: var(--text-primary) !important;
+  border-color: transparent !important;
+}
+
+.mat-calendar-body-selected {
+  background-color: var(--action-primary) !important;
+  color: var(--text-inverse) !important;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: var(--action-primary) !important;
+}
+
+/* Icon Overrides */
+.mat-icon {
+  color: inherit !important;
+}
+
+/* Ripple Effect */
+.mat-ripple-element {
+  background-color: rgba(var(--color-primary-500-rgb), 0.1) !important;
+}
+
+/* Focus Indicators */
+.mat-mdc-button:focus,
+.mat-mdc-raised-button:focus,
+.mat-mdc-flat-button:focus,
+.mat-mdc-stroked-button:focus {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Divider */
+.mat-divider {
+  border-top-color: var(--border-secondary) !important;
+}
+
+/* List Overrides */
+.mat-mdc-list-base {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-list-item {
+  color: var(--text-primary) !important;
+  
+  &:hover {
+    background-color: var(--table-row-hover) !important;
+  }
+}
+
+.mat-mdc-list-item-title {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-list-item-meta {
+  color: var(--text-secondary) !important;
+}

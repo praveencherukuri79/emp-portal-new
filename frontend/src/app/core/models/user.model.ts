@@ -1,8 +1,10 @@
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  TENANT_ADMIN = 'tenant_admin',
-  MANAGER = 'manager',
-  EMPLOYEE = 'employee'
+  PROSPECT = 'prospect',
+  EMPLOYEE = 'employee',
+  SUPERVISOR = 'supervisor',
+  HR = 'hr',
+  ADMIN = 'admin',
+  EMPLOYER = 'employer'
 }
 
 export enum EmploymentType {

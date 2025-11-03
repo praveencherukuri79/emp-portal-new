@@ -15,6 +15,9 @@
 /* Angular Material theme */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+/* Angular Material theme overrides using design tokens */
+@import './styles/material-override.scss';
+
 /* Global styles using design tokens - NO HARDCODED COLORS */
 * {
   margin: 0;

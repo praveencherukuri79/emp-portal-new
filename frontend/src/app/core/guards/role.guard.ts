@@ -17,10 +17,30 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   
   if (requiredRoles && requiredRoles.length > 0) {
     if (!requiredRoles.includes(currentUser.role)) {
-      router.navigate(['/unauthorized']);
+      // Redirect to appropriate dashboard based on role
+      router.navigate([getRoleDashboardRoute(currentUser.role)]);
       return false;
     }
   }
   
   return true;
 };
+
+function getRoleDashboardRoute(role: UserRole): string {
+  switch (role) {
+    case UserRole.PROSPECT:
+      return '/prospect/dashboard';
+    case UserRole.EMPLOYEE:
+      return '/employee/dashboard';
+    case UserRole.SUPERVISOR:
+      return '/supervisor/dashboard';
+    case UserRole.HR:
+      return '/hr/dashboard';
+    case UserRole.ADMIN:
+      return '/admin/dashboard';
+    case UserRole.EMPLOYER:
+      return '/employer/dashboard';
+    default:
+      return '/auth/login';
+  }
+}
