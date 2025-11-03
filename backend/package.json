@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "dev:inspect": "nodemon --exec \"node --inspect=9229 -r ts-node/register -r tsconfig-paths/register\" src/server.ts",
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "jest --coverage",

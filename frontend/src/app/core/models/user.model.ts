@@ -58,13 +58,18 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  success: boolean;
+  status: string;  // Backend returns 'success' or 'error'
   message: string;
   data: {
     user: User;
     accessToken: string;
     refreshToken: string;
   };
+}
+
+// Helper to check if response was successful
+export function isSuccessResponse(response: AuthResponse): boolean {
+  return response.status === 'success';
 }
 
 export interface ChangePasswordRequest {

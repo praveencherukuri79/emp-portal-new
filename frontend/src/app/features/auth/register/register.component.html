@@ -6,6 +6,12 @@
     </mat-card-header>
     
     <mat-card-content>
+      <!-- Info message about admin creation -->
+      <div class="info-banner">
+        <mat-icon>info</mat-icon>
+        <p>Note: User accounts are created by system administrators. If you need an account, please contact your HR department or system administrator.</p>
+      </div>
+
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
@@ -25,15 +31,6 @@
             }
           </mat-form-field>
         </div>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tenant ID</mat-label>
-          <input matInput formControlName="tenantId" placeholder="company-123">
-          <mat-icon matPrefix>business</mat-icon>
-          @if (f['tenantId'].invalid && f['tenantId'].touched) {
-            <mat-error>Tenant ID is required</mat-error>
-          }
-        </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>

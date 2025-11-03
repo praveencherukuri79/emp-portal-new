@@ -10,7 +10,8 @@ import {
   AuthResponse,
   ChangePasswordRequest,
   ForgotPasswordRequest,
-  ResetPasswordRequest
+  ResetPasswordRequest,
+  isSuccessResponse
 } from '../models/user.model';
 
 @Injectable({
@@ -42,7 +43,7 @@ export class AuthService {
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, data).pipe(
       tap(response => {
-        if (response.success && response.data) {
+        if (isSuccessResponse(response) && response.data) {
           this.handleAuthSuccess(response.data);
         }
       }),
@@ -54,10 +55,17 @@ export class AuthService {
    * Login user
    */
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
+    const data = {
+      ...credentials,
+      tenantDomain: 'default' // Set default domain
+    };
+    return this.http.post<AuthResponse>(`${this.API_URL}/login`, data).pipe(
       tap(response => {
-        if (response.success && response.data) {
+        console.log('📥 Login response:', response);
+        if (isSuccessResponse(response) && response.data) {
           this.handleAuthSuccess(response.data);
+        } else {
+          console.error('❌ Invalid response structure:', response);
         }
       }),
       catchError(this.handleError)
@@ -92,7 +100,7 @@ export class AuthService {
     
     return this.http.post<AuthResponse>(`${this.API_URL}/refresh-token`, { refreshToken }).pipe(
       tap(response => {
-        if (response.success && response.data) {
+        if (isSuccessResponse(response) && response.data) {
           this.setAccessToken(response.data.accessToken);
           this.setRefreshToken(response.data.refreshToken);
         }
@@ -111,7 +119,7 @@ export class AuthService {
   getMe(): Observable<any> {
     return this.http.get(`${this.API_URL}/me`).pipe(
       tap((response: any) => {
-        if (response.success && response.data) {
+        if (response.status === 'success' && response.data) {
           this.setCurrentUser(response.data);
         }
       }),
@@ -193,9 +201,11 @@ export class AuthService {
    * Handle successful authentication
    */
   private handleAuthSuccess(data: { user: User; accessToken: string; refreshToken: string }): void {
+    console.log('🔐 Saving auth tokens...');
     this.setAccessToken(data.accessToken);
     this.setRefreshToken(data.refreshToken);
     this.setCurrentUser(data.user);
+    console.log('✅ Tokens saved. Authenticated:', this.isAuthenticated());
   }
 
   /**

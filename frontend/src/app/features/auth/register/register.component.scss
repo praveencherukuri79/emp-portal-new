@@ -34,6 +34,29 @@
   }
 }
 
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: var(--color-info-light, #e3f2fd);
+  border-left: 4px solid var(--color-info, #2196f3);
+  border-radius: 4px;
+
+  mat-icon {
+    color: var(--color-info, #2196f3);
+    margin-top: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text-primary, rgba(0, 0, 0, 0.87));
+  }
+}
+
 .full-width {
   width: 100%;
 }

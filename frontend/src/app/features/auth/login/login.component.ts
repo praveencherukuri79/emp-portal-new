@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
+import { isSuccessResponse } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -33,7 +34,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   hidePassword = true;
-  returnUrl: string = '/';
+  returnUrl: string = '/dashboard';
 
   constructor(
     private fb: FormBuilder,
@@ -47,8 +48,8 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    // Get return URL from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    // Get return URL from route parameters or default to '/dashboard'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
   }
 
   onSubmit(): void {
@@ -59,15 +60,19 @@ export class LoginComponent {
     this.loading = true;
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        this.snackBar.open('Login successful!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-        this.router.navigate([this.returnUrl]);
+        this.loading = false;
+        if (isSuccessResponse(response)) {
+          this.snackBar.open('Login successful!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top'
+          });
+          this.router.navigate([this.returnUrl]);
+        }
       },
       error: (error) => {
         this.loading = false;
+        console.error('Login error:', error);
         this.snackBar.open(
           error.error?.message || 'Login failed. Please check your credentials.',
           'Close',

@@ -16,6 +16,7 @@ import documentRoutes from './routes/document.routes';
 import reportRoutes from './routes/report.routes';
 import notificationRoutes from './routes/notification.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import adminRoutes from './routes/admin.routes';
 
 const app: Application = express();
 
@@ -78,6 +79,7 @@ app.use(`${apiPrefix}/documents`, documentRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/notifications`, notificationRoutes);
 app.use(`${apiPrefix}/dashboard`, dashboardRoutes);
+app.use(`${apiPrefix}/admin`, adminRoutes); // Secure admin routes
 
 // ==================== ERROR HANDLING ====================
 
