@@ -1,0 +1,11 @@
+/**
+ * Custom Angular Material Theme
+ * Uses prebuilt theme with CSS variable overrides
+ * For Angular Material 18, we use the prebuilt theme and override with CSS variables
+ */
+
+/* Use prebuilt indigo-pink theme as base */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Custom theme overrides will be handled in material-override.scss */
+

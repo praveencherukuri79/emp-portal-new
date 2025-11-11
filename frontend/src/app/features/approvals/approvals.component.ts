@@ -12,8 +12,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TimesheetService } from '../../core/services/timesheet.service';
 import { LeaveService } from '../../core/services/leave.service';
-import { TimesheetEntry } from '../../core/models/timesheet.model';
+import { AuthService } from '../../core/services/auth.service';
+import { TimesheetEntry, WeeklyTimesheet } from '../../core/models/timesheet.model';
 import { LeaveRequest, LeaveStatus } from '../../core/models/leave.model';
+import { UserRole } from '../../core/models/user.model';
+import { UINotificationService } from '../../core/services/notification.service';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-approvals',
@@ -38,16 +42,23 @@ export class ApprovalsComponent implements OnInit {
   private timesheetService = inject(TimesheetService);
   private leaveService = inject(LeaveService);
   private dialog = inject(MatDialog);
+  private notification = inject(UINotificationService);
+  
+  // Make services public for template access
+  authService = inject(AuthService);
+  UserRole = UserRole; // Expose enum to template
 
   // Signals for reactive state
-  pendingTimesheets = signal<TimesheetEntry[]>([]);
+  pendingTimesheets = signal<WeeklyTimesheet[]>([]);
   pendingLeaves = signal<LeaveRequest[]>([]);
   loadingTimesheets = signal(false);
   loadingLeaves = signal(false);
+  errorTimesheets = signal<string | null>(null);
+  errorLeaves = signal<string | null>(null);
 
   // Table columns
-  timesheetColumns = ['employeeName', 'weekStart', 'totalHours', 'submittedAt', 'actions'];
-  leaveColumns = ['employeeName', 'leaveType', 'startDate', 'endDate', 'days', 'reason', 'actions'];
+  timesheetColumns = ['employee', 'week', 'totalHours', 'submittedAt', 'status', 'actions'];
+  leaveColumns = ['employee', 'leaveType', 'startDate', 'endDate', 'days', 'reason', 'status', 'actions'];
 
   ngOnInit(): void {
     this.loadPendingTimesheets();
@@ -56,79 +67,193 @@ export class ApprovalsComponent implements OnInit {
 
   loadPendingTimesheets(): void {
     this.loadingTimesheets.set(true);
-    // TODO: Implement getPendingTimesheets in TimesheetService
-    // For now, using empty array
-    this.pendingTimesheets.set([]);
-    this.loadingTimesheets.set(false);
+    this.errorTimesheets.set(null);
+    this.timesheetService.getPendingTimesheets().subscribe({
+      next: (response) => {
+        if (response.status === 'success' && response.data) {
+          this.pendingTimesheets.set(response.data);
+        }
+        this.loadingTimesheets.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading pending timesheets:', error);
+        this.errorTimesheets.set('Failed to load pending timesheets');
+        this.loadingTimesheets.set(false);
+      }
+    });
   }
 
   loadPendingLeaves(): void {
     this.loadingLeaves.set(true);
+    this.errorLeaves.set(null);
     this.leaveService.getPendingApprovals().subscribe({
       next: (response) => {
-        this.pendingLeaves.set(response.data);
+        if (response.status === 'success' && response.data) {
+          this.pendingLeaves.set(response.data);
+        }
         this.loadingLeaves.set(false);
       },
       error: (error) => {
         console.error('Error loading pending leaves:', error);
+        this.errorLeaves.set('Failed to load pending leave requests');
         this.loadingLeaves.set(false);
       }
     });
   }
 
-  approveTimesheet(entry: TimesheetEntry): void {
-    if (!entry._id) return;
-    
-    // TODO: Implement approveTimesheet in TimesheetService
-    console.log('Approve timesheet:', entry._id);
-    this.loadPendingTimesheets();
+  approveTimesheet(week: WeeklyTimesheet): void {
+    if (!week.entries || week.entries.length === 0) return;
+
+    const entryIds = week.entries.map(e => e._id!).filter(Boolean);
+    if (entryIds.length === 0) return;
+
+    const dialogData: ConfirmDialogData = {
+      title: 'Approve Timesheet',
+      message: `Are you sure you want to approve the timesheet for week ${this.formatDate(week.weekStart)}?`,
+      confirmText: 'Approve',
+      cancelText: 'Cancel',
+      confirmColor: 'primary'
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: dialogData,
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.timesheetService.approveTimesheet(entryIds).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('Timesheet approved successfully');
+              this.loadPendingTimesheets();
+            }
+          },
+          error: (error) => {
+            console.error('Error approving timesheet:', error);
+            this.notification.showError('Failed to approve timesheet');
+          }
+        });
+      }
+    });
   }
 
-  rejectTimesheet(entry: TimesheetEntry): void {
-    if (!entry._id) return;
-    
-    const reason = prompt('Rejection reason:');
-    if (reason) {
-      // TODO: Implement rejectTimesheet in TimesheetService
-      console.log('Reject timesheet:', entry._id, reason);
-      this.loadPendingTimesheets();
-    }
+  rejectTimesheet(week: WeeklyTimesheet): void {
+    if (!week.entries || week.entries.length === 0) return;
+
+    const entryIds = week.entries.map(e => e._id!).filter(Boolean);
+    if (entryIds.length === 0) return;
+
+    const dialogData: ConfirmDialogData = {
+      title: 'Reject Timesheet',
+      message: 'Please provide a reason for rejection:',
+      confirmText: 'Reject',
+      cancelText: 'Cancel',
+      confirmColor: 'warn',
+      showInput: true,
+      inputLabel: 'Rejection Reason',
+      inputPlaceholder: 'Enter reason for rejection'
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: dialogData,
+      width: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && typeof result === 'object' && 'reason' in result && result.reason) {
+        this.timesheetService.rejectTimesheet(entryIds, result.reason).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('Timesheet rejected');
+              this.loadPendingTimesheets();
+            }
+          },
+          error: (error) => {
+            console.error('Error rejecting timesheet:', error);
+            this.notification.showError('Failed to reject timesheet');
+          }
+        });
+      }
+    });
   }
 
   approveLeave(leave: LeaveRequest): void {
     if (!leave._id) return;
-    
-    this.leaveService.approveRejectLeave({
-      leaveId: leave._id,
-      action: 'approve'
-    }).subscribe({
-      next: () => {
-        this.loadPendingLeaves();
-      },
-      error: (error) => {
-        console.error('Error approving leave:', error);
+
+    const dialogData: ConfirmDialogData = {
+      title: 'Approve Leave Request',
+      message: `Are you sure you want to approve the leave request from ${this.formatDate(leave.startDate)} to ${this.formatDate(leave.endDate)}?`,
+      confirmText: 'Approve',
+      cancelText: 'Cancel',
+      confirmColor: 'primary'
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: dialogData,
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.leaveService.approveRejectLeave({
+          leaveId: leave._id!,
+          action: 'approve'
+        }).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('Leave request approved successfully');
+              this.loadPendingLeaves();
+            }
+          },
+          error: (error) => {
+            console.error('Error approving leave:', error);
+            this.notification.showError('Failed to approve leave request');
+          }
+        });
       }
     });
   }
 
   rejectLeave(leave: LeaveRequest): void {
     if (!leave._id) return;
-    
-    const reason = prompt('Rejection reason:');
-    if (reason) {
-      this.leaveService.approveRejectLeave({
-        leaveId: leave._id,
-        action: 'reject',
-        reason
-      }).subscribe({
-        next: () => {
-          this.loadPendingLeaves();
-        },
-        error: (error) => {
-          console.error('Error rejecting leave:', error);
-        }
-      });
-    }
+
+    const dialogData: ConfirmDialogData = {
+      title: 'Reject Leave Request',
+      message: 'Please provide a reason for rejection:',
+      confirmText: 'Reject',
+      cancelText: 'Cancel',
+      confirmColor: 'warn',
+      showInput: true,
+      inputLabel: 'Rejection Reason',
+      inputPlaceholder: 'Enter reason for rejection'
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: dialogData,
+      width: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.reason) {
+        this.leaveService.approveRejectLeave({
+          leaveId: leave._id!,
+          action: 'reject',
+          reason: result.reason
+        }).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('Leave request rejected');
+              this.loadPendingLeaves();
+            }
+          },
+          error: (error) => {
+            console.error('Error rejecting leave:', error);
+            this.notification.showError('Failed to reject leave request');
+          }
+        });
+      }
+    });
   }
 
   formatDate(date: string | Date | undefined): string {

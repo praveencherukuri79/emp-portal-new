@@ -1,0 +1,148 @@
+<div class="notifications-page">
+  <div class="page-header">
+    <h1>Notifications</h1>
+    @if (unreadNotifications().length > 0) {
+      <button mat-raised-button color="primary" (click)="markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        Mark All Read
+      </button>
+    }
+  </div>
+
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="selectedTab.set($event)">
+    <mat-tab label="All">
+      <div class="notifications-container">
+        @if (loading()) {
+          <div class="loading-container">
+            <mat-spinner></mat-spinner>
+          </div>
+        } @else if (allNotifications().length === 0) {
+          <div class="empty-state">
+            <mat-icon>notifications_none</mat-icon>
+            <p>No notifications</p>
+          </div>
+        } @else {
+          @for (notification of allNotifications(); track notification._id) {
+            <mat-card class="notification-card" [class.unread]="!notification.isRead">
+              <div class="notification-content">
+                <div class="notification-icon" [class]="'icon-' + getNotificationColor(notification.type)">
+                  <mat-icon>{{ getNotificationIcon(notification.type) }}</mat-icon>
+                </div>
+                <div class="notification-details">
+                  <div class="notification-header">
+                    <h3>{{ notification.title }}</h3>
+                    @if (!notification.isRead) {
+                      <mat-chip>New</mat-chip>
+                    }
+                  </div>
+                  <p>{{ notification.message }}</p>
+                  <div class="notification-footer">
+                    <span class="notification-time">{{ formatTime(notification.createdAt) }}</span>
+                    <div class="notification-actions">
+                      @if (!notification.isRead) {
+                        <button mat-button (click)="markAsRead(notification)">
+                          <mat-icon>check</mat-icon>
+                          Mark Read
+                        </button>
+                      }
+                      <button mat-button color="warn" (click)="deleteNotification(notification._id)">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          }
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Unread">
+      <div class="notifications-container">
+        @if (loading()) {
+          <div class="loading-container">
+            <mat-spinner></mat-spinner>
+          </div>
+        } @else if (unreadNotifications().length === 0) {
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <p>All caught up! No unread notifications.</p>
+          </div>
+        } @else {
+          @for (notification of unreadNotifications(); track notification._id) {
+            <mat-card class="notification-card unread">
+              <div class="notification-content">
+                <div class="notification-icon" [class]="'icon-' + getNotificationColor(notification.type)">
+                  <mat-icon>{{ getNotificationIcon(notification.type) }}</mat-icon>
+                </div>
+                <div class="notification-details">
+                  <div class="notification-header">
+                    <h3>{{ notification.title }}</h3>
+                    <mat-chip>New</mat-chip>
+                  </div>
+                  <p>{{ notification.message }}</p>
+                  <div class="notification-footer">
+                    <span class="notification-time">{{ formatTime(notification.createdAt) }}</span>
+                    <div class="notification-actions">
+                      <button mat-button (click)="markAsRead(notification)">
+                        <mat-icon>check</mat-icon>
+                        Mark Read
+                      </button>
+                      <button mat-button color="warn" (click)="deleteNotification(notification._id)">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          }
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Read">
+      <div class="notifications-container">
+        @if (loading()) {
+          <div class="loading-container">
+            <mat-spinner></mat-spinner>
+          </div>
+        } @else if (readNotifications().length === 0) {
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>No read notifications</p>
+          </div>
+        } @else {
+          @for (notification of readNotifications(); track notification._id) {
+            <mat-card class="notification-card">
+              <div class="notification-content">
+                <div class="notification-icon" [class]="'icon-' + getNotificationColor(notification.type)">
+                  <mat-icon>{{ getNotificationIcon(notification.type) }}</mat-icon>
+                </div>
+                <div class="notification-details">
+                  <div class="notification-header">
+                    <h3>{{ notification.title }}</h3>
+                  </div>
+                  <p>{{ notification.message }}</p>
+                  <div class="notification-footer">
+                    <span class="notification-time">{{ formatTime(notification.createdAt) }}</span>
+                    <div class="notification-actions">
+                      <button mat-button color="warn" (click)="deleteNotification(notification._id)">
+                        <mat-icon>delete</mat-icon>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          }
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+

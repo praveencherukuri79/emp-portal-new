@@ -1,0 +1,129 @@
+<mat-sidenav-container class="mobile-nav-container">
+  <mat-sidenav 
+    #sidenav 
+    [opened]="sidenavOpened()" 
+    mode="over"
+    class="mobile-sidenav"
+    (closedStart)="closeSidenav()">
+    
+    <div class="sidenav-header">
+      <div class="logo">
+        <mat-icon>business</mat-icon>
+        <span>Employee Portal</span>
+      </div>
+      <button mat-icon-button (click)="closeSidenav()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <nav class="sidenav-nav">
+      @for (item of getVisibleNavItems(); track item.route) {
+        @if (!item.children) {
+          <a 
+            [routerLink]="item.route" 
+            [class.active]="isActive(item.route)"
+            (click)="closeSidenav()"
+            class="nav-item">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        } @else {
+          <div class="nav-group">
+            <button 
+              class="nav-group-label"
+              (click)="toggleGroup(item.label)"
+              [attr.aria-expanded]="isGroupExpanded(item.label)">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+              <mat-icon class="expand-icon" [class.expanded]="isGroupExpanded(item.label)">
+                chevron_right
+              </mat-icon>
+            </button>
+            @if (isGroupExpanded(item.label)) {
+              <div class="nav-group-children">
+                @for (child of item.children; track child.route) {
+                  @if (hasAccess(child.roles)) {
+                    <a 
+                      [routerLink]="child.route" 
+                      [class.active]="isActive(child.route)"
+                      (click)="closeSidenav()"
+                      class="nav-item nav-child">
+                      <mat-icon>{{ child.icon }}</mat-icon>
+                      <span>{{ child.label }}</span>
+                    </a>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </nav>
+
+    <div class="sidenav-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ getUserInitials() }}</div>
+        <div class="user-details">
+          <div class="user-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</div>
+          <div class="user-role">{{ getRoleName() }}</div>
+        </div>
+      </div>
+      <div class="sidenav-actions">
+        <button mat-icon-button (click)="themeService.toggle()" class="theme-toggle">
+          <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+        <button mat-icon-button (click)="logout()" class="logout-button">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="mobile-toolbar">
+      <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <a routerLink="/" class="mobile-logo">
+        <mat-icon>business</mat-icon>
+        <span>Employee Portal</span>
+      </a>
+      <div class="mobile-actions">
+        <app-notification-dropdown />
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
+          <div class="user-avatar">{{ getUserInitials() }}</div>
+        </button>
+      </div>
+    </div>
+
+    <mat-menu #userMenu="matMenu" xPosition="before" class="user-menu">
+      <div class="user-menu-header">
+        <div class="user-menu-avatar">{{ getUserInitials() }}</div>
+        <div class="user-menu-info">
+          <div class="user-menu-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</div>
+          <div class="user-menu-email">{{ currentUser()?.email }}</div>
+          <div class="user-menu-role">{{ getRoleName() }}</div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+    
+    <main class="mobile-content">
+      <ng-content></ng-content>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

@@ -1,150 +1,240 @@
 <div class="approvals-container">
-  <mat-card class="header-card">
-    <mat-card-header>
-      <mat-card-title>Approval Queue</mat-card-title>
-    </mat-card-header>
-  </mat-card>
+  <div class="page-header">
+    <div>
+      <h1>Approval Queue</h1>
+      <p class="subtitle">
+        @if (authService.currentUser()?.role === UserRole.EMPLOYER) {
+          Review and approve all organization requests
+        } @else {
+          Review and approve pending requests
+        }
+      </p>
+    </div>
+  </div>
 
   <mat-tab-group class="approvals-tabs">
     <!-- Timesheet Approvals Tab -->
     <mat-tab label="Timesheet Approvals">
       <div class="tab-content">
-        <mat-card class="approvals-card">
-          <mat-card-content>
-            <div *ngIf="loadingTimesheets()" class="loading-container">
-              <mat-spinner diameter="50"></mat-spinner>
-            </div>
+        @if (loadingTimesheets()) {
+          <div class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading pending timesheets...</p>
+          </div>
+        } @else if (errorTimesheets()) {
+          <div class="error-container">
+            <mat-icon>error_outline</mat-icon>
+            <p>{{ errorTimesheets() }}</p>
+            <button mat-raised-button color="primary" (click)="loadPendingTimesheets()">
+              Retry
+            </button>
+          </div>
+        } @else if (pendingTimesheets().length === 0) {
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <h3>No pending timesheet approvals</h3>
+            <p>All timesheets have been reviewed</p>
+          </div>
+        } @else {
+          <mat-card class="approvals-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>schedule</mat-icon>
+                Pending Timesheets ({{ pendingTimesheets().length }})
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="pendingTimesheets()" class="approvals-table mat-elevation-z0">
+                  <!-- Employee Column -->
+                  <ng-container matColumnDef="employee">
+                    <th mat-header-cell *matHeaderCellDef>Employee</th>
+                    <td mat-cell *matCellDef="let week">
+                      <div class="employee-info">
+                        <div class="employee-avatar">{{ week.employeeName?.[0] || 'U' }}</div>
+                        <span>{{ week.employeeName || 'Unknown' }}</span>
+                      </div>
+                    </td>
+                  </ng-container>
 
-            <div *ngIf="!loadingTimesheets() && pendingTimesheets().length === 0" class="empty-state">
-              <mat-icon>check_circle</mat-icon>
-              <p>No pending timesheet approvals</p>
-            </div>
+                  <!-- Week Column -->
+                  <ng-container matColumnDef="week">
+                    <th mat-header-cell *matHeaderCellDef>Week</th>
+                    <td mat-cell *matCellDef="let week">
+                      {{ formatDate(week.weekStart) }} - {{ formatDate(week.weekEnd) }}
+                    </td>
+                  </ng-container>
 
-            <table mat-table [dataSource]="pendingTimesheets()" *ngIf="!loadingTimesheets() && pendingTimesheets().length > 0" class="approvals-table">
-              <!-- Employee Name Column -->
-              <ng-container matColumnDef="employeeName">
-                <th mat-header-cell *matHeaderCellDef>Employee</th>
-                <td mat-cell *matCellDef="let entry">{{ entry.userId }}</td>
-              </ng-container>
+                  <!-- Total Hours Column -->
+                  <ng-container matColumnDef="totalHours">
+                    <th mat-header-cell *matHeaderCellDef>Total Hours</th>
+                    <td mat-cell *matCellDef="let week">
+                      <div class="hours-info">
+                        <mat-icon>schedule</mat-icon>
+                        <span>{{ week.totalHours || 0 }}h</span>
+                      </div>
+                    </td>
+                  </ng-container>
 
-              <!-- Week Start Column -->
-              <ng-container matColumnDef="weekStart">
-                <th mat-header-cell *matHeaderCellDef>Week Starting</th>
-                <td mat-cell *matCellDef="let entry">{{ formatDate(entry.date) }}</td>
-              </ng-container>
+                  <!-- Submitted At Column -->
+                  <ng-container matColumnDef="submittedAt">
+                    <th mat-header-cell *matHeaderCellDef>Submitted</th>
+                    <td mat-cell *matCellDef="let week">
+                      {{ formatDate(week.submittedAt) }}
+                    </td>
+                  </ng-container>
 
-              <!-- Total Hours Column -->
-              <ng-container matColumnDef="totalHours">
-                <th mat-header-cell *matHeaderCellDef>Total Hours</th>
-                <td mat-cell *matCellDef="let entry">{{ entry.hours }} hrs</td>
-              </ng-container>
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let week">
+                      <mat-chip [color]="week.status === 'submitted' ? 'warn' : 'default'">
+                        {{ week.status | titlecase }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
 
-              <!-- Submitted At Column -->
-              <ng-container matColumnDef="submittedAt">
-                <th mat-header-cell *matHeaderCellDef>Submitted</th>
-                <td mat-cell *matCellDef="let entry">{{ formatDate(entry.createdAt) }}</td>
-              </ng-container>
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let week">
+                      <div class="action-buttons">
+                        <button mat-raised-button color="primary" (click)="approveTimesheet(week)">
+                          <mat-icon>check</mat-icon>
+                          Approve
+                        </button>
+                        <button mat-raised-button color="warn" (click)="rejectTimesheet(week)">
+                          <mat-icon>close</mat-icon>
+                          Reject
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
 
-              <!-- Actions Column -->
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let entry">
-                  <div class="action-buttons">
-                    <button mat-raised-button color="primary" (click)="approveTimesheet(entry)">
-                      <mat-icon>check</mat-icon>
-                      Approve
-                    </button>
-                    <button mat-raised-button color="warn" (click)="rejectTimesheet(entry)">
-                      <mat-icon>close</mat-icon>
-                      Reject
-                    </button>
-                  </div>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="timesheetColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: timesheetColumns"></tr>
-            </table>
-          </mat-card-content>
-        </mat-card>
+                  <tr mat-header-row *matHeaderRowDef="timesheetColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: timesheetColumns" class="table-row"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
       </div>
     </mat-tab>
 
     <!-- Leave Approvals Tab -->
     <mat-tab label="Leave Approvals">
       <div class="tab-content">
-        <mat-card class="approvals-card">
-          <mat-card-content>
-            <div *ngIf="loadingLeaves()" class="loading-container">
-              <mat-spinner diameter="50"></mat-spinner>
-            </div>
+        @if (loadingLeaves()) {
+          <div class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading pending leave requests...</p>
+          </div>
+        } @else if (errorLeaves()) {
+          <div class="error-container">
+            <mat-icon>error_outline</mat-icon>
+            <p>{{ errorLeaves() }}</p>
+            <button mat-raised-button color="primary" (click)="loadPendingLeaves()">
+              Retry
+            </button>
+          </div>
+        } @else if (pendingLeaves().length === 0) {
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <h3>No pending leave approvals</h3>
+            <p>All leave requests have been reviewed</p>
+          </div>
+        } @else {
+          <mat-card class="approvals-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>event_available</mat-icon>
+                Pending Leave Requests ({{ pendingLeaves().length }})
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="pendingLeaves()" class="approvals-table mat-elevation-z0">
+                  <!-- Employee Column -->
+                  <ng-container matColumnDef="employee">
+                    <th mat-header-cell *matHeaderCellDef>Employee</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <div class="employee-info">
+                        <div class="employee-avatar">{{ leave.userId?.[0] || 'U' }}</div>
+                        <span>{{ leave.userId || 'Unknown' }}</span>
+                      </div>
+                    </td>
+                  </ng-container>
 
-            <div *ngIf="!loadingLeaves() && pendingLeaves().length === 0" class="empty-state">
-              <mat-icon>check_circle</mat-icon>
-              <p>No pending leave approvals</p>
-            </div>
+                  <!-- Leave Type Column -->
+                  <ng-container matColumnDef="leaveType">
+                    <th mat-header-cell *matHeaderCellDef>Leave Type</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <mat-chip>{{ leave.leaveType }}</mat-chip>
+                    </td>
+                  </ng-container>
 
-            <table mat-table [dataSource]="pendingLeaves()" *ngIf="!loadingLeaves() && pendingLeaves().length > 0" class="approvals-table">
-              <!-- Employee Name Column -->
-              <ng-container matColumnDef="employeeName">
-                <th mat-header-cell *matHeaderCellDef>Employee</th>
-                <td mat-cell *matCellDef="let leave">{{ leave.userId }}</td>
-              </ng-container>
+                  <!-- Start Date Column -->
+                  <ng-container matColumnDef="startDate">
+                    <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                    <td mat-cell *matCellDef="let leave">{{ formatDate(leave.startDate) }}</td>
+                  </ng-container>
 
-              <!-- Leave Type Column -->
-              <ng-container matColumnDef="leaveType">
-                <th mat-header-cell *matHeaderCellDef>Leave Type</th>
-                <td mat-cell *matCellDef="let leave">
-                  <mat-chip>{{ leave.leaveType }}</mat-chip>
-                </td>
-              </ng-container>
+                  <!-- End Date Column -->
+                  <ng-container matColumnDef="endDate">
+                    <th mat-header-cell *matHeaderCellDef>End Date</th>
+                    <td mat-cell *matCellDef="let leave">{{ formatDate(leave.endDate) }}</td>
+                  </ng-container>
 
-              <!-- Start Date Column -->
-              <ng-container matColumnDef="startDate">
-                <th mat-header-cell *matHeaderCellDef>Start Date</th>
-                <td mat-cell *matCellDef="let leave">{{ formatDate(leave.startDate) }}</td>
-              </ng-container>
+                  <!-- Days Column -->
+                  <ng-container matColumnDef="days">
+                    <th mat-header-cell *matHeaderCellDef>Days</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <strong>{{ leave.totalDays || 0 }}</strong>
+                    </td>
+                  </ng-container>
 
-              <!-- End Date Column -->
-              <ng-container matColumnDef="endDate">
-                <th mat-header-cell *matHeaderCellDef>End Date</th>
-                <td mat-cell *matCellDef="let leave">{{ formatDate(leave.endDate) }}</td>
-              </ng-container>
+                  <!-- Reason Column -->
+                  <ng-container matColumnDef="reason">
+                    <th mat-header-cell *matHeaderCellDef>Reason</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <span class="reason-text">{{ leave.reason || 'N/A' }}</span>
+                    </td>
+                  </ng-container>
 
-              <!-- Days Column -->
-              <ng-container matColumnDef="days">
-                <th mat-header-cell *matHeaderCellDef>Days</th>
-                <td mat-cell *matCellDef="let leave">{{ leave.totalDays }}</td>
-              </ng-container>
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <mat-chip [color]="getStatusColor(leave.status)">
+                        {{ leave.status | titlecase }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
 
-              <!-- Reason Column -->
-              <ng-container matColumnDef="reason">
-                <th mat-header-cell *matHeaderCellDef>Reason</th>
-                <td mat-cell *matCellDef="let leave">{{ leave.reason }}</td>
-              </ng-container>
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let leave">
+                      <div class="action-buttons">
+                        <button mat-raised-button color="primary" (click)="approveLeave(leave)">
+                          <mat-icon>check</mat-icon>
+                          Approve
+                        </button>
+                        <button mat-raised-button color="warn" (click)="rejectLeave(leave)">
+                          <mat-icon>close</mat-icon>
+                          Reject
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
 
-              <!-- Actions Column -->
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let leave">
-                  <div class="action-buttons">
-                    <button mat-raised-button color="primary" (click)="approveLeave(leave)">
-                      <mat-icon>check</mat-icon>
-                      Approve
-                    </button>
-                    <button mat-raised-button color="warn" (click)="rejectLeave(leave)">
-                      <mat-icon>close</mat-icon>
-                      Reject
-                    </button>
-                  </div>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="leaveColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: leaveColumns"></tr>
-            </table>
-          </mat-card-content>
-        </mat-card>
+                  <tr mat-header-row *matHeaderRowDef="leaveColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: leaveColumns" class="table-row"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
       </div>
     </mat-tab>
   </mat-tab-group>

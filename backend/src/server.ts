@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction, Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
+//import rateLimit from 'express-rate-limit';
 import config from './config';
 import connectDatabase from './config/database';
 import { EmailUtil } from './utils';
@@ -48,12 +48,12 @@ if (config.env === 'development') {
 }
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: config.security.rateLimitWindowMs,
-  max: config.security.rateLimitMaxRequests,
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/', limiter);
+//const limiter = rateLimit({
+ // windowMs: config.security.rateLimitWindowMs,
+ // max: config.security.rateLimitMaxRequests,
+ // message: 'Too many requests from this IP, please try again later.'
+//});
+//app.use('/api/', limiter);
 
 // ==================== DATABASE CONNECTION ====================
 

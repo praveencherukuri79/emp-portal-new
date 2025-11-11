@@ -1,0 +1,32 @@
+@import '../../../../styles/mixins/components.scss';
+
+.confirm-dialog {
+  min-width: 300px;
+
+  h2 {
+    margin: 0 0 var(--spacing-4) 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  mat-dialog-content {
+    p {
+      margin: 0 0 var(--spacing-4) 0;
+      color: var(--text-secondary);
+      font-size: var(--font-size-md);
+      line-height: var(--line-height-normal);
+    }
+
+    .full-width {
+      width: 100%;
+      margin-top: var(--spacing-4);
+    }
+  }
+
+  mat-dialog-actions {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4) 0 0 0;
+    gap: var(--spacing-3);
+  }
+}

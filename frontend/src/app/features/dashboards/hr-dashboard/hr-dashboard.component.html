@@ -4,57 +4,41 @@
     <p class="subtitle">Manage organization-wide HR operations</p>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card employees">
-      <div class="stat-icon">
-        <i class="fas fa-users"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().totalEmployees }}</h3>
-        <p>Total Employees</p>
-      </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading dashboard...</p>
     </div>
-
-    <div class="stat-card leaves">
-      <div class="stat-icon">
-        <i class="fas fa-calendar-times"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().pendingLeaves }}</h3>
-        <p>Pending Leave Requests</p>
-      </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadDashboardData()">
+        Retry
+      </button>
     </div>
-
-    <div class="stat-card alerts">
-      <div class="stat-icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().documentAlerts }}</h3>
-        <p>Document Alerts</p>
-      </div>
+  } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      @for (stat of statsCards(); track stat.title) {
+        <app-stats-card [data]="stat"></app-stats-card>
+      }
     </div>
-
-    <div class="stat-card compliance">
-      <div class="stat-icon">
-        <i class="fas fa-check-circle"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().complianceRate }}%</h3>
-        <p>Compliance Rate</p>
-      </div>
-    </div>
-  </div>
+  }
 
   <div class="dashboard-content">
     <!-- Leave Summary -->
-    <div class="content-card leave-summary">
-      <div class="card-header">
-        <h2><i class="fas fa-calendar-alt"></i> Leave Summary</h2>
-        <button class="btn btn-link" routerLink="/hr/leaves">View All</button>
-      </div>
-      <div class="card-body">
+    <mat-card class="clickable" [routerLink]="'/hr/leaves'">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>event_available</mat-icon>
+          Leave Summary
+        </mat-card-title>
+        <mat-card-subtitle>
+          <button mat-button color="primary" routerLink="/hr/leaves">View All</button>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <div class="leave-stats">
           <div class="leave-stat approved">
             <div class="stat-value">{{ leaveStats().approvedThisMonth }}</div>
@@ -70,36 +54,41 @@
           </div>
         </div>
         <div class="action-row">
-          <button class="btn btn-primary" routerLink="/hr/leaves">Manage Leaves</button>
-          <button class="btn btn-secondary" routerLink="/hr/leave-policies">Leave Policies</button>
+          <button mat-raised-button color="primary" routerLink="/hr/leaves">Manage Leaves</button>
+          <button mat-stroked-button color="primary" routerLink="/hr/leaves">Leave Policies</button>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
 
     <!-- Document Alerts -->
-    <div class="content-card alerts-card">
-      <div class="card-header">
-        <h2><i class="fas fa-file-alt"></i> Document Alerts</h2>
-        <button class="btn btn-link" routerLink="/hr/documents">View All</button>
-      </div>
-      <div class="card-body">
+    <mat-card class="clickable" [routerLink]="'/hr/documents'">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>folder_special</mat-icon>
+          Document Alerts
+        </mat-card-title>
+        <mat-card-subtitle>
+          <button mat-button color="primary" routerLink="/hr/documents">View All</button>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <div class="alerts-list">
           @if (documentAlerts().length === 0) {
             <div class="empty-state">
-              <i class="fas fa-check-circle"></i>
+              <mat-icon>check_circle</mat-icon>
               <p>No document alerts</p>
             </div>
           } @else {
             @for (alert of documentAlerts(); track alert.id) {
               <div class="alert-item">
                 <div class="alert-info">
-                  <span class="status-badge" [class]="alert.status">
+                  <mat-chip [class]="'status-' + alert.status">
                     @switch (alert.status) {
                       @case ('expired') { EXPIRED }
                       @case ('expiring-soon') { EXPIRING SOON }
                       @case ('missing') { MISSING }
                     }
-                  </span>
+                  </mat-chip>
                   <div class="details">
                     <strong>{{ alert.employeeName }}</strong>
                     <span class="document-type">{{ alert.documentType }}</span>
@@ -108,41 +97,45 @@
                     }
                   </div>
                 </div>
-                <button class="btn btn-sm btn-primary" (click)="handleAlert(alert.id)">
-                  <i class="fas fa-bell"></i> Notify
+                <button mat-raised-button color="primary" (click)="handleAlert(alert.id)">
+                  <mat-icon>notifications</mat-icon>
+                  Notify
                 </button>
               </div>
             }
           }
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <!-- Employee Management -->
-  <div class="content-card full-width">
-    <div class="card-header">
-      <h2><i class="fas fa-user-cog"></i> Employee Management</h2>
-    </div>
-    <div class="card-body">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>manage_accounts</mat-icon>
+        Employee Management
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
       <div class="management-actions">
-        <button class="action-btn" routerLink="/hr/employees">
-          <i class="fas fa-users"></i>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/employees">
+          <mat-icon>people</mat-icon>
           <span>View All Employees</span>
         </button>
-        <button class="action-btn" routerLink="/hr/employees/add">
-          <i class="fas fa-user-plus"></i>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/employees">
+          <mat-icon>person_add</mat-icon>
           <span>Add New Employee</span>
         </button>
-        <button class="action-btn" routerLink="/hr/documents">
-          <i class="fas fa-file-contract"></i>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/documents">
+          <mat-icon>description</mat-icon>
           <span>Document Compliance</span>
         </button>
-        <button class="action-btn" routerLink="/hr/reports">
-          <i class="fas fa-chart-line"></i>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/leaves">
+          <mat-icon>assessment</mat-icon>
           <span>HR Reports</span>
         </button>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

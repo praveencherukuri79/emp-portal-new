@@ -1,21 +1,51 @@
-<div class="stats-card" [attr.data-color]="data.color || 'primary'">
-  <div class="stats-card__icon">
-    <mat-icon>{{ data.icon }}</mat-icon>
-  </div>
-  
-  <div class="stats-card__content">
-    <div class="stats-card__title">{{ data.title }}</div>
-    <div class="stats-card__value">{{ data.value }}</div>
+@if (data.route) {
+  <a [routerLink]="data.route" class="stats-card" [attr.data-color]="data.color || 'primary'" [class.clickable]="data.clickable !== false">
+    <div class="stats-card__icon">
+      <mat-icon>{{ data.icon }}</mat-icon>
+    </div>
     
-    @if (data.subtitle) {
-      <div class="stats-card__subtitle">{{ data.subtitle }}</div>
-    }
+    <div class="stats-card__content">
+      <div class="stats-card__title">{{ data.title }}</div>
+      <div class="stats-card__value">{{ data.value }}</div>
+      
+      @if (data.subtitle) {
+        <div class="stats-card__subtitle">{{ data.subtitle }}</div>
+      }
+      
+      @if (data.trend) {
+        <div class="stats-card__trend" [class.positive]="data.trend.isPositive" [class.negative]="!data.trend.isPositive">
+          <mat-icon>{{ data.trend.isPositive ? 'trending_up' : 'trending_down' }}</mat-icon>
+          <span>{{ data.trend.value }}%</span>
+        </div>
+      }
+    </div>
     
-    @if (data.trend) {
-      <div class="stats-card__trend" [class.positive]="data.trend.isPositive" [class.negative]="!data.trend.isPositive">
-        <mat-icon>{{ data.trend.isPositive ? 'trending_up' : 'trending_down' }}</mat-icon>
-        <span>{{ data.trend.value }}%</span>
+    @if (data.route) {
+      <div class="stats-card__action">
+        <mat-icon>arrow_forward</mat-icon>
       </div>
     }
+  </a>
+} @else {
+  <div class="stats-card" [attr.data-color]="data.color || 'primary'" [class.clickable]="data.clickable" (click)="onCardClick()">
+    <div class="stats-card__icon">
+      <mat-icon>{{ data.icon }}</mat-icon>
+    </div>
+    
+    <div class="stats-card__content">
+      <div class="stats-card__title">{{ data.title }}</div>
+      <div class="stats-card__value">{{ data.value }}</div>
+      
+      @if (data.subtitle) {
+        <div class="stats-card__subtitle">{{ data.subtitle }}</div>
+      }
+      
+      @if (data.trend) {
+        <div class="stats-card__trend" [class.positive]="data.trend.isPositive" [class.negative]="!data.trend.isPositive">
+          <mat-icon>{{ data.trend.isPositive ? 'trending_up' : 'trending_down' }}</mat-icon>
+          <span>{{ data.trend.value }}%</span>
+        </div>
+      }
+    </div>
   </div>
-</div>
+}

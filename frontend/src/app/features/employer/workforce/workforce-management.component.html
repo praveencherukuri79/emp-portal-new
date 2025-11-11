@@ -1,0 +1,145 @@
+<div class="workforce-page">
+  <div class="page-header">
+    <div>
+      <h1>Workforce Management</h1>
+      <p class="subtitle">Manage and analyze your organization's workforce</p>
+    </div>
+    <button mat-raised-button color="primary">
+      <mat-icon>person_add</mat-icon>
+      Add Employee
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading workforce data...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadWorkforceData()">
+        Retry
+      </button>
+    </div>
+  } @else {
+    <mat-tab-group>
+      <mat-tab label="Team Overview">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>groups</mat-icon>
+                Team Overview
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (employees().length === 0) {
+                <div class="empty-state">
+                  <mat-icon>people_outline</mat-icon>
+                  <p>No employees found</p>
+                </div>
+              } @else {
+                <div class="table-container">
+                  <table mat-table [dataSource]="employees()" class="workforce-table mat-elevation-z0">
+                    <ng-container matColumnDef="name">
+                      <th mat-header-cell *matHeaderCellDef>Name</th>
+                      <td mat-cell *matCellDef="let emp">
+                        <div class="employee-info">
+                          <div class="employee-avatar">{{ emp.firstName?.[0] }}{{ emp.lastName?.[0] }}</div>
+                          <div>
+                            <div class="employee-name">{{ emp.firstName }} {{ emp.lastName }}</div>
+                            <div class="employee-email">{{ emp.email }}</div>
+                          </div>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="department">
+                      <th mat-header-cell *matHeaderCellDef>Department</th>
+                      <td mat-cell *matCellDef="let emp">
+                        <mat-chip>{{ emp.department || 'N/A' }}</mat-chip>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="role">
+                      <th mat-header-cell *matHeaderCellDef>Role</th>
+                      <td mat-cell *matCellDef="let emp">
+                        <mat-chip>{{ emp.role }}</mat-chip>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef>Status</th>
+                      <td mat-cell *matCellDef="let emp">
+                        <mat-chip [color]="emp.isActive ? 'primary' : 'default'">
+                          {{ emp.isActive ? 'Active' : 'Inactive' }}
+                        </mat-chip>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>Actions</th>
+                      <td mat-cell *matCellDef="let emp">
+                        <button mat-icon-button>
+                          <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button>
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Capacity Planning">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>event_note</mat-icon>
+                Capacity Planning
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Plan and optimize workforce capacity</p>
+              <div class="metrics-placeholder">
+                <mat-icon>event_note</mat-icon>
+                <p>Capacity planning tools will be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Skills Matrix">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>assessment</mat-icon>
+                Skills Matrix
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Track skills and competencies across the organization</p>
+              <div class="metrics-placeholder">
+                <mat-icon>assessment</mat-icon>
+                <p>Skills matrix will be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

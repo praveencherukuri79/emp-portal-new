@@ -4,31 +4,72 @@
 .stats-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
   background: var(--card-background);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all var(--transition-normal);
+  border: var(--border-width-thin) solid var(--border-secondary);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--action-primary);
+    transform: scaleY(0);
+    transition: transform var(--transition-normal);
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
 
   &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-focus);
+
+    &::before {
+      transform: scaleY(1);
+    }
+
+    .stats-card__action {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  &:active {
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+    transition: all var(--transition-normal);
     
     mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
+      font-size: var(--font-size-3xl);
+      width: var(--font-size-3xl);
+      height: var(--font-size-3xl);
     }
+  }
+
+  &:hover &__icon {
+    transform: scale(1.1) rotate(5deg);
   }
 
   &__content {
@@ -57,15 +98,15 @@
   &__trend {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 8px;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-top: var(--spacing-2);
 
     mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: var(--font-size-lg);
+      width: var(--font-size-lg);
+      height: var(--font-size-lg);
     }
 
     &.positive {
@@ -74,6 +115,20 @@
 
     &.negative {
       color: var(--status-error);
+    }
+  }
+
+  &__action {
+    margin-left: auto;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all var(--transition-normal);
+    color: var(--action-primary);
+    
+    mat-icon {
+      font-size: var(--font-size-xl);
+      width: var(--font-size-xl);
+      height: var(--font-size-xl);
     }
   }
 

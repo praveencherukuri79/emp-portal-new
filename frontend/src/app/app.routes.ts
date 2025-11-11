@@ -9,7 +9,7 @@ export const routes: Routes = [
   { 
     path: '', 
     canActivate: [authGuard],
-    loadComponent: () => import('./features/dashboard/dashboard-router.component').then(m => m.DashboardRouterComponent),
+    loadComponent: () => import('./features/dashboard/dashboard-router.component').then((m: any) => m.DashboardRouterComponent),
     pathMatch: 'full' 
   },
   { 
@@ -41,11 +41,11 @@ export const routes: Routes = [
   {
     path: 'employee',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER] },
+    data: { roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN] },
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        loadComponent: () => import('./features/dashboards/employee-dashboard/employee-dashboard.component').then(m => m.EmployeeDashboardComponent),
         title: 'Employee Dashboard - Employee Portal'
       },
       {
@@ -75,7 +75,7 @@ export const routes: Routes = [
   {
     path: 'supervisor',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER] },
+    data: { roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN] },
     children: [
       {
         path: 'dashboard',
@@ -89,12 +89,12 @@ export const routes: Routes = [
       },
       {
         path: 'team',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/supervisor/team/team-management.component').then((m: any) => m.TeamManagementComponent),
         title: 'Team Management - Employee Portal'
       },
       {
         path: 'reports',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/supervisor/reports/team-reports.component').then((m: any) => m.TeamReportsComponent),
         title: 'Team Reports - Employee Portal'
       }
     ]
@@ -104,7 +104,7 @@ export const routes: Routes = [
   {
     path: 'hr',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER] },
+    data: { roles: [UserRole.HR, UserRole.ADMIN] },
     children: [
       {
         path: 'dashboard',
@@ -118,7 +118,7 @@ export const routes: Routes = [
       },
       {
         path: 'employees',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/hr/employees/employee-management.component').then((m: any) => m.EmployeeManagementComponent),
         title: 'Employee Management - Employee Portal'
       },
       {
@@ -133,7 +133,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.ADMIN, UserRole.EMPLOYER] },
+    data: { roles: [UserRole.ADMIN] },
     children: [
       {
         path: 'dashboard',
@@ -142,17 +142,17 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/admin/users/user-management.component').then((m: any) => m.UserManagementComponent),
         title: 'User Management - Employee Portal'
       },
       {
         path: 'roles',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/admin/roles/role-management.component').then((m: any) => m.RoleManagementComponent),
         title: 'Role Management - Employee Portal'
       },
       {
         path: 'settings',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/admin/settings/system-settings.component').then((m: any) => m.SystemSettingsComponent),
         title: 'System Settings - Employee Portal'
       }
     ]
@@ -170,18 +170,33 @@ export const routes: Routes = [
         title: 'Employer Dashboard - Employee Portal'
       },
       {
-        path: 'financial',
+        path: 'approvals',
         loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        title: 'Approvals - Employee Portal'
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/admin/users/user-management.component').then((m: any) => m.UserManagementComponent),
+        title: 'User Management - Employee Portal'
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/admin/settings/system-settings.component').then((m: any) => m.SystemSettingsComponent),
+        title: 'Settings - Employee Portal'
+      },
+      {
+        path: 'financial',
+        loadComponent: () => import('./features/employer/financial/financial-reports.component').then(m => m.FinancialReportsComponent),
         title: 'Financial Reports - Employee Portal'
       },
       {
         path: 'analytics',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/employer/analytics/business-analytics.component').then(m => m.BusinessAnalyticsComponent),
         title: 'Business Analytics - Employee Portal'
       },
       {
         path: 'workforce',
-        loadComponent: () => import('./features/approvals/approvals.component').then(m => m.ApprovalsComponent),
+        loadComponent: () => import('./features/employer/workforce/workforce-management.component').then(m => m.WorkforceManagementComponent),
         title: 'Workforce Management - Employee Portal'
       }
     ]
@@ -191,7 +206,7 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     canActivate: [authGuard],
-    loadComponent: () => import('./features/dashboard/dashboard-router.component').then(m => m.DashboardRouterComponent),
+    loadComponent: () => import('./features/dashboard/dashboard-router.component').then((m: any) => m.DashboardRouterComponent),
     title: 'Dashboard - Employee Portal'
   },
   {
@@ -209,6 +224,27 @@ export const routes: Routes = [
   {
     path: 'approvals',
     redirectTo: 'supervisor/approvals'
+  },
+  
+  {
+    path: 'notifications',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent),
+    title: 'Notifications - Employee Portal'
+  },
+  
+  {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
+    title: 'Profile - Employee Portal'
+  },
+  
+  {
+    path: 'settings',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent),
+    title: 'Settings - Employee Portal'
   },
   
   { path: '**', redirectTo: '' }

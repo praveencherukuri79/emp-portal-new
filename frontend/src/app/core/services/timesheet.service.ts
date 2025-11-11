@@ -27,15 +27,15 @@ export class TimesheetService {
   /**
    * Get all projects for dropdown
    */
-  getProjects(): Observable<{ data: Project[] }> {
-    return this.http.get<{ data: Project[] }>(this.PROJECT_URL);
+  getProjects(): Observable<{ status: string; data: Project[]; message?: string }> {
+    return this.http.get<{ status: string; data: Project[]; message?: string }>(this.PROJECT_URL);
   }
 
   /**
    * Get timesheet entries for a specific week
    */
-  getWeeklyEntries(weekStart: string, weekEnd: string): Observable<{ data: WeeklyTimesheet }> {
-    return this.http.get<{ data: WeeklyTimesheet }>(
+  getWeeklyEntries(weekStart: string, weekEnd: string): Observable<{ status: string; data: WeeklyTimesheet; message?: string }> {
+    return this.http.get<{ status: string; data: WeeklyTimesheet; message?: string }>(
       `${this.API_URL}/week/${weekStart}`
     );
   }
@@ -43,42 +43,42 @@ export class TimesheetService {
   /**
    * Create a new timesheet entry
    */
-  createEntry(entry: CreateTimesheetRequest): Observable<{ data: TimesheetEntry }> {
-    return this.http.post<{ data: TimesheetEntry }>(`${this.API_URL}/entries`, entry);
+  createEntry(entry: CreateTimesheetRequest): Observable<{ status: string; data: TimesheetEntry; message?: string }> {
+    return this.http.post<{ status: string; data: TimesheetEntry; message?: string }>(`${this.API_URL}/entries`, entry);
   }
 
   /**
    * Batch create multiple timesheet entries
    */
-  batchCreateEntries(entries: CreateTimesheetRequest[]): Observable<{ data: TimesheetEntry[] }> {
-    return this.http.post<{ data: TimesheetEntry[] }>(`${this.API_URL}/entries/batch`, { entries });
+  batchCreateEntries(entries: CreateTimesheetRequest[]): Observable<{ status: string; data: TimesheetEntry[]; message?: string }> {
+    return this.http.post<{ status: string; data: TimesheetEntry[]; message?: string }>(`${this.API_URL}/entries/batch`, { entries });
   }
 
   /**
    * Update an existing timesheet entry (only if Draft or Rejected)
    */
-  updateEntry(entry: UpdateTimesheetRequest): Observable<{ data: TimesheetEntry }> {
-    return this.http.put<{ data: TimesheetEntry }>(`${this.API_URL}/entries/${entry._id}`, entry);
+  updateEntry(entry: UpdateTimesheetRequest): Observable<{ status: string; data: TimesheetEntry; message?: string }> {
+    return this.http.put<{ status: string; data: TimesheetEntry; message?: string }>(`${this.API_URL}/entries/${entry._id}`, entry);
   }
 
   /**
    * Delete a timesheet entry (only if Draft or Rejected)
    */
-  deleteEntry(entryId: string): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/entries/${entryId}`);
+  deleteEntry(entryId: string): Observable<{ status: string; message?: string }> {
+    return this.http.delete<{ status: string; message?: string }>(`${this.API_URL}/entries/${entryId}`);
   }
 
   /**
    * Submit entire week for approval
    */
-  submitWeek(data: SubmitWeekRequest): Observable<{ data: WeeklyTimesheet }> {
-    return this.http.post<{ data: WeeklyTimesheet }>(`${this.API_URL}/submit`, data);
+  submitWeek(data: SubmitWeekRequest): Observable<{ status: string; data: WeeklyTimesheet; message?: string }> {
+    return this.http.post<{ status: string; data: WeeklyTimesheet; message?: string }>(`${this.API_URL}/submit`, data);
   }
 
   /**
    * Get timesheet history with optional filters
    */
-  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<{ data: TimesheetEntry[] }> {
+  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<{ status: string; data: TimesheetEntry[]; message?: string }> {
     let queryParams = '';
     if (params) {
       const queryArray: string[] = [];
@@ -89,7 +89,7 @@ export class TimesheetService {
         queryParams = '?' + queryArray.join('&');
       }
     }
-    return this.http.get<{ data: TimesheetEntry[] }>(`${this.API_URL}/history${queryParams}`);
+    return this.http.get<{ status: string; data: TimesheetEntry[]; message?: string }>(`${this.API_URL}/history${queryParams}`);
   }
 
   /**
@@ -137,5 +137,32 @@ export class TimesheetService {
    */
   formatDate(date: Date): string {
     return dayjs(date).format('YYYY-MM-DD');
+  }
+
+  /**
+   * Get pending timesheets for approval (Supervisor/HR/Admin/Employer)
+   */
+  getPendingTimesheets(): Observable<{ status: string; data: WeeklyTimesheet[]; message?: string }> {
+    return this.http.get<{ status: string; data: WeeklyTimesheet[]; message?: string }>(`${this.API_URL}/approvals/pending`);
+  }
+
+  /**
+   * Approve timesheet entries
+   */
+  approveTimesheet(entryIds: string[], comments?: string): Observable<{ status: string; data: any; message?: string }> {
+    return this.http.post<{ status: string; data: any; message?: string }>(
+      `${this.API_URL}/approvals/approve`,
+      { entryIds, comments }
+    );
+  }
+
+  /**
+   * Reject timesheet entries
+   */
+  rejectTimesheet(entryIds: string[], reason: string): Observable<{ status: string; data: any; message?: string }> {
+    return this.http.post<{ status: string; data: any; message?: string }>(
+      `${this.API_URL}/approvals/reject`,
+      { entryIds, comments: reason }
+    );
   }
 }

@@ -1,0 +1,139 @@
+<div class="financial-reports-page">
+  <div class="page-header">
+    <div>
+      <h1>Financial Reports</h1>
+      <p class="subtitle">Track revenue, costs, and financial performance</p>
+    </div>
+    <div class="header-actions">
+      <mat-form-field appearance="outline">
+        <mat-label>Period</mat-label>
+        <mat-select [ngModel]="selectedPeriod()" (ngModelChange)="selectedPeriod.set($event)">
+          <mat-option value="month">This Month</mat-option>
+          <mat-option value="quarter">This Quarter</mat-option>
+          <mat-option value="year">This Year</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="exportReport('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Export PDF
+      </button>
+      <button mat-raised-button color="primary" (click)="exportReport('excel')">
+        <mat-icon>table_chart</mat-icon>
+        Export Excel
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading financial reports...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadFinancialReports()">
+        Retry
+      </button>
+    </div>
+  } @else {
+    @if (financialData()) {
+      <div class="reports-grid">
+        <!-- Summary Cards -->
+        <mat-card class="summary-card revenue">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>attach_money</mat-icon>
+              Total Revenue
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-value">{{ formatCurrency(financialData()!.totalRevenue) }}</div>
+            <div class="summary-label">Year to date</div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="summary-card hours">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>schedule</mat-icon>
+              Billable Hours
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-value">{{ financialData()!.billableHours.toLocaleString() }}h</div>
+            <div class="summary-label">This month</div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Revenue by Department -->
+        @if (financialData()!.revenueByDepartment.length > 0) {
+          <mat-card class="report-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>business</mat-icon>
+                Revenue by Department
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="financialData()!.revenueByDepartment" class="revenue-table mat-elevation-z0">
+                  <ng-container matColumnDef="department">
+                    <th mat-header-cell *matHeaderCellDef>Department</th>
+                    <td mat-cell *matCellDef="let item">{{ item.department }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="revenue">
+                    <th mat-header-cell *matHeaderCellDef>Revenue</th>
+                    <td mat-cell *matCellDef="let item">{{ formatCurrency(item.revenue) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="percentage">
+                    <th mat-header-cell *matHeaderCellDef>% of Total</th>
+                    <td mat-cell *matCellDef="let item">
+                      {{ ((item.revenue / financialData()!.totalRevenue) * 100).toFixed(1) }}%
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <!-- Top Projects -->
+        @if (financialData()!.topProjects.length > 0) {
+          <mat-card class="report-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>folder_special</mat-icon>
+                Top Projects
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="projects-list">
+                @for (project of financialData()!.topProjects; track project.project) {
+                  <div class="project-item">
+                    <div class="project-info">
+                      <strong>{{ project.project }}</strong>
+                      <span class="project-revenue">{{ formatCurrency(project.revenue) }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mat-icon>bar_chart</mat-icon>
+        <h3>No financial data available</h3>
+        <p>Financial reports will appear here once data is available</p>
+      </div>
+    }
+  }
+</div>

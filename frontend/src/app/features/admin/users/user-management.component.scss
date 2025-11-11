@@ -1,0 +1,103 @@
+@import '../../../../styles/mixins/components.scss';
+
+.user-management {
+  padding: var(--spacing-6);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-6);
+    gap: var(--spacing-4);
+
+    h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: var(--font-size-lg);
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .filters-section {
+    margin-bottom: var(--spacing-6);
+
+    .search-field {
+      width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .users-table {
+    width: 100%;
+    background: transparent;
+
+    th {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      background: var(--background-tertiary);
+      padding: var(--spacing-4);
+      border-bottom: var(--border-width-medium) solid var(--border-primary);
+    }
+
+    td {
+      color: var(--text-secondary);
+      padding: var(--spacing-4);
+      border-bottom: var(--border-width-thin) solid var(--border-primary);
+    }
+
+    .table-row {
+      transition: background-color var(--transition-fast);
+
+      &:hover {
+        background: var(--table-row-hover);
+      }
+    }
+  }
+
+  .loading-container,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16);
+    gap: var(--spacing-4);
+    text-align: center;
+
+    p {
+      color: var(--text-secondary);
+    }
+  }
+
+  .empty-state {
+    mat-icon {
+      font-size: var(--font-size-5xl);
+      width: var(--font-size-5xl);
+      height: var(--font-size-5xl);
+      color: var(--text-tertiary);
+      opacity: 0.5;
+      margin-bottom: var(--spacing-4);
+    }
+
+    h3 {
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+  }
+}
+

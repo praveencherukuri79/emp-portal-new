@@ -1,39 +1,46 @@
-// Leave Management Component - uses only CSS variables
+@import '../../../styles/mixins/components.scss';
 
 .leave-management {
-  padding: 24px;
+  padding: var(--spacing-6);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-6);
 
   h1 {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--spacing-3);
     margin: 0;
-    font-size: 28px;
-    font-weight: 700;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
     color: var(--text-primary);
 
     mat-icon {
       color: var(--action-primary);
+      font-size: var(--font-size-2xl);
+      width: var(--font-size-2xl);
+      height: var(--font-size-2xl);
     }
   }
 }
 
 .tab-content {
-  padding: 24px 0;
+  padding: var(--spacing-6) 0;
 }
 
 .request-card,
 .history-card {
-  background: var(--card-background);
-  box-shadow: var(--card-shadow);
-  padding: 24px;
+  @include card;
+  padding: var(--spacing-6) !important;
+  margin-bottom: var(--spacing-6);
 
   h2 {
-    margin: 0 0 24px 0;
+    margin: 0 0 var(--spacing-6) 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
   }
 }
@@ -41,73 +48,82 @@
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-6);
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
 }
 
 .balance-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .balance-card {
-  background: var(--card-background);
-  box-shadow: var(--card-shadow);
-  padding: 20px;
+  @include card;
+  padding: var(--spacing-5) !important;
 
   .balance-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
 
     mat-icon {
       color: var(--action-primary);
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
+      font-size: var(--font-size-3xl);
+      width: var(--font-size-3xl);
+      height: var(--font-size-3xl);
     }
 
     h3 {
       margin: 0;
       color: var(--text-primary);
-      font-size: 18px;
-      font-weight: 600;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
     }
   }
 
   .balance-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
 
     .stat {
       text-align: center;
 
       .label {
         display: block;
-        font-size: 12px;
+        font-size: var(--font-size-xs);
         color: var(--text-secondary);
-        margin-bottom: 4px;
+        margin-bottom: var(--spacing-1);
       }
 
       .value {
         display: block;
-        font-size: 24px;
-        font-weight: 700;
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
         color: var(--text-primary);
 
         &.used {
@@ -122,6 +138,9 @@
   }
 
   mat-progress-bar {
+    height: var(--spacing-2);
+    border-radius: var(--radius-sm);
+
     ::ng-deep .mdc-linear-progress__bar-inner {
       border-color: var(--status-success);
     }
@@ -134,18 +153,22 @@
 
 .leaves-table {
   width: 100%;
+  background: var(--card-background);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 
   th {
     background: var(--table-header-background);
     color: var(--text-primary);
-    font-weight: 600;
-    padding: 16px;
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-4);
+    text-align: left;
   }
 
   td {
-    padding: 16px;
+    padding: var(--spacing-4);
     color: var(--text-primary);
-    border-bottom: 1px solid var(--table-border);
+    border-bottom: var(--border-width-thin) solid var(--table-border);
   }
 
   tr:hover {
@@ -154,42 +177,56 @@
 }
 
 .status-success {
-  background: var(--color-success-100);
+  background: var(--color-success-50);
   color: var(--status-success);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .status-warning {
-  background: var(--color-warning-100);
+  background: var(--color-warning-50);
   color: var(--status-warning);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .status-error {
-  background: var(--color-error-100);
+  background: var(--color-error-50);
   color: var(--status-error);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .no-data {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px;
+  padding: var(--spacing-16);
   color: var(--text-tertiary);
 
   mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-md);
   }
 }
 
 @media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .balance-grid {
-    grid-template-columns: 1fr;
+  .leave-management {
+    padding: var(--spacing-4);
   }
 
   .form-actions {

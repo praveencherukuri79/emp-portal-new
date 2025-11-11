@@ -11,6 +11,7 @@ import {
 } from '../models/document.model';
 
 interface ApiResponse<T> {
+  status: string;
   data: T;
   message?: string;
 }

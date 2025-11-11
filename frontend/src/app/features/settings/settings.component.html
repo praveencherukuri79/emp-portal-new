@@ -1,0 +1,118 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <h1>Settings</h1>
+    <p class="subtitle">Manage your preferences and account settings</p>
+  </div>
+
+  <div class="settings-content">
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+      <!-- Appearance Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-header-icon">
+              <mat-icon>palette</mat-icon>
+            </div>
+            <div>
+              <mat-card-title>Appearance</mat-card-title>
+              <mat-card-subtitle>Customize the look and feel</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Theme</mat-label>
+            <mat-select formControlName="theme">
+              <mat-option value="light">
+                <mat-icon>light_mode</mat-icon>
+                Light
+              </mat-option>
+              <mat-option value="dark">
+                <mat-icon>dark_mode</mat-icon>
+                Dark
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>palette</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notification Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-header-icon">
+              <mat-icon>notifications</mat-icon>
+            </div>
+            <div>
+              <mat-card-title>Notifications</mat-card-title>
+              <mat-card-subtitle>Manage your notification preferences</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Push Notifications</div>
+              <div class="setting-description">Receive notifications in the browser</div>
+            </div>
+            <mat-slide-toggle formControlName="notifications"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Email Notifications</div>
+              <div class="setting-description">Receive notifications via email</div>
+            </div>
+            <mat-slide-toggle formControlName="emailNotifications"></mat-slide-toggle>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Language Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-header-icon">
+              <mat-icon>language</mat-icon>
+            </div>
+            <div>
+              <mat-card-title>Language</mat-card-title>
+              <mat-card-subtitle>Choose your preferred language</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Language</mat-label>
+            <mat-select formControlName="language">
+              <mat-option value="en">English</mat-option>
+              <mat-option value="es">Spanish</mat-option>
+              <mat-option value="fr">French</mat-option>
+            </mat-select>
+            <mat-icon matPrefix>language</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Save Button -->
+      <div class="settings-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <ng-container>
+              <mat-icon>save</mat-icon>
+              <span>Save Settings</span>
+            </ng-container>
+          }
+        </button>
+        <button mat-stroked-button type="button" (click)="initForm()">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

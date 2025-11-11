@@ -1,8 +1,16 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '../../../core/services/auth.service';
+import { DashboardService } from '../../../services/dashboard.service';
 import { User } from '../../../core/models/user.model';
+import { StatsCardComponent, StatsCardData } from '../../../shared/components/stats-card/stats-card.component';
 
 interface SystemHealth {
   cpu: number;
@@ -22,7 +30,17 @@ interface ActivityLog {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    MatProgressSpinnerModule, 
+    MatButtonModule, 
+    MatIconModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatChipsModule,
+    StatsCardComponent
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -35,6 +53,8 @@ export class AdminDashboardComponent implements OnInit {
     status: 'healthy'
   });
   activityLogs = signal<ActivityLog[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
   
   stats = signal({
     totalUsers: 0,
@@ -43,7 +63,12 @@ export class AdminDashboardComponent implements OnInit {
     systemUptime: ''
   });
 
-  constructor(private authService: AuthService) {}
+  statsCards = signal<StatsCardData[]>([]);
+
+  constructor(
+    private authService: AuthService,
+    private dashboardService: DashboardService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser.set(this.authService.currentUser());
@@ -51,19 +76,76 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    // TODO: Load actual data from API
-    this.stats.set({
-      totalUsers: 178,
-      activeUsers: 156,
-      departments: 8,
-      systemUptime: '99.9%'
-    });
+    this.loading.set(true);
+    this.error.set(null);
 
-    this.systemHealth.set({
-      cpu: 45,
-      memory: 62,
-      storage: 73,
-      status: 'healthy'
+    this.dashboardService.getDashboard().subscribe({
+      next: (response: any) => {
+        if (response.status === 'success' && response.data) {
+          const data = response.data;
+          
+          this.stats.set({
+            totalUsers: data.totalUsers || 0,
+            activeUsers: data.activeUsers || 0,
+            departments: data.departments || 0,
+            systemUptime: data.systemUptime || 'N/A'
+          });
+
+          // Create interactive stats cards
+          this.statsCards.set([
+            {
+              title: 'Total Users',
+              value: (data.totalUsers || 0).toString(),
+              icon: 'people',
+              color: 'primary',
+              route: '/admin/users',
+              clickable: true,
+              subtitle: 'all users'
+            },
+            {
+              title: 'Active Users',
+              value: (data.activeUsers || 0).toString(),
+              icon: 'person',
+              color: 'success',
+              route: '/admin/users',
+              clickable: true,
+              subtitle: 'currently active'
+            },
+            {
+              title: 'Departments',
+              value: (data.departments || 0).toString(),
+              icon: 'business',
+              color: 'info',
+              route: '/admin/settings',
+              clickable: true,
+              subtitle: 'total departments'
+            },
+            {
+              title: 'System Uptime',
+              value: data.systemUptime || 'N/A',
+              icon: 'dns',
+              color: 'warning',
+              route: '/admin/settings',
+              clickable: true,
+              subtitle: 'system status'
+            }
+          ]);
+
+          if (data.systemHealth) {
+            this.systemHealth.set(data.systemHealth);
+          }
+
+          if (data.activityLogs) {
+            this.activityLogs.set(data.activityLogs);
+          }
+        }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Dashboard load error:', err);
+        this.error.set('Failed to load dashboard data. Please try again.');
+        this.loading.set(false);
+      }
     });
   }
 

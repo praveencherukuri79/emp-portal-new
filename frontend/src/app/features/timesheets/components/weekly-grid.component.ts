@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -10,8 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TimesheetService } from '../../../core/services/timesheet.service';
+import { UINotificationService } from '../../../core/services/notification.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { TimesheetEntry, TimesheetStatus, Project } from '../../../core/models/timesheet.model';
 import dayjs from 'dayjs';
@@ -69,11 +70,12 @@ export class WeeklyGridComponent implements OnInit {
     return this.projects().filter(p => !addedProjectIds.includes(p._id) && p.isActive);
   });
 
+  private uiNotification = inject(UINotificationService);
+
   constructor(
     private timesheetService: TimesheetService,
     private router: Router,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -124,8 +126,8 @@ export class WeeklyGridComponent implements OnInit {
   loadProjects() {
     this.timesheetService.getProjects().subscribe({
       next: (response) => {
-        if (response && response.data) {
-          const activeProjects = response.data.filter(p => p.isActive);
+        if (response.status === 'success' && response.data) {
+          const activeProjects = response.data.filter((p: any) => p.isActive);
           this.projects.set(activeProjects);
         } else {
           this.projects.set([]);
@@ -150,12 +152,17 @@ export class WeeklyGridComponent implements OnInit {
 
     this.timesheetService.getWeeklyEntries(start, end).subscribe({
       next: (response) => {
-        // Backend returns entries directly in response.data, not response.data.entries
-        const weekData = response.data;
-        this.weekStatus.set(weekData.status || TimesheetStatus.DRAFT);
-        
-        // Entries are in weekData.entries
-        this.convertEntriesToGrid(weekData.entries || []);
+        if (response.status === 'success' && response.data) {
+          // Backend returns entries directly in response.data, not response.data.entries
+          const weekData = response.data;
+          this.weekStatus.set(weekData.status || TimesheetStatus.DRAFT);
+          
+          // Entries are in weekData.entries
+          this.convertEntriesToGrid(weekData.entries || []);
+        } else {
+          this.weekStatus.set(TimesheetStatus.DRAFT);
+          this.projectEntries.set([]);
+        }
         this.loading.set(false);
       },
       error: (error) => {
@@ -286,10 +293,16 @@ export class WeeklyGridComponent implements OnInit {
     this.showSuccess(`"${projectName}" added to timesheet`);
   }
 
-  removeProject(projectId: string) {
-    if (!confirm('Remove this project from the timesheet? All hours will be lost.')) {
-      return;
-    }
+  async removeProject(projectId: string) {
+    const confirmed = await this.uiNotification.confirm({
+      title: 'Remove Project',
+      message: 'Remove this project from the timesheet? All hours will be lost.',
+      confirmText: 'Remove',
+      cancelText: 'Keep',
+      confirmColor: 'warn'
+    });
+
+    if (!confirmed) return;
     
     this.projectEntries.update(entries => 
       entries.filter(e => e.projectId !== projectId)
@@ -345,15 +358,21 @@ export class WeeklyGridComponent implements OnInit {
     this.saveAllEntries(TimesheetStatus.DRAFT);
   }
 
-  submitWeek() {
+  async submitWeek() {
     if (this.projectEntries().length === 0 || this.getTotalWeekHours() === 0) {
       this.showError('Please add hours before submitting');
       return;
     }
 
-    if (!confirm('Submit this week for approval? You won\'t be able to edit it after submission.')) {
-      return;
-    }
+    const confirmed = await this.uiNotification.confirm({
+      title: 'Submit Timesheet',
+      message: 'Submit this week for approval? You won\'t be able to edit it after submission.',
+      confirmText: 'Submit',
+      cancelText: 'Cancel',
+      confirmColor: 'primary'
+    });
+
+    if (!confirmed) return;
 
     this.loading.set(true);
     this.saveAllEntries(TimesheetStatus.SUBMITTED);
@@ -373,10 +392,12 @@ export class WeeklyGridComponent implements OnInit {
           const day = this.weekDays()[dayIndex];
           entries.push({
             date: this.timesheetService.formatDate(day),
-            projectId: projectEntry.projectId,  // Frontend uses projectId
+            project: projectEntry.projectId,  // Backend expects 'project' field (handles projectId too)
+            projectId: projectEntry.projectId,  // Also send projectId for compatibility
             hours: hours,
             description: projectEntry.description,
-            billable: projectEntry.billable
+            billable: projectEntry.billable,
+            isBillable: projectEntry.billable  // Backend expects isBillable
           });
         }
       });
@@ -390,28 +411,38 @@ export class WeeklyGridComponent implements OnInit {
 
     // First, create/update all entries as DRAFT
     this.timesheetService.batchCreateEntries(entries).subscribe({
-      next: () => {
-        if (status === TimesheetStatus.SUBMITTED) {
-          // Then submit the week (changes DRAFT to SUBMITTED)
-          const weekStartDate = this.timesheetService.formatDate(this.weekStart());
-          this.timesheetService.submitWeek({ 
-            weekStart: weekStartDate,
-            weekEnd: this.timesheetService.formatDate(this.weekEnd()),
-            entryIds: []
-          }).subscribe({
-            next: () => {
-              this.showSuccess('Timesheet submitted successfully!');
-              this.loadWeekEntries();
-            },
-            error: (error) => {
-              console.error('Failed to submit week:', error);
-              this.showError('Failed to submit timesheet');
-              this.loading.set(false);
-            }
-          });
+      next: (response) => {
+        if (response.status === 'success') {
+          if (status === TimesheetStatus.SUBMITTED) {
+            // Then submit the week (changes DRAFT to SUBMITTED)
+            const weekStartDate = this.timesheetService.formatDate(this.weekStart());
+            this.timesheetService.submitWeek({ 
+              weekStart: weekStartDate,
+              weekEnd: this.timesheetService.formatDate(this.weekEnd()),
+              entryIds: []
+            }).subscribe({
+              next: (submitResponse) => {
+                if (submitResponse.status === 'success') {
+                  this.showSuccess('Timesheet submitted successfully!');
+                  this.loadWeekEntries();
+                } else {
+                  this.showError('Failed to submit timesheet');
+                  this.loading.set(false);
+                }
+              },
+              error: (error) => {
+                console.error('Failed to submit week:', error);
+                this.showError('Failed to submit timesheet');
+                this.loading.set(false);
+              }
+            });
+          } else {
+            this.showSuccess('Timesheet saved as draft');
+            this.loadWeekEntries();
+          }
         } else {
-          this.showSuccess('Timesheet saved as draft');
-          this.loadWeekEntries();
+          this.showError('Failed to save timesheet entries');
+          this.loading.set(false);
         }
       },
       error: (error) => {
@@ -423,20 +454,10 @@ export class WeeklyGridComponent implements OnInit {
   }
 
   private showSuccess(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['success-snackbar']
-    });
+    this.uiNotification.showSuccess(message);
   }
 
   private showError(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar']
-    });
+    this.uiNotification.showError(message);
   }
 }

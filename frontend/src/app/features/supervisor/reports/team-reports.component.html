@@ -1,0 +1,40 @@
+<div class="team-reports">
+  <div class="page-header">
+    <div>
+      <h1>Team Reports</h1>
+      <p class="subtitle">View and analyze team performance reports</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportReport('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Export PDF
+      </button>
+      <button mat-stroked-button (click)="exportReport('excel')">
+        <mat-icon>table_chart</mat-icon>
+        Export Excel
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading reports...</p>
+    </div>
+  } @else {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>assessment</mat-icon>
+          Team Performance Report
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="reports-content">
+          <p>Team reports will be displayed here</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+

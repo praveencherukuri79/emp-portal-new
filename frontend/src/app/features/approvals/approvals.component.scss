@@ -1,131 +1,177 @@
+@import '../../../styles/mixins/components.scss';
+
 .approvals-container {
-  padding: 24px;
-  max-width: 1400px;
+  padding: var(--spacing-6);
+  max-width: var(--container-max-width);
   margin: 0 auto;
 
-  .header-card {
-    margin-bottom: 24px;
-    background: var(--card-background);
+  .page-header {
+    margin-bottom: var(--spacing-6);
 
-    mat-card-title {
+    h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
       color: var(--text-primary);
-      font-size: 24px;
-      font-weight: 500;
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: var(--font-size-lg);
+      margin: 0;
     }
   }
 
   .approvals-tabs {
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    ::ng-deep .mat-mdc-tab-body-content {
+      padding: var(--spacing-4) 0;
+    }
   }
 
   .tab-content {
-    padding: 24px;
+    min-height: 400px;
   }
 
   .approvals-card {
-    .loading-container {
-      display: flex;
-      justify-content: center;
-      padding: 40px;
-    }
+    @include card;
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 20px;
-      color: var(--text-secondary);
+    mat-card-header {
+      margin-bottom: var(--spacing-4);
 
-      mat-icon {
-        font-size: 64px;
-        width: 64px;
-        height: 64px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-        color: var(--status-success);
-      }
-
-      p {
-        font-size: 16px;
-        margin: 0;
-      }
-    }
-
-    .approvals-table {
-      width: 100%;
-
-      mat-chip {
-        font-size: 12px;
-      }
-
-      .status-success {
-        background-color: var(--status-success);
-        color: white;
-      }
-
-      .status-warning {
-        background-color: var(--status-warning);
-        color: white;
-      }
-
-      .status-error {
-        background-color: var(--status-error);
-        color: white;
-      }
-
-      .status-neutral {
-        background-color: var(--surface-background);
-        color: var(--text-secondary);
-      }
-
-      .action-buttons {
+      mat-card-title {
         display: flex;
-        gap: 8px;
+        align-items: center;
+        gap: var(--spacing-3);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
 
-        button {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 14px;
-          padding: 6px 16px;
-
-          mat-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
-          }
+        mat-icon {
+          color: var(--action-primary);
         }
       }
     }
   }
-}
 
-// Responsive Design
-@media (max-width: 768px) {
-  .approvals-container {
-    padding: 16px;
+  .table-container {
+    overflow-x: auto;
+  }
 
-    .approvals-table {
-      font-size: 12px;
+  .approvals-table {
+    width: 100%;
+    background: transparent;
 
-      th,
-      td {
-        padding: 8px 4px;
+    th {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      background: var(--background-tertiary);
+      padding: var(--spacing-4);
+      border-bottom: var(--border-width-medium) solid var(--border-primary);
+    }
+
+    td {
+      color: var(--text-secondary);
+      padding: var(--spacing-4);
+      border-bottom: var(--border-width-thin) solid var(--border-primary);
+    }
+
+    .table-row {
+      transition: background-color var(--transition-fast);
+
+      &:hover {
+        background: var(--table-row-hover);
       }
+    }
 
-      .action-buttons {
-        flex-direction: column;
-        gap: 4px;
+    .employee-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
 
-        button {
-          width: 100%;
-          font-size: 12px;
-          padding: 4px 12px;
-        }
+      .employee-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, var(--action-primary), var(--color-primary-600));
+        color: var(--text-inverse);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-sm);
       }
+    }
+
+    .hours-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      color: var(--text-primary);
+      font-weight: var(--font-weight-medium);
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--action-primary);
+      }
+    }
+
+    .reason-text {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: var(--spacing-2);
+    }
+  }
+
+  .loading-container,
+  .error-container,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16);
+    gap: var(--spacing-4);
+    text-align: center;
+
+    p {
+      color: var(--text-secondary);
+    }
+  }
+
+  .error-container {
+    mat-icon {
+      font-size: var(--font-size-5xl);
+      width: var(--font-size-5xl);
+      height: var(--font-size-5xl);
+      color: var(--status-error);
+      margin-bottom: var(--spacing-4);
+    }
+  }
+
+  .empty-state {
+    mat-icon {
+      font-size: var(--font-size-5xl);
+      width: var(--font-size-5xl);
+      height: var(--font-size-5xl);
+      color: var(--text-tertiary);
+      opacity: 0.5;
+      margin-bottom: var(--spacing-4);
+    }
+
+    h3 {
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-2) 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
     }
   }
 }

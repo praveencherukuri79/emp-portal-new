@@ -1,6 +1,6 @@
 .timesheet-container {
   padding: var(--spacing-6);
-  max-width: 1800px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   animation: fadeIn 0.3s ease-out;
 }
@@ -13,9 +13,9 @@
   margin-bottom: var(--spacing-6);
   padding: var(--spacing-5);
   background: linear-gradient(135deg, var(--card-background) 0%, var(--background-elevated) 100%);
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: var(--border-width-thin) solid var(--border-secondary);
   
   &__controls {
     display: flex;
@@ -34,7 +34,7 @@
       font-size: var(--font-size-2xl);
       font-weight: 700;
       color: var(--text-primary);
-      letter-spacing: -0.5px;
+      letter-spacing: var(--letter-spacing-tight);
     }
   }
   
@@ -55,9 +55,9 @@
   &__card {
     padding: var(--spacing-5);
     background: var(--card-background);
-    border-radius: 12px;
-    border: 1px solid var(--border-secondary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-lg);
+    border: var(--border-width-thin) solid var(--border-secondary);
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -68,13 +68,13 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
+      height: var(--spacing-1);
       background: linear-gradient(90deg, var(--action-primary), var(--color-accent-500));
     }
     
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
     
     &__label {
@@ -83,12 +83,12 @@
       margin-bottom: var(--spacing-2);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: var(--letter-spacing-wide);
     }
     
     &__value {
-      font-size: 2.5rem;
-      font-weight: 800;
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
       color: var(--text-primary);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       
@@ -106,10 +106,10 @@
 /* Weekly Time Entry Grid */
 .time-entry-grid {
   background: var(--card-background);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: var(--spacing-5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-secondary);
+  box-shadow: var(--shadow-md);
+  border: var(--border-width-thin) solid var(--border-secondary);
   margin-bottom: var(--spacing-6);
   
   &__header {
@@ -118,7 +118,7 @@
     align-items: center;
     margin-bottom: var(--spacing-5);
     padding-bottom: var(--spacing-4);
-    border-bottom: 2px solid var(--border-primary);
+    border-bottom: var(--border-width-medium) solid var(--border-primary);
     
     h3 {
       margin: 0;
@@ -151,15 +151,15 @@
           font-size: var(--font-size-sm);
           color: var(--text-secondary);
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          border-bottom: 2px solid var(--border-primary);
+          letter-spacing: var(--letter-spacing-wide);
+          border-bottom: var(--border-width-medium) solid var(--border-primary);
           
           &:first-child {
-            border-top-left-radius: 8px;
+            border-top-left-radius: var(--radius-md);
           }
           
           &:last-child {
-            border-top-right-radius: 8px;
+            border-top-right-radius: var(--radius-md);
           }
         }
       }
@@ -178,7 +178,7 @@
           font-weight: 700;
           
           td {
-            border-top: 2px solid var(--border-primary);
+            border-top: var(--border-width-medium) solid var(--border-primary);
             padding: var(--spacing-4);
             font-size: var(--font-size-lg);
           }
@@ -186,7 +186,7 @@
         
         td {
           padding: var(--spacing-4);
-          border-bottom: 1px solid var(--border-secondary);
+          border-bottom: var(--border-width-thin) solid var(--border-secondary);
           color: var(--text-primary);
           
           &.project-cell {
@@ -201,8 +201,8 @@
             input {
               width: 60px;
               padding: var(--spacing-2);
-              border: 1px solid var(--border-primary);
-              border-radius: 6px;
+              border: var(--border-width-thin) solid var(--border-primary);
+              border-radius: var(--radius-sm);
               text-align: center;
               font-family: inherit;
               font-size: var(--font-size-md);
@@ -217,7 +217,7 @@
               &:focus {
                 outline: none;
                 border-color: var(--action-primary);
-                box-shadow: 0 0 0 3px rgba(var(--color-primary-500-rgb), 0.1);
+                box-shadow: 0 0 0 var(--spacing-1) color-mix(in srgb, var(--action-primary) 10%, transparent);
               }
               
               &:disabled {
@@ -250,7 +250,7 @@
 .add-project-section {
   margin-top: var(--spacing-5);
   padding-top: var(--spacing-5);
-  border-top: 1px dashed var(--border-primary);
+  border-top: var(--border-width-thin) dashed var(--border-primary);
   display: flex;
   gap: var(--spacing-4);
   align-items: flex-end;
@@ -258,11 +258,11 @@
   
   mat-form-field {
     flex: 1;
-    min-width: 200px;
+    min-width: 200px; /* Keep for responsive design */
   }
   
   span {
-    padding-bottom: 12px;
+    padding-bottom: var(--spacing-3);
     font-size: var(--font-size-sm);
     white-space: nowrap;
   }
@@ -276,9 +276,9 @@
   gap: var(--spacing-4);
   padding: var(--spacing-5);
   background: var(--card-background);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: var(--border-width-thin) solid var(--border-secondary);
   
   &__info {
     display: flex;
@@ -294,7 +294,7 @@
         font-size: var(--font-size-xs);
         color: var(--text-secondary);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: var(--letter-spacing-wide);
         font-weight: 600;
       }
       
@@ -315,29 +315,29 @@
 /* Status Badges */
 .status-badge {
   padding: var(--spacing-1) var(--spacing-3);
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+      letter-spacing: var(--letter-spacing-wide);
   
   &.draft {
-    background: rgba(var(--color-accent-500-rgb), 0.1);
+    background: color-mix(in srgb, var(--color-accent-500) 10%, transparent);
     color: var(--color-accent-500);
   }
   
   &.submitted {
-    background: rgba(var(--color-primary-500-rgb), 0.1);
+    background: color-mix(in srgb, var(--action-primary) 10%, transparent);
     color: var(--action-primary);
   }
   
   &.approved {
-    background: rgba(var(--color-success-500-rgb), 0.1);
+    background: color-mix(in srgb, var(--status-success) 10%, transparent);
     color: var(--status-success);
   }
   
   &.rejected {
-    background: rgba(var(--color-error-500-rgb), 0.1);
+    background: color-mix(in srgb, var(--status-error) 10%, transparent);
     color: var(--status-error);
   }
 }
@@ -348,9 +348,9 @@
   padding: var(--spacing-8) var(--spacing-4);
   
   mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
     color: var(--text-tertiary);
     margin-bottom: var(--spacing-4);
   }

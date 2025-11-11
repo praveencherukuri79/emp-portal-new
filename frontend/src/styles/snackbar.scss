@@ -1,0 +1,37 @@
+// Snackbar Styles
+.success-snackbar {
+  background-color: var(--color-success-500) !important;
+  color: var(--text-inverse) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: var(--text-inverse) !important;
+  }
+}
+
+.error-snackbar {
+  background-color: var(--color-error-500) !important;
+  color: var(--text-inverse) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: var(--text-inverse) !important;
+  }
+}
+
+.warning-snackbar {
+  background-color: var(--color-warning-500) !important;
+  color: var(--text-inverse) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: var(--text-inverse) !important;
+  }
+}
+
+.info-snackbar {
+  background-color: var(--color-info-500) !important;
+  color: var(--text-inverse) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: var(--text-inverse) !important;
+  }
+}
+

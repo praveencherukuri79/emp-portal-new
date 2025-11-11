@@ -1,0 +1,163 @@
+<div class="employee-dashboard">
+  <!-- Hero Header Section -->
+  <div class="dashboard-hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          <span class="greeting">Welcome back,</span>
+          <span class="name">{{ currentUser()?.firstName || 'Employee' }}!</span>
+        </h1>
+        <p class="hero-subtitle">Here's what's happening with your work today</p>
+      </div>
+      <div class="hero-illustration">
+        <div class="illustration-circle"></div>
+        <mat-icon class="hero-icon">dashboard</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading your dashboard...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadDashboardData()">
+        Retry
+      </button>
+    </div>
+  } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      @for (stat of statsCards(); track stat.title) {
+        <app-stats-card [data]="stat"></app-stats-card>
+      }
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Quick Actions -->
+      <mat-card class="quick-actions-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-header-icon">
+              <mat-icon>flash_on</mat-icon>
+            </div>
+            <div>
+              <mat-card-title>Quick Actions</mat-card-title>
+              <mat-card-subtitle>Get things done faster</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="quick-actions-grid">
+            <a class="action-card" routerLink="/employee/timesheets">
+              <div class="action-icon primary">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <div class="action-content">
+                <h3>Log Timesheet</h3>
+                <p>Record your work hours</p>
+              </div>
+              <mat-icon class="action-arrow">arrow_forward</mat-icon>
+            </a>
+            
+            <a class="action-card" routerLink="/employee/leaves">
+              <div class="action-icon success">
+                <mat-icon>event_available</mat-icon>
+              </div>
+              <div class="action-content">
+                <h3>Request Leave</h3>
+                <p>Submit a leave request</p>
+              </div>
+              <mat-icon class="action-arrow">arrow_forward</mat-icon>
+            </a>
+            
+            <a class="action-card" routerLink="/employee/documents">
+              <div class="action-icon info">
+                <mat-icon>upload_file</mat-icon>
+              </div>
+              <div class="action-content">
+                <h3>Upload Document</h3>
+                <p>Add new documents</p>
+              </div>
+              <mat-icon class="action-arrow">arrow_forward</mat-icon>
+            </a>
+            
+            <a class="action-card" routerLink="/employee/timesheets/history">
+              <div class="action-icon warning">
+                <mat-icon>history</mat-icon>
+              </div>
+              <div class="action-content">
+                <h3>View History</h3>
+                <p>Check past records</p>
+              </div>
+              <mat-icon class="action-arrow">arrow_forward</mat-icon>
+            </a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Activity -->
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-header-icon">
+              <mat-icon>timeline</mat-icon>
+            </div>
+            <div>
+              <mat-card-title>Recent Activity</mat-card-title>
+              <mat-card-subtitle>Your latest updates</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (recentActivity().length === 0) {
+            <div class="empty-state">
+              <div class="empty-illustration">
+                <div class="empty-circle"></div>
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <h3>No recent activity</h3>
+              <p>Your recent actions and updates will appear here</p>
+              <button mat-stroked-button color="primary" routerLink="/employee/timesheets">
+                <mat-icon>add</mat-icon>
+                Get Started
+              </button>
+            </div>
+          } @else {
+            <div class="activity-list">
+              @for (activity of recentActivity(); track activity.id) {
+                <div class="activity-item">
+                  <div class="activity-icon-wrapper">
+                    <div class="activity-icon" [class]="'type-' + activity.type">
+                      @switch (activity.type) {
+                        @case ('timesheet') { <mat-icon>schedule</mat-icon> }
+                        @case ('leave') { <mat-icon>event_available</mat-icon> }
+                        @case ('document') { <mat-icon>folder</mat-icon> }
+                        @default { <mat-icon>info</mat-icon> }
+                      }
+                    </div>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-title">{{ activity.title }}</div>
+                    <div class="activity-time">
+                      <mat-icon>schedule</mat-icon>
+                      {{ activity.timestamp | date:'short' }}
+                    </div>
+                  </div>
+                  <div class="activity-badge">
+                    <mat-icon>check_circle</mat-icon>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

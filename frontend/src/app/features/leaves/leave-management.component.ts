@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -14,6 +14,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LeaveService } from '../../core/services/leave.service';
+import { UINotificationService } from '../../core/services/notification.service';
 import { LeaveType, LeaveRequest, LeaveBalance, HalfDayPeriod } from '../../core/models/leave.model';
 import dayjs from 'dayjs';
 
@@ -50,6 +51,8 @@ export class LeaveManagementComponent implements OnInit {
   halfDayOptions = Object.values(HalfDayPeriod);
   displayedColumns = ['leaveType', 'dates', 'days', 'status', 'actions'];
 
+  private uiNotification = inject(UINotificationService);
+
   constructor(
     private fb: FormBuilder,
     private leaveService: LeaveService
@@ -74,26 +77,31 @@ export class LeaveManagementComponent implements OnInit {
   loadBalances() {
     this.leaveService.getMyBalances().subscribe({
       next: (response) => {
-        // Backend returns an object like { annual: {...}, sick: {...} }
-        // Convert to array format
-        const balanceArray: LeaveBalance[] = [];
-        const balanceData: any = response.data;
-        
-        Object.keys(balanceData).forEach(key => {
-          balanceArray.push({
-            userId: '',
-            tenantId: '',
-            leaveType: key as LeaveType,
-            totalDays: balanceData[key].total,
-            usedDays: balanceData[key].used,
-            remainingDays: balanceData[key].remaining,
-            year: dayjs().year()
+        if (response.status === 'success' && response.data) {
+          // Backend returns an object like { annual: {...}, sick: {...} }
+          // Convert to array format
+          const balanceArray: LeaveBalance[] = [];
+          const balanceData: any = response.data;
+          
+          Object.keys(balanceData).forEach(key => {
+            balanceArray.push({
+              userId: '',
+              tenantId: '',
+              leaveType: key as LeaveType,
+              totalDays: balanceData[key].total,
+              usedDays: balanceData[key].used,
+              remainingDays: balanceData[key].remaining,
+              year: dayjs().year()
+            });
           });
-        });
-        
-        this.balances.set(balanceArray);
+          
+          this.balances.set(balanceArray);
+        }
       },
-      error: () => console.error('Failed to load balances')
+      error: (err) => {
+        console.error('Failed to load balances:', err);
+        this.balances.set([]);
+      }
     });
   }
 
@@ -101,10 +109,18 @@ export class LeaveManagementComponent implements OnInit {
     this.loading.set(true);
     this.leaveService.getMyLeaves().subscribe({
       next: (response) => {
-        this.leaves.set(response.data);
+        if (response.status === 'success' && response.data) {
+          this.leaves.set(response.data);
+        } else {
+          this.leaves.set([]);
+        }
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: (err) => {
+        console.error('Failed to load leaves:', err);
+        this.leaves.set([]);
+        this.loading.set(false);
+      }
     });
   }
 
@@ -122,22 +138,48 @@ export class LeaveManagementComponent implements OnInit {
       halfDayPeriod: formValue.halfDay !== HalfDayPeriod.FULL_DAY ? formValue.halfDay : undefined,
       reason: formValue.reason
     }).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.leaveForm.reset({ halfDay: HalfDayPeriod.FULL_DAY });
-        this.loadBalances();
-        this.loadLeaves();
+      next: (response) => {
+        if (response.status === 'success') {
+          this.submitting.set(false);
+          this.leaveForm.reset({ halfDay: HalfDayPeriod.FULL_DAY });
+          this.loadBalances();
+          this.loadLeaves();
+          this.uiNotification.showSuccess('Leave request submitted successfully!');
+        } else {
+          this.submitting.set(false);
+          this.uiNotification.showError('Failed to submit leave request. Please try again.');
+        }
       },
-      error: () => this.submitting.set(false)
+      error: (err) => {
+        console.error('Failed to create leave request:', err);
+        this.submitting.set(false);
+        this.uiNotification.showError('Failed to submit leave request. Please try again.');
+      }
     });
   }
 
-  cancelLeave(leave: LeaveRequest) {
+  async cancelLeave(leave: LeaveRequest) {
     if (!leave._id || leave.status !== 'pending') return;
 
+    const confirmed = await this.uiNotification.confirm({
+      title: 'Cancel Leave Request',
+      message: 'Are you sure you want to cancel this leave request?',
+      confirmText: 'Cancel Leave',
+      cancelText: 'Keep Request',
+      confirmColor: 'warn'
+    });
+
+    if (!confirmed) return;
+
     this.leaveService.cancelLeave(leave._id).subscribe({
-      next: () => this.loadLeaves(),
-      error: () => console.error('Failed to cancel leave')
+      next: () => {
+        this.loadLeaves();
+        this.loadBalances();
+        this.uiNotification.showSuccess('Leave request cancelled successfully');
+      },
+      error: () => {
+        this.uiNotification.showError('Failed to cancel leave request');
+      }
     });
   }
 

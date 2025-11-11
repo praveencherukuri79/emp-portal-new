@@ -21,51 +21,51 @@ export class LeaveService {
   /**
    * Get all leave requests for current user
    */
-  getMyLeaves(): Observable<{ data: LeaveRequest[] }> {
-    return this.http.get<{ data: LeaveRequest[] }>(`${this.API_URL}/my-requests`);
+  getMyLeaves(): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
+    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(`${this.API_URL}/my-requests`);
   }
 
   /**
    * Get leave balances for current user
    */
-  getMyBalances(): Observable<{ data: LeaveBalance[] }> {
-    return this.http.get<{ data: LeaveBalance[] }>(`${this.API_URL}/my-balance`);
+  getMyBalances(): Observable<{ status: string; data: any; message?: string }> {
+    return this.http.get<{ status: string; data: any; message?: string }>(`${this.API_URL}/my-balance`);
   }
 
   /**
    * Create a new leave request
    */
-  createLeaveRequest(request: CreateLeaveRequest): Observable<{ data: LeaveRequest }> {
-    return this.http.post<{ data: LeaveRequest }>(this.API_URL, request);
+  createLeaveRequest(request: CreateLeaveRequest): Observable<{ status: string; data: LeaveRequest; message?: string }> {
+    return this.http.post<{ status: string; data: LeaveRequest; message?: string }>(this.API_URL, request);
   }
 
   /**
    * Cancel a pending leave request
    */
-  cancelLeave(leaveId: string): Observable<void> {
-    return this.http.put<void>(`${this.API_URL}/${leaveId}/cancel`, {});
+  cancelLeave(leaveId: string): Observable<{ status: string; message?: string }> {
+    return this.http.put<{ status: string; message?: string }>(`${this.API_URL}/${leaveId}/cancel`, {});
   }
 
   /**
    * Get pending leave requests for approval (Supervisor/HR/Admin)
    */
-  getPendingApprovals(): Observable<{ data: LeaveRequest[] }> {
-    return this.http.get<{ data: LeaveRequest[] }>(`${this.API_URL}/approvals/pending`);
+  getPendingApprovals(): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
+    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(`${this.API_URL}/approvals/pending`);
   }
 
   /**
    * Approve or reject a leave request (Supervisor/HR/Admin)
    */
-  approveRejectLeave(request: ApproveRejectLeaveRequest): Observable<{ data: LeaveRequest }> {
+  approveRejectLeave(request: ApproveRejectLeaveRequest): Observable<{ status: string; data: LeaveRequest; message?: string }> {
     const { leaveId, action, reason } = request;
-    return this.http.put<{ data: LeaveRequest }>(`${this.API_URL}/${leaveId}/${action}`, { reason });
+    return this.http.put<{ status: string; data: LeaveRequest; message?: string }>(`${this.API_URL}/${leaveId}/${action}`, { reason });
   }
 
   /**
    * Get all leaves for calendar view
    */
-  getCalendarLeaves(startDate: string, endDate: string): Observable<{ data: LeaveRequest[] }> {
-    return this.http.get<{ data: LeaveRequest[] }>(
+  getCalendarLeaves(startDate: string, endDate: string): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
+    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(
       `${this.API_URL}/calendar?start=${startDate}&end=${endDate}`
     );
   }

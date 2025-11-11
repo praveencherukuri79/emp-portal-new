@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DocumentService } from '../../core/services/document.service';
+import { UINotificationService } from '../../core/services/notification.service';
 import { Document, DocumentCategory } from '../../core/models/document.model';
 
 @Component({
@@ -37,6 +38,7 @@ import { Document, DocumentCategory } from '../../core/models/document.model';
 export class DocumentsComponent implements OnInit {
   private documentService = inject(DocumentService);
   private fb = inject(FormBuilder);
+  private uiNotification = inject(UINotificationService);
 
   // Signals for reactive state
   documents = signal<Document[]>([]);
@@ -73,18 +75,25 @@ export class DocumentsComponent implements OnInit {
     this.loading.set(true);
     this.documentService.getMyDocuments().subscribe({
       next: (response) => {
-        this.documents.set(response.data);
-        // Filter expiring documents (within 30 days) from loaded documents
-        const expiringDocs = response.data.filter(doc => {
-          if (!doc.expiryDate) return false;
-          const daysRemaining = this.getDaysRemaining(doc.expiryDate as string);
-          return daysRemaining >= 0 && daysRemaining <= 30;
-        });
-        this.expiringDocuments.set(expiringDocs);
+        if (response.status === 'success' && response.data) {
+          this.documents.set(response.data);
+          // Filter expiring documents (within 30 days) from loaded documents
+          const expiringDocs = response.data.filter((doc: Document) => {
+            if (!doc.expiryDate) return false;
+            const daysRemaining = this.getDaysRemaining(doc.expiryDate as string);
+            return daysRemaining >= 0 && daysRemaining <= 30;
+          });
+          this.expiringDocuments.set(expiringDocs);
+        } else {
+          this.documents.set([]);
+          this.expiringDocuments.set([]);
+        }
         this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading documents:', error);
+        this.documents.set([]);
+        this.expiringDocuments.set([]);
         this.loading.set(false);
       }
     });
@@ -112,11 +121,16 @@ export class DocumentsComponent implements OnInit {
     };
 
     this.documentService.uploadDocument(uploadRequest).subscribe({
-      next: () => {
-        this.uploading.set(false);
-        this.uploadForm.reset();
-        this.selectedFile = null;
-        this.loadDocuments(); // This will also update expiring documents
+      next: (response) => {
+        if (response.status === 'success') {
+          this.uploading.set(false);
+          this.uploadForm.reset();
+          this.selectedFile = null;
+          this.loadDocuments(); // This will also update expiring documents
+        } else {
+          this.uploading.set(false);
+          console.error('Document upload failed:', response);
+        }
       },
       error: (error) => {
         console.error('Error uploading document:', error);
@@ -143,17 +157,27 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  deleteDocument(docId: string): void {
-    if (confirm('Are you sure you want to delete this document?')) {
-      this.documentService.deleteDocument(docId).subscribe({
-        next: () => {
-          this.loadDocuments(); // This will also update expiring documents
-        },
-        error: (error) => {
-          console.error('Error deleting document:', error);
-        }
-      });
-    }
+  async deleteDocument(docId: string): Promise<void> {
+    const confirmed = await this.uiNotification.confirm({
+      title: 'Delete Document',
+      message: 'Are you sure you want to delete this document?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      confirmColor: 'warn'
+    });
+
+    if (!confirmed) return;
+
+    this.documentService.deleteDocument(docId).subscribe({
+      next: () => {
+        this.loadDocuments(); // This will also update expiring documents
+        this.uiNotification.showSuccess('Document deleted successfully');
+      },
+      error: (error) => {
+        console.error('Error deleting document:', error);
+        this.uiNotification.showError('Failed to delete document');
+      }
+    });
   }
 
   getDaysRemaining(expiryDate: string): number {

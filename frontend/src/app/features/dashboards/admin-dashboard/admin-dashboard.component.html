@@ -4,68 +4,54 @@
     <p class="subtitle">System administration and management</p>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card users">
-      <div class="stat-icon">
-        <i class="fas fa-users-cog"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().totalUsers }}</h3>
-        <p>Total Users</p>
-      </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading dashboard...</p>
     </div>
-
-    <div class="stat-card active">
-      <div class="stat-icon">
-        <i class="fas fa-user-check"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().activeUsers }}</h3>
-        <p>Active Users</p>
-      </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadDashboardData()">
+        Retry
+      </button>
     </div>
-
-    <div class="stat-card departments">
-      <div class="stat-icon">
-        <i class="fas fa-sitemap"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().departments }}</h3>
-        <p>Departments</p>
-      </div>
+  } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      @for (stat of statsCards(); track stat.title) {
+        <app-stats-card [data]="stat"></app-stats-card>
+      }
     </div>
-
-    <div class="stat-card uptime">
-      <div class="stat-icon">
-        <i class="fas fa-server"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ stats().systemUptime }}</h3>
-        <p>System Uptime</p>
-      </div>
-    </div>
-  </div>
+  }
 
   <div class="dashboard-content">
     <!-- System Health -->
-    <div class="content-card health-card">
-      <div class="card-header">
-        <h2><i class="fas fa-heartbeat"></i> System Health</h2>
-        <span class="health-badge" [class]="getHealthStatus()">
-          {{ getHealthStatus() | uppercase }}
-        </span>
-      </div>
-      <div class="card-body">
+    <mat-card class="clickable" [routerLink]="'/admin/settings'">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>monitor_heart</mat-icon>
+          System Health
+        </mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [class]="'health-' + getHealthStatus()">
+            {{ getHealthStatus() | uppercase }}
+          </mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <div class="health-metrics">
           <div class="metric">
             <div class="metric-header">
               <span class="metric-label">CPU Usage</span>
               <span class="metric-value">{{ systemHealth().cpu }}%</span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill cpu" [style.width.%]="systemHealth().cpu"></div>
-            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="systemHealth().cpu"
+              [color]="systemHealth().cpu > 75 ? 'warn' : 'primary'">
+            </mat-progress-bar>
           </div>
 
           <div class="metric">
@@ -73,9 +59,11 @@
               <span class="metric-label">Memory Usage</span>
               <span class="metric-value">{{ systemHealth().memory }}%</span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill memory" [style.width.%]="systemHealth().memory"></div>
-            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="systemHealth().memory"
+              [color]="systemHealth().memory > 75 ? 'warn' : 'primary'">
+            </mat-progress-bar>
           </div>
 
           <div class="metric">
@@ -83,35 +71,42 @@
               <span class="metric-label">Storage Usage</span>
               <span class="metric-value">{{ systemHealth().storage }}%</span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill storage" [style.width.%]="systemHealth().storage"></div>
-            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="systemHealth().storage"
+              [color]="systemHealth().storage > 75 ? 'warn' : 'primary'">
+            </mat-progress-bar>
           </div>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
 
     <!-- Activity Log -->
-    <div class="content-card activity-card">
-      <div class="card-header">
-        <h2><i class="fas fa-history"></i> Recent Activity</h2>
-        <button class="btn btn-link" routerLink="/admin/activity-logs">View All</button>
-      </div>
-      <div class="card-body">
+    <mat-card class="clickable" [routerLink]="'/admin/users'">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          Recent Activity
+        </mat-card-title>
+        <mat-card-subtitle>
+          <button mat-button color="primary" routerLink="/admin/users">View All</button>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <div class="activity-list">
           @if (activityLogs().length === 0) {
             <div class="empty-state">
-              <i class="fas fa-clock"></i>
+              <mat-icon>schedule</mat-icon>
               <p>No recent activity</p>
             </div>
           } @else {
             @for (log of activityLogs(); track log.id) {
-              <div class="activity-item" [class]="log.type">
+              <div class="activity-item" [class]="'type-' + log.type">
                 <div class="activity-icon">
                   @switch (log.type) {
-                    @case ('info') { <i class="fas fa-info-circle"></i> }
-                    @case ('warning') { <i class="fas fa-exclamation-triangle"></i> }
-                    @case ('error') { <i class="fas fa-times-circle"></i> }
+                    @case ('info') { <mat-icon>info</mat-icon> }
+                    @case ('warning') { <mat-icon>warning</mat-icon> }
+                    @case ('error') { <mat-icon>error</mat-icon> }
                   }
                 </div>
                 <div class="activity-details">
@@ -123,65 +118,79 @@
             }
           }
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <!-- User Management -->
-  <div class="content-card full-width">
-    <div class="card-header">
-      <h2><i class="fas fa-users-cog"></i> User Management</h2>
-    </div>
-    <div class="card-body">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>admin_panel_settings</mat-icon>
+        User Management
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
       <div class="management-grid">
-        <button class="action-btn" routerLink="/admin/users">
-          <i class="fas fa-users"></i>
-          <span>Manage Users</span>
-          <small>Create, edit, and delete users</small>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/users">
+          <mat-icon>people</mat-icon>
+          <div class="action-content">
+            <span>Manage Users</span>
+            <small>Create, edit, and delete users</small>
+          </div>
         </button>
-        <button class="action-btn" routerLink="/admin/roles">
-          <i class="fas fa-user-shield"></i>
-          <span>Role Assignment</span>
-          <small>Assign and manage user roles</small>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/roles">
+          <mat-icon>shield</mat-icon>
+          <div class="action-content">
+            <span>Role Assignment</span>
+            <small>Assign and manage user roles</small>
+          </div>
         </button>
-        <button class="action-btn" routerLink="/admin/departments">
-          <i class="fas fa-sitemap"></i>
-          <span>Departments</span>
-          <small>Manage departments and teams</small>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/settings">
+          <mat-icon>business</mat-icon>
+          <div class="action-content">
+            <span>Departments</span>
+            <small>Manage departments and teams</small>
+          </div>
         </button>
-        <button class="action-btn" routerLink="/admin/settings">
-          <i class="fas fa-cog"></i>
-          <span>System Settings</span>
-          <small>Configure system preferences</small>
+        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/settings">
+          <mat-icon>settings</mat-icon>
+          <div class="action-content">
+            <span>System Settings</span>
+            <small>Configure system preferences</small>
+          </div>
         </button>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 
   <!-- Reports & Analytics -->
-  <div class="content-card full-width">
-    <div class="card-header">
-      <h2><i class="fas fa-chart-line"></i> Reports & Analytics</h2>
-    </div>
-    <div class="card-body">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assessment</mat-icon>
+        Reports & Analytics
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
       <div class="reports-grid">
-        <button class="report-btn" routerLink="/admin/reports/users">
-          <i class="fas fa-users"></i>
+        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
+          <mat-icon>people</mat-icon>
           <span>User Reports</span>
         </button>
-        <button class="report-btn" routerLink="/admin/reports/activity">
-          <i class="fas fa-chart-bar"></i>
+        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
+          <mat-icon>bar_chart</mat-icon>
           <span>Activity Reports</span>
         </button>
-        <button class="report-btn" routerLink="/admin/reports/system">
-          <i class="fas fa-server"></i>
+        <button mat-stroked-button class="report-btn" routerLink="/admin/settings">
+          <mat-icon>dns</mat-icon>
           <span>System Reports</span>
         </button>
-        <button class="report-btn" routerLink="/admin/reports/audit">
-          <i class="fas fa-clipboard-list"></i>
+        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
+          <mat-icon>description</mat-icon>
           <span>Audit Logs</span>
         </button>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

@@ -4,7 +4,7 @@
 @import './styles/tokens/typography.scss';
 @import './styles/tokens/breakpoints.scss';
 
-/* Import themes */
+/* Import themes (must be imported before mixins) */
 @import './styles/themes/light.scss';
 @import './styles/themes/dark.scss';
 
@@ -12,11 +12,14 @@
 @import './styles/mixins/layout.scss';
 @import './styles/mixins/components.scss';
 
-/* Angular Material theme */
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+/* Custom Angular Material theme (replaces indigo-pink) */
+@import './styles/material-theme.scss';
 
 /* Angular Material theme overrides using design tokens */
 @import './styles/material-override.scss';
+
+/* Snackbar styles */
+@import './styles/snackbar.scss';
 
 /* Global styles using design tokens - NO HARDCODED COLORS */
 * {
@@ -32,21 +35,15 @@ html, body {
   line-height: var(--line-height-normal);
   color: var(--text-primary);
   background-color: var(--background-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
   margin: 0;
 }
 
-/* Default to light theme */
-body {
-  @extend .theme-light;
-}
-
-/* Apply dark theme when body has .theme-dark class */
-body.theme-dark {
-  @extend .theme-dark;
-}
+/* Theme is applied via data-theme attribute on :root (handled by ThemeService) */
+/* Default theme is light (applied when no data-theme attribute) */
 
 /* Utility classes using tokens */
 .container {

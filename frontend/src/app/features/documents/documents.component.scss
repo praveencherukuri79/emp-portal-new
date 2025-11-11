@@ -1,30 +1,179 @@
-.documents-container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+@import '../../../styles/mixins/components.scss';
 
-  .header-card { margin-bottom: 24px; background: var(--card-background); }
-  mat-card-title { color: var(--text-primary); font-size: 24px; font-weight: 500; }
-  .documents-tabs { background: var(--card-background); border-radius: 8px; }
-  .tab-content { padding: 24px; }
-  .upload-card { max-width: 800px; margin: 0 auto; }
-  .upload-form { padding: 16px 0; }
-  .form-row { margin-bottom: 16px; }
-  .full-width { width: 100%; }
-  .file-upload-section { display: flex; gap: 16px; margin: 24px 0; padding: 20px; border: 2px dashed var(--border-color); }
-  .select-file-btn, button { display: flex; align-items: center; gap: 8px; }
-  .form-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
-  .loading-container, .empty-state { display: flex; justify-content: center; padding: 40px; }
-  .empty-state { flex-direction: column; align-items: center; color: var(--text-secondary); }
-  .documents-table, .expiry-table { width: 100%; }
-  .doc-name { display: flex; align-items: center; gap: 8px; }
-  .status-valid { background-color: var(--status-success); color: white; }
-  .status-warning { background-color: var(--status-warning); color: white; }
-  .status-expired { background-color: var(--status-error); color: white; }
-  .expired { color: var(--status-error); font-weight: 600; }
+.documents-container {
+  padding: var(--spacing-6);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+.header-card {
+  margin-bottom: var(--spacing-6);
+  @include card;
+  padding: var(--spacing-6) !important;
+
+  mat-card-title {
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.documents-tabs {
+  background: var(--card-background);
+  border-radius: var(--radius-lg);
+  @include shadow('md');
+}
+
+.tab-content {
+  padding: var(--spacing-6);
+}
+
+.upload-card {
+  max-width: 800px;
+  margin: 0 auto;
+  @include card;
+  padding: var(--spacing-6) !important;
+}
+
+.upload-form {
+  padding: var(--spacing-4) 0;
+}
+
+.form-row {
+  margin-bottom: var(--spacing-4);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.file-upload-section {
+  display: flex;
+  gap: var(--spacing-4);
+  margin: var(--spacing-6) 0;
+  padding: var(--spacing-5);
+  border: var(--border-width-medium) dashed var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--background-tertiary);
+  transition: all var(--transition-normal);
+
+  &:hover {
+    border-color: var(--action-primary);
+    background: var(--background-secondary);
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.select-file-btn,
+button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
+}
+
+.loading-container,
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-10);
+  min-height: 200px;
+}
+
+.empty-state {
+  flex-direction: column;
+  color: var(--text-secondary);
+
+  mat-icon {
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-md);
+  }
+}
+
+.documents-table,
+.expiry-table {
+  width: 100%;
+  background: var(--card-background);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+
+  th {
+    background: var(--table-header-background);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-4);
+  }
+
+  td {
+    padding: var(--spacing-4);
+    color: var(--text-primary);
+    border-bottom: var(--border-width-thin) solid var(--table-border);
+  }
+
+  tr:hover {
+    background: var(--table-row-hover);
+  }
+}
+
+.doc-name {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-valid {
+  background-color: var(--status-success);
+  color: var(--text-inverse);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.status-warning {
+  background-color: var(--status-warning);
+  color: var(--text-inverse);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.status-expired {
+  background-color: var(--status-error);
+  color: var(--text-inverse);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.expired {
+  color: var(--status-error);
+  font-weight: var(--font-weight-semibold);
 }
 
 @media (max-width: 768px) {
-  .documents-container { padding: 16px; }
-  .file-upload-section { flex-direction: column; }
+  .documents-container {
+    padding: var(--spacing-4);
+  }
 }

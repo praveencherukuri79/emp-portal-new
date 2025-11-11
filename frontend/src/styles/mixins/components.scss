@@ -97,3 +97,39 @@
     @include badge(var(--status-info));
   }
 }
+
+@mixin card {
+  background: var(--card-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  padding: var(--spacing-card-padding);
+  transition: all var(--transition-normal);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+@mixin shadow($level: 'md') {
+  @if $level == 'sm' {
+    box-shadow: var(--shadow-sm);
+  } @else if $level == 'md' {
+    box-shadow: var(--shadow-md);
+  } @else if $level == 'lg' {
+    box-shadow: var(--shadow-lg);
+  } @else if $level == 'xl' {
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+@mixin badge-variant($color-var, $bg-opacity: 0.1) {
+  background: color-mix(in srgb, $color-var $bg-opacity, transparent);
+  color: $color-var;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}

@@ -1,0 +1,85 @@
+<div class="analytics-page">
+  <div class="page-header">
+    <div>
+      <h1>Business Analytics</h1>
+      <p class="subtitle">Comprehensive business insights and metrics</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading analytics...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadAnalytics()">
+        Retry
+      </button>
+    </div>
+  } @else {
+    <mat-tab-group>
+      <mat-tab label="Productivity Metrics">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>trending_up</mat-icon>
+                Productivity Metrics
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Track team productivity and efficiency metrics</p>
+              <div class="metrics-placeholder">
+                <mat-icon>bar_chart</mat-icon>
+                <p>Productivity charts and metrics will be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Resource Utilization">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>pie_chart</mat-icon>
+                Resource Utilization
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Monitor resource allocation and utilization across projects</p>
+              <div class="metrics-placeholder">
+                <mat-icon>pie_chart</mat-icon>
+                <p>Resource utilization charts will be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Performance Trends">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>show_chart</mat-icon>
+                Performance Trends
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Analyze performance trends over time</p>
+              <div class="metrics-placeholder">
+                <mat-icon>show_chart</mat-icon>
+                <p>Performance trend charts will be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

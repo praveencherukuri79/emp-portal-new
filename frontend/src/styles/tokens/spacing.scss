@@ -59,4 +59,14 @@
   --z-index-modal: 1050;
   --z-index-popover: 1060;
   --z-index-tooltip: 1070;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Layout */
+  --header-height: 64px;
+  --header-height-mobile: 56px;
+  --container-max-width: 1440px;
 }

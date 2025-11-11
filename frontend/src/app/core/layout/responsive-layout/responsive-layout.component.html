@@ -1,0 +1,13 @@
+@if (isDesktop()) {
+  <div class="desktop-layout">
+    <app-topnav />
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+} @else {
+  <app-mobile-nav>
+    <router-outlet></router-outlet>
+  </app-mobile-nav>
+}
+

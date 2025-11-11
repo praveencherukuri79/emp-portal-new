@@ -1,0 +1,33 @@
+<div class="confirm-dialog">
+  <h2 mat-dialog-title>{{ data.title }}</h2>
+  
+  <mat-dialog-content>
+    <p>{{ data.message }}</p>
+    
+    @if (data.showInput) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ data.inputLabel || 'Reason' }}</mat-label>
+        <textarea 
+          matInput 
+          [(ngModel)]="inputValue"
+          [placeholder]="data.inputPlaceholder || 'Enter reason'"
+          rows="3"
+          required>
+        </textarea>
+      </mat-form-field>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">
+      {{ cancelText }}
+    </button>
+    <button 
+      mat-raised-button 
+      [color]="confirmColor" 
+      (click)="onConfirm()"
+      [disabled]="data.showInput && !inputValue.trim()">
+      {{ confirmText }}
+    </button>
+  </mat-dialog-actions>
+</div>

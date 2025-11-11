@@ -1,11 +1,12 @@
 /**
  * Dark Theme
  * CRITICAL: Uses ONLY CSS variables from tokens - NO hardcoded colors
+ * Applied via data-theme="dark" attribute on :root
  */
 
 @import '../tokens/colors.scss';
 
-.theme-dark {
+:root[data-theme="dark"] {
   /* Background colors */
   --background-primary: var(--color-neutral-900);
   --background-secondary: var(--color-neutral-800);
@@ -48,4 +49,10 @@
   --table-header-background: var(--color-neutral-700);
   --table-row-hover: var(--color-neutral-700);
   --table-border: var(--color-neutral-700);
+
+  /* Shadow colors (for rgba usage) */
+  --shadow-color-light: rgba(0, 0, 0, 0.2);
+  --shadow-color-medium: rgba(0, 0, 0, 0.3);
+  --shadow-color-dark: rgba(0, 0, 0, 0.5);
+  --shadow-color-overlay: rgba(0, 0, 0, 0.7);
 }

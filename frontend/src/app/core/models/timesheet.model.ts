@@ -21,13 +21,17 @@ export interface TimesheetEntry {
 }
 
 export interface WeeklyTimesheet {
-  weekStart: Date;
-  weekEnd: Date;
+  _id?: string;
+  weekStart: Date | string;
+  weekEnd: Date | string;
   entries: TimesheetEntry[];
   totalHours: number;
   billableHours: number;
   nonBillableHours: number;
   status: TimesheetStatus;
+  userId?: string;
+  employeeName?: string;
+  submittedAt?: Date | string;
 }
 
 export interface Project {

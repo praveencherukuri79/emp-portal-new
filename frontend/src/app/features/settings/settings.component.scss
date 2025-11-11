@@ -1,0 +1,146 @@
+@import '../../../styles/mixins/components.scss';
+
+.settings-page {
+  padding: var(--spacing-6);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-tertiary) 100%);
+}
+
+.settings-header {
+  margin-bottom: var(--spacing-8);
+
+  h1 {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-size-lg);
+    margin: 0;
+  }
+}
+
+.settings-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.settings-card {
+  @include card;
+  padding: var(--spacing-6) !important;
+
+  mat-card-header {
+    padding: 0 0 var(--spacing-5) 0;
+    margin-bottom: var(--spacing-5);
+    border-bottom: var(--border-width-thin) solid var(--border-primary);
+
+    .card-header-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+      width: 100%;
+
+      .card-header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(135deg, var(--action-primary), var(--color-primary-600));
+        color: var(--text-inverse);
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: var(--font-size-2xl);
+          width: var(--font-size-2xl);
+          height: var(--font-size-2xl);
+        }
+      }
+
+      mat-card-title {
+        margin: 0;
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+      }
+
+      mat-card-subtitle {
+        margin: var(--spacing-1) 0 0 0;
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+      }
+    }
+  }
+
+  mat-card-content {
+    padding: 0 !important;
+  }
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4) 0;
+  border-bottom: var(--border-width-thin) solid var(--border-secondary);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .setting-info {
+    flex: 1;
+
+    .setting-label {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-1);
+    }
+
+    .setting-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.settings-actions {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+
+  button {
+    mat-icon {
+      margin-right: var(--spacing-2);
+    }
+
+    mat-spinner {
+      margin-right: var(--spacing-2);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: var(--spacing-4);
+  }
+
+  .settings-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+}
+
