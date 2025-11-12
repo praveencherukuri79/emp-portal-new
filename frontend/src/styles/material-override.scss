@@ -826,7 +826,12 @@ textarea {
 .mat-mdc-tab-header {
   background-color: var(--table-header-background) !important;
   border-bottom: var(--border-default) solid var(--border-secondary) !important;
+  overflow-x: hidden !important;
   // Material handles padding - don't override
+}
+
+.mat-mdc-tab-body-content {
+  overflow: visible !important;
 }
 
 .mat-mdc-tab {
@@ -873,9 +878,6 @@ textarea {
   }
 }
 
-.mat-mdc-tab-body-content {
-  // Material handles padding - don't override
-}
 
 .mat-mdc-tab-header-pagination {
   background-color: var(--table-header-background) !important;

@@ -30,6 +30,8 @@
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 0 var(--spacing-page-padding);
+  box-sizing: border-box;
+  overflow-x: hidden;
   
   @media (max-width: 768px) {
     padding: 0 var(--spacing-4);

@@ -9,7 +9,7 @@
     }
   </div>
 
-  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="selectedTab.set($event)">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="selectedTab.set($event)" [dynamicHeight]="true">
     <mat-tab label="All">
       <div class="notifications-container">
         @if (loading()) {

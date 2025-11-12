@@ -9,8 +9,10 @@
 .timesheet-container {
   @include container;
   padding: var(--spacing-page-padding);
-  min-height: calc(100vh - var(--header-height));
   animation: fadeIn var(--transition-slow) ease-out;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Week Navigation Header - Simple & Clean */

@@ -32,6 +32,9 @@
 
 html, body {
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: var(--font-primary);
   font-size: var(--font-size-md);
   line-height: var(--line-height-normal);
@@ -45,6 +48,7 @@ html, body {
 
 body {
   margin: 0;
+  position: relative;
 }
 
 /* Theme is applied via data-theme attribute on :root (handled by ThemeService) */

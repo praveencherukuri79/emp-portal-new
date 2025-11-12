@@ -4,8 +4,10 @@
 .history-container {
   @include container;
   padding: var(--spacing-page-padding);
-  min-height: calc(100vh - var(--header-height));
   animation: fadeIn 0.3s ease-out;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 // Use global .page-header class - only override if needed
@@ -166,12 +168,22 @@
 
 .table-card {
   border-radius: var(--radius-lg) !important;
-  overflow: hidden;
+  
+  ::ng-deep {
+    .mat-mdc-table {
+      overflow: visible !important;
+    }
+    
+    .mat-mdc-table-container {
+      overflow: visible !important;
+    }
+  }
   
   .history-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    display: table;
     
     th {
       background: var(--background-tertiary);
