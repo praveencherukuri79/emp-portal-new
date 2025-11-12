@@ -1,7 +1,8 @@
 import { Response } from 'express';
 import { TimesheetEntry, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
-import { IAuthRequest, TimesheetStatus } from '../types';
+import { IAuthRequest, TimesheetStatus, ITimesheetEntryDTO } from '../types';
+import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -13,7 +14,7 @@ export class TimesheetController {
    */
   static async createEntry(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { date, project, task, description, hours, isBillable } = req.body;
+      const { date, project, task, description, hours, isBillable }: ITimesheetEntryDTO = req.body;
 
       // Calculate week information
       const entryDate = dayjs(date);
@@ -62,7 +63,7 @@ export class TimesheetController {
    */
   static async batchCreateEntries(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { entries } = req.body; // Array of entries
+      const { entries }: IBatchTimesheetEntriesRequest = req.body;
 
       if (!Array.isArray(entries) || entries.length === 0) {
         return ApiResponse.error(res, 'Entries array is required');
@@ -78,8 +79,8 @@ export class TimesheetController {
         const weekEnd = entryDate.endOf('isoWeek');
 
         // Map frontend fields to backend fields
-        const project = entryData.projectId || entryData.project;
-        const isBillable = entryData.billable !== undefined ? entryData.billable : (entryData.isBillable !== undefined ? entryData.isBillable : true);
+        const project = entryData.project;
+        const isBillable = entryData.isBillable !== undefined ? entryData.isBillable : true;
 
         // Check if entry already exists
         const existing = await TimesheetEntry.findOne({
@@ -173,7 +174,7 @@ export class TimesheetController {
   static async updateEntry(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { entryId } = req.params;
-      const { project, task, description, hours, isBillable } = req.body;
+      const { project, task, description, hours, isBillable }: IUpdateTimesheetEntryRequest = req.body;
 
       const entry = await TimesheetEntry.findOne({
         _id: entryId,
@@ -243,7 +244,7 @@ export class TimesheetController {
    */
   static async submitWeek(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { weekStart, weekStartDate } = req.body;
+      const { weekStart, weekStartDate }: ISubmitWeekRequest = req.body;
 
       // Support both weekStart and weekStartDate for backward compatibility
       const dateToUse = weekStart || weekStartDate;
@@ -337,7 +338,7 @@ export class TimesheetController {
    */
   static async approveEntries(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { entryIds, comments } = req.body;
+      const { entryIds, comments }: IApproveTimesheetEntriesRequest = req.body;
 
       const entries = await TimesheetEntry.find({
         _id: { $in: entryIds },
@@ -372,7 +373,7 @@ export class TimesheetController {
    */
   static async rejectEntries(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { entryIds, comments } = req.body;
+      const { entryIds, comments }: IRejectTimesheetEntriesRequest = req.body;
 
       if (!comments) {
         return ApiResponse.error(res, 'Rejection comments are required');

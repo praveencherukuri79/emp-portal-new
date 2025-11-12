@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -60,6 +60,22 @@ export class TimesheetHistoryComponent implements OnInit {
   statusFilter = signal<string>('all');
   startDateFilter = signal<Date | null>(null);
   endDateFilter = signal<Date | null>(null);
+  
+  // Computed: Check if any filters are active
+  hasActiveFilters = computed(() => {
+    return this.statusFilter() !== 'all' || 
+           this.startDateFilter() !== null || 
+           this.endDateFilter() !== null;
+  });
+  
+  // Computed: Get active filter count
+  activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.statusFilter() !== 'all') count++;
+    if (this.startDateFilter() !== null) count++;
+    if (this.endDateFilter() !== null) count++;
+    return count;
+  });
   
   // Pagination
   pageSize = 10;
@@ -160,8 +176,44 @@ export class TimesheetHistoryComponent implements OnInit {
   }
 
   onFilterChange() {
+    // Reset to first page when filters change
     this.pageIndex = 0;
-    this.applyFilters();
+    // Note: Filters are applied automatically via applyFilters() after loadHistory()
+    // For better UX, we could add debouncing here if needed
+  }
+
+  applyFiltersNow() {
+    this.pageIndex = 0;
+    this.loadHistory();
+  }
+
+  clearFilters() {
+    this.statusFilter.set('all');
+    this.startDateFilter.set(null);
+    this.endDateFilter.set(null);
+    this.pageIndex = 0;
+    this.loadHistory();
+  }
+
+  removeFilter(filterType: 'status' | 'startDate' | 'endDate') {
+    switch (filterType) {
+      case 'status':
+        this.statusFilter.set('all');
+        break;
+      case 'startDate':
+        this.startDateFilter.set(null);
+        break;
+      case 'endDate':
+        this.endDateFilter.set(null);
+        break;
+    }
+    this.pageIndex = 0;
+    this.loadHistory();
+  }
+
+  getStatusLabel(value: string): string {
+    const option = this.statusOptions.find(opt => opt.value === value);
+    return option ? option.label : value;
   }
 
   onPageChange(event: PageEvent) {

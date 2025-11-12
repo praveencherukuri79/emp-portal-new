@@ -60,7 +60,6 @@ export class WeeklyGridComponent implements OnInit {
   
   // Add project controls
   selectedProject = signal<string>('');
-  customProjectName = signal<string>('');
   projectDescription = signal<string>('');
   projectBillable = signal<boolean>(true);
   
@@ -82,8 +81,14 @@ export class WeeklyGridComponent implements OnInit {
     // Subscribe to query param changes to handle navigation from history
     this.route.queryParams.subscribe(params => {
       if (params['date']) {
-        const date = new Date(params['date']);
-        this.loadSpecificWeek(date);
+        // Parse date string using dayjs to handle YYYY-MM-DD format correctly
+        const parsedDate = dayjs(params['date']);
+        if (parsedDate.isValid()) {
+          this.loadSpecificWeek(parsedDate.toDate());
+        } else {
+          console.warn('Invalid date parameter, loading current week instead');
+          this.loadCurrentWeek();
+        }
       } else {
         this.loadCurrentWeek();
       }
@@ -94,7 +99,7 @@ export class WeeklyGridComponent implements OnInit {
 
   loadSpecificWeek(date: Date) {
     // The date passed from history is already the week start (Monday)
-    // Use Day.js to ensure Monday as week start
+    // Use Day.js to ensure Monday as week start and handle timezone correctly
     const monday = dayjs(date).startOf('isoWeek');
     const sunday = monday.add(6, 'days').endOf('day');
 
@@ -129,18 +134,20 @@ export class WeeklyGridComponent implements OnInit {
         if (response.status === 'success' && response.data) {
           const activeProjects = response.data.filter((p: any) => p.isActive);
           this.projects.set(activeProjects);
+          
+          // Show warning if no projects are assigned
+          if (activeProjects.length === 0) {
+            this.showError('No projects assigned. Please contact your administrator to assign projects before creating timesheets.');
+          }
         } else {
           this.projects.set([]);
+          this.showError('No projects assigned. Please contact your administrator to assign projects before creating timesheets.');
         }
       },
       error: (error) => {
         console.error('Failed to load projects:', error);
-        this.showError('Failed to load projects. You can still manually enter project names.');
-        // Set some default projects as fallback
-        this.projects.set([
-          { _id: 'temp-1', tenantId: '', name: 'General Tasks', code: 'GEN', isActive: true },
-          { _id: 'temp-2', tenantId: '', name: 'Client Project', code: 'CLI', isActive: true }
-        ]);
+        this.projects.set([]);
+        this.showError('Failed to load projects. Please contact your administrator to assign projects before creating timesheets.');
       }
     });
   }
@@ -148,9 +155,8 @@ export class WeeklyGridComponent implements OnInit {
   loadWeekEntries() {
     this.loading.set(true);
     const start = this.timesheetService.formatDate(this.weekStart());
-    const end = this.timesheetService.formatDate(this.weekEnd());
 
-    this.timesheetService.getWeeklyEntries(start, end).subscribe({
+    this.timesheetService.getWeeklyEntries(start).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
           // Backend returns entries directly in response.data, not response.data.entries
@@ -188,20 +194,28 @@ export class WeeklyGridComponent implements OnInit {
         return;
       }
       
+      // Parse date using dayjs to handle both Date objects and date strings correctly
       const entryDate = dayjs(entry.date);
-      const dayIndex = this.weekDays().findIndex(day => 
-        dayjs(day).format('YYYY-MM-DD') === entryDate.format('YYYY-MM-DD')
-      );
+      const dayIndex = this.weekDays().findIndex(day => {
+        const dayStr = dayjs(day).format('YYYY-MM-DD');
+        const entryStr = entryDate.format('YYYY-MM-DD');
+        return dayStr === entryStr;
+      });
       
       if (dayIndex === -1) {
+        console.warn(`Entry date ${entryDate.format('YYYY-MM-DD')} not found in week days`);
         return;
       }
+      
+      // Find project name from projects list if available
+      const project = this.projects().find(p => p._id === projectId || p.name === projectId);
+      const projectName = project ? project.name : (entry.task || entry.project || 'Unnamed Project');
       
       // Create new project entry if it doesn't exist
       if (!projectMap.has(projectId)) {
         projectMap.set(projectId, {
           projectId: projectId,
-          projectName: entry.task || entry.project || 'Unnamed Project',
+          projectName: projectName,
           description: entry.description || '',
           billable: entry.isBillable !== undefined ? entry.isBillable : true,
           hours: [0, 0, 0, 0, 0, 0, 0]
@@ -210,7 +224,7 @@ export class WeeklyGridComponent implements OnInit {
       
       // Add hours to the appropriate day
       const projectEntry = projectMap.get(projectId)!;
-      projectEntry.hours[dayIndex] += entry.hours; // Use += in case multiple entries per day
+      projectEntry.hours[dayIndex] += entry.hours || 0; // Use += in case multiple entries per day
     });
     
     const projectEntries = Array.from(projectMap.values());
@@ -243,40 +257,28 @@ export class WeeklyGridComponent implements OnInit {
 
   addProject() {
     const projectId = this.selectedProject();
-    const customName = this.customProjectName();
     
-    if (!projectId && !customName) {
-      this.showError('Please select a project or enter a project name');
+    if (!projectId) {
+      this.showError('Please select a project from the list');
       return;
     }
     
-    let projectName = '';
-    let finalProjectId = '';
-    
-    if (customName) {
-      // Using custom project name
-      projectName = customName;
-      finalProjectId = customName.toLowerCase().replace(/\s+/g, '-');
-    } else {
-      // Using selected project
-      const project = this.projects().find(p => p._id === projectId);
-      if (!project) {
-        this.showError('Selected project not found');
-        return;
-      }
-      projectName = project.name;
-      finalProjectId = projectId;
+    // Find selected project
+    const project = this.projects().find(p => p._id === projectId);
+    if (!project) {
+      this.showError('Selected project not found');
+      return;
     }
     
     // Check if project already added
-    if (this.projectEntries().some(e => e.projectId === finalProjectId)) {
+    if (this.projectEntries().some(e => e.projectId === projectId)) {
       this.showError('This project is already added to the timesheet');
       return;
     }
     
     const newEntry: ProjectEntry = {
-      projectId: finalProjectId,
-      projectName: projectName,
+      projectId: projectId,
+      projectName: project.name,
       description: this.projectDescription(),
       billable: this.projectBillable(),
       hours: [0, 0, 0, 0, 0, 0, 0]
@@ -286,11 +288,10 @@ export class WeeklyGridComponent implements OnInit {
     
     // Reset form
     this.selectedProject.set('');
-    this.customProjectName.set('');
     this.projectDescription.set('');
     this.projectBillable.set(true);
     
-    this.showSuccess(`"${projectName}" added to timesheet`);
+    this.showSuccess(`"${project.name}" added to timesheet`);
   }
 
   async removeProject(projectId: string) {
@@ -359,6 +360,12 @@ export class WeeklyGridComponent implements OnInit {
   }
 
   async submitWeek() {
+    // Check if user has any assigned projects
+    if (this.projects().length === 0) {
+      this.showError('No projects assigned. Please contact your administrator to assign projects before submitting timesheets.');
+      return;
+    }
+
     if (this.projectEntries().length === 0 || this.getTotalWeekHours() === 0) {
       this.showError('Please add hours before submitting');
       return;
@@ -416,11 +423,7 @@ export class WeeklyGridComponent implements OnInit {
           if (status === TimesheetStatus.SUBMITTED) {
             // Then submit the week (changes DRAFT to SUBMITTED)
             const weekStartDate = this.timesheetService.formatDate(this.weekStart());
-            this.timesheetService.submitWeek({ 
-              weekStart: weekStartDate,
-              weekEnd: this.timesheetService.formatDate(this.weekEnd()),
-              entryIds: []
-            }).subscribe({
+            this.timesheetService.submitWeek(weekStartDate).subscribe({
               next: (submitResponse) => {
                 if (submitResponse.status === 'success') {
                   this.showSuccess('Timesheet submitted successfully!');
@@ -459,5 +462,20 @@ export class WeeklyGridComponent implements OnInit {
 
   private showError(message: string) {
     this.uiNotification.showError(message);
+  }
+
+  getStatusIcon(status: TimesheetStatus): string {
+    switch (status) {
+      case TimesheetStatus.DRAFT:
+        return 'edit';
+      case TimesheetStatus.SUBMITTED:
+        return 'send';
+      case TimesheetStatus.APPROVED:
+        return 'check_circle';
+      case TimesheetStatus.REJECTED:
+        return 'cancel';
+      default:
+        return 'info';
+    }
   }
 }

@@ -1,39 +1,23 @@
-export enum LeaveType {
-  ANNUAL = 'annual',
-  SICK = 'sick',
-  PERSONAL = 'personal',
-  UNPAID = 'unpaid',
-  MATERNITY = 'maternity',
-  PATERNITY = 'paternity'
-}
+/**
+ * Leave Model - Frontend
+ * Re-exports shared types and adds frontend-specific interfaces
+ */
 
-export enum LeaveStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected'
-}
+// Import enums as values for use in this file
+import { LeaveType, LeaveStatus } from '@shared/types';
+// Re-export enums
+export { LeaveType, LeaveStatus } from '@shared/types';
 
-export enum HalfDayPeriod {
-  MORNING = 'morning',
-  AFTERNOON = 'afternoon',
-  FULL_DAY = 'full_day'
-}
+// Import types
+import type { ILeaveRequestDTO } from '@shared/types';
+export type { ILeaveRequestDTO } from '@shared/types';
 
-export interface LeaveRequest {
+export interface LeaveRequest extends ILeaveRequestDTO {
   _id?: string;
-  userId: string;
-  tenantId: string;
-  leaveType: LeaveType;
+  status?: LeaveStatus;
+  totalDays?: number;
   startDate: Date | string;
   endDate: Date | string;
-  halfDay: HalfDayPeriod;
-  reason: string;
-  status: LeaveStatus;
-  approvedBy?: string;
-  approvedAt?: Date;
-  rejectionReason?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export interface LeaveBalance {
@@ -44,19 +28,4 @@ export interface LeaveBalance {
   usedDays: number;
   remainingDays: number;
   year: number;
-}
-
-export interface CreateLeaveRequest {
-  leaveType: LeaveType;
-  startDate: string;
-  endDate: string;
-  isHalfDay?: boolean;
-  halfDayPeriod?: string;
-  reason: string;
-}
-
-export interface ApproveRejectLeaveRequest {
-  leaveId: string;
-  action: 'approve' | 'reject';
-  reason?: string;
 }

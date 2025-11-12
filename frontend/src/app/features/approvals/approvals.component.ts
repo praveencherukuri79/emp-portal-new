@@ -18,6 +18,8 @@ import { LeaveRequest, LeaveStatus } from '../../core/models/leave.model';
 import { UserRole } from '../../core/models/user.model';
 import { UINotificationService } from '../../core/services/notification.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { getStatusColor, getStatusLabel } from '../../shared/utils/formatters';
+import { LeaveStatus as SharedLeaveStatus } from '@shared/types';
 
 @Component({
   selector: 'app-approvals',
@@ -196,10 +198,7 @@ export class ApprovalsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.leaveService.approveRejectLeave({
-          leaveId: leave._id!,
-          action: 'approve'
-        }).subscribe({
+        this.leaveService.approveLeaveRequest(leave._id!).subscribe({
           next: (response) => {
             if (response.status === 'success') {
               this.notification.showSuccess('Leave request approved successfully');
@@ -236,11 +235,7 @@ export class ApprovalsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.reason) {
-        this.leaveService.approveRejectLeave({
-          leaveId: leave._id!,
-          action: 'reject',
-          reason: result.reason
-        }).subscribe({
+        this.leaveService.rejectLeaveRequest(leave._id!, result.reason).subscribe({
           next: (response) => {
             if (response.status === 'success') {
               this.notification.showSuccess('Leave request rejected');
@@ -262,11 +257,17 @@ export class ApprovalsComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    const statusMap: Record<string, string> = {
-      [LeaveStatus.PENDING]: 'status-warning',
-      [LeaveStatus.APPROVED]: 'status-success',
-      [LeaveStatus.REJECTED]: 'status-error'
+    const color = getStatusColor(status);
+    const colorMap: Record<string, string> = {
+      'primary': 'status-success',
+      'accent': 'status-warning',
+      'warn': 'status-error',
+      '': 'status-neutral'
     };
-    return statusMap[status] || 'status-neutral';
+    return colorMap[color] || 'status-neutral';
+  }
+
+  getStatusLabel(status: string, type: 'timesheet' | 'leave' = 'leave'): string {
+    return getStatusLabel(status, type);
   }
 }

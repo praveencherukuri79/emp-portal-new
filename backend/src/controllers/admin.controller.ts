@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { User, Tenant } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { UserRole, EmploymentType } from '../types';
+import { ICreateUserRequest, IBulkCreateUsersRequest, IUpdateTenantRequest } from '@shared/types/requests';
 
 /**
  * Admin Controller
@@ -32,10 +33,10 @@ export class AdminController {
         employeeId,
         department,
         designation,
-        dateOfJoining,
-        phone,
+        joiningDate,
+        phoneNumber,
         employmentType
-      } = req.body;
+      }: ICreateUserRequest = req.body;
 
       // Validation
       if (!email || !password || !firstName || !lastName || !role) {
@@ -88,8 +89,8 @@ export class AdminController {
         employeeId: employeeId || `EMP${Date.now()}`,
         department: department || 'General',
         designation: designation || 'Employee',
-        dateOfJoining: dateOfJoining || new Date(),
-        phone,
+        joiningDate: joiningDate || new Date(),
+        phone: phoneNumber,
         employmentType: employmentType || EmploymentType.FULL_TIME,
         isEmailVerified: true, // Auto-verify for admin-created users
         isActive: true,
@@ -127,7 +128,7 @@ export class AdminController {
         return ApiResponse.error(res, 'Unauthorized: Invalid admin secret key', 401);
       }
 
-      const { users } = req.body;
+      const { users }: IBulkCreateUsersRequest = req.body;
 
       if (!Array.isArray(users) || users.length === 0) {
         return ApiResponse.error(res, 'Invalid input: users array is required', 400);
@@ -200,8 +201,8 @@ export class AdminController {
             employeeId: rest.employeeId || `EMP${Date.now()}${Math.random().toString(36).substr(2, 5)}`,
             department: rest.department || 'General',
             designation: rest.designation || 'Employee',
-            dateOfJoining: rest.dateOfJoining || new Date(),
-            phone: rest.phone,
+            joiningDate: rest.joiningDate || new Date(),
+            phone: rest.phoneNumber,
             employmentType: rest.employmentType || EmploymentType.FULL_TIME,
             isEmailVerified: true,
             isActive: true,
@@ -277,7 +278,7 @@ export class AdminController {
         return ApiResponse.error(res, 'Unauthorized: Invalid admin secret key', 401);
       }
 
-      const { name, domain, settings } = req.body;
+      const { name, domain, settings }: IUpdateTenantRequest = req.body;
 
       let tenant = await Tenant.findOne();
 

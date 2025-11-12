@@ -1,49 +1,19 @@
-export enum ApprovalType {
-  TIMESHEET = 'timesheet',
-  LEAVE = 'leave'
-}
+/**
+ * Approval Model - Frontend
+ * Re-exports shared types and adds frontend-specific interfaces
+ */
 
-export enum ApprovalStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected'
-}
+export {
+  ApprovalType,
+  ApprovalStatus,
+  IApprovalRequest,
+  ITimesheetApprovalData,
+  ILeaveApprovalData,
+  IBulkApprovalRequest
+} from '@shared/types';
 
-export interface ApprovalRequest {
-  _id?: string;
-  type: ApprovalType;
-  requestId: string;
-  requestorId: string;
-  requestorName: string;
-  approverId: string;
-  approverName?: string;
-  tenantId: string;
-  status: ApprovalStatus;
-  requestData: any;
-  submittedAt: Date | string;
-  reviewedAt?: Date | string;
-  comments?: string;
-  rejectionReason?: string;
-}
-
-export interface TimesheetApprovalData {
-  weekStart: string;
-  weekEnd: string;
-  totalHours: number;
-  billableHours: number;
-  entries: number;
-}
-
-export interface LeaveApprovalData {
-  leaveType: string;
-  startDate: string;
-  endDate: string;
-  days: number;
-  reason: string;
-}
-
-export interface BulkApprovalRequest {
-  approvalIds: string[];
-  status: 'approved' | 'rejected';
-  comments?: string;
-}
+// Frontend-specific interfaces can extend shared types if needed
+export interface ApprovalRequest extends IApprovalRequest {}
+export interface TimesheetApprovalData extends ITimesheetApprovalData {}
+export interface LeaveApprovalData extends ILeaveApprovalData {}
+export interface BulkApprovalRequest extends IBulkApprovalRequest {}

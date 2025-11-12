@@ -13,7 +13,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DocumentService } from '../../core/services/document.service';
 import { UINotificationService } from '../../core/services/notification.service';
-import { Document, DocumentCategory } from '../../core/models/document.model';
+import { DocumentCategory } from '../../core/models/document.model';
+import { Document } from '../../core/services/document.service';
 
 @Component({
   selector: 'app-documents',
@@ -112,15 +113,13 @@ export class DocumentsComponent implements OnInit {
     }
 
     this.uploading.set(true);
-    const uploadRequest = {
-      file: this.selectedFile,
+    const metadata: Partial<Document> = {
       category: this.uploadForm.value.category,
-      title: this.uploadForm.value.title,
-      expiryDate: this.uploadForm.value.expiryDate,
-      notes: this.uploadForm.value.notes
+      description: this.uploadForm.value.notes || this.uploadForm.value.title,
+      expiryDate: this.uploadForm.value.expiryDate
     };
 
-    this.documentService.uploadDocument(uploadRequest).subscribe({
+    this.documentService.uploadDocument(this.selectedFile, metadata).subscribe({
       next: (response) => {
         if (response.status === 'success') {
           this.uploading.set(false);

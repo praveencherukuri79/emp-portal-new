@@ -13,12 +13,14 @@ import {
   ResetPasswordRequest,
   isSuccessResponse
 } from '../models/user.model';
+import { IChangePasswordRequest, IRefreshTokenRequest, ILogoutRequest } from '@shared/types/requests';
+import { API_ENDPOINTS } from '@shared/types/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/auth`;
+  // API URLs are now constructed using API_ENDPOINTS constants
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   
@@ -47,7 +49,7 @@ export class AuthService {
    * Register a new user
    */
   register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, data).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REGISTER}`, data).pipe(
       tap(response => {
         if (isSuccessResponse(response) && response.data) {
           this.handleAuthSuccess(response.data);
@@ -62,7 +64,7 @@ export class AuthService {
    * Single-tenant deployment - automatically uses the single tenant
    */
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGIN}`, credentials).pipe(
       tap(response => {
         if (isSuccessResponse(response) && response.data) {
           this.handleAuthSuccess(response.data);
@@ -77,8 +79,9 @@ export class AuthService {
    */
   logout(): Observable<any> {
     const refreshToken = this.getRefreshToken();
+    const body: ILogoutRequest = { refreshToken: refreshToken! };
     
-    return this.http.post(`${this.API_URL}/logout`, { refreshToken }).pipe(
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGOUT}`, body).pipe(
       tap(() => {
         this.clearAuthData();
         this.router.navigate(['/auth/login']);
@@ -97,8 +100,9 @@ export class AuthService {
    */
   refreshToken(): Observable<AuthResponse> {
     const refreshToken = this.getRefreshToken();
+    const body: IRefreshTokenRequest = { refreshToken: refreshToken! };
     
-    return this.http.post<AuthResponse>(`${this.API_URL}/refresh-token`, { refreshToken }).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, body).pipe(
       tap(response => {
         if (isSuccessResponse(response) && response.data) {
           this.setAccessToken(response.data.accessToken);
@@ -117,7 +121,7 @@ export class AuthService {
    * Get current user profile
    */
   private getMe(): Observable<any> {
-    return this.http.get(`${this.API_URL}/me`).pipe(
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.AUTH.ME}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -125,8 +129,8 @@ export class AuthService {
   /**
    * Change password
    */
-  changePassword(data: ChangePasswordRequest): Observable<any> {
-    return this.http.post(`${this.API_URL}/change-password`, data).pipe(
+  changePassword(data: IChangePasswordRequest): Observable<any> {
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.CHANGE_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }
@@ -135,7 +139,7 @@ export class AuthService {
    * Forgot password
    */
   forgotPassword(data: ForgotPasswordRequest): Observable<any> {
-    return this.http.post(`${this.API_URL}/forgot-password`, data).pipe(
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.FORGOT_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }
@@ -144,7 +148,7 @@ export class AuthService {
    * Reset password
    */
   resetPassword(data: ResetPasswordRequest): Observable<any> {
-    return this.http.post(`${this.API_URL}/reset-password`, data).pipe(
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.RESET_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }

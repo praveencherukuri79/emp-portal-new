@@ -1,48 +1,24 @@
-export enum DocumentCategory {
-  PASSPORT = 'passport',
-  VISA = 'visa',
-  DRIVING_LICENSE = 'driving_license',
-  ID_CARD = 'id_card',
-  CONTRACT = 'contract',
-  CERTIFICATE = 'certificate',
-  OTHER = 'other'
-}
+/**
+ * Document Model - Frontend
+ * Re-exports shared types and adds frontend-specific interfaces
+ */
 
-export enum DocumentStatus {
-  ACTIVE = 'active',
-  EXPIRED = 'expired',
-  EXPIRING_SOON = 'expiring_soon'
-}
+export { DocumentCategory } from '@shared/types';
 
 export interface Document {
   _id?: string;
-  userId: string;
-  tenantId: string;
-  category: DocumentCategory;
-  title: string;
   fileName: string;
-  fileUrl: string;
-  fileSize: number;
-  mimeType: string;
+  originalName: string;
+  category: string; // Will be DocumentCategory enum value
+  description?: string;
+  documentNumber?: string;
   issueDate?: Date | string;
   expiryDate?: Date | string;
-  status?: DocumentStatus;
-  notes?: string;
-  uploadedAt?: Date | string;
+  filePath?: string;
+  fileSize?: number;
+  mimeType?: string;
+  isPrivate?: boolean;
+  isActive?: boolean;
+  createdAt?: Date | string;
   updatedAt?: Date | string;
-}
-
-export interface DocumentUploadRequest {
-  category: DocumentCategory;
-  title: string;
-  file: File;
-  issueDate?: string;
-  expiryDate?: string;
-  notes?: string;
-}
-
-export interface DocumentFilters {
-  category?: DocumentCategory;
-  status?: DocumentStatus;
-  search?: string;
 }

@@ -1,7 +1,8 @@
 import { Response } from 'express';
 import { LeaveRequest, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
-import { IAuthRequest, LeaveStatus, LeaveType, UserRole } from '../types';
+import { IAuthRequest, LeaveStatus, LeaveType, UserRole, ILeaveRequestDTO } from '../types';
+import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -15,7 +16,7 @@ export class LeaveController {
    */
   static async createLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const { leaveType, startDate, endDate, isHalfDay, halfDayPeriod, reason, attachments } = req.body;
+      const { leaveType, startDate, endDate, isHalfDay, halfDayPeriod, reason }: ILeaveRequestDTO = req.body;
 
       // Validate dates
       if (new Date(startDate) > new Date(endDate)) {
@@ -53,13 +54,12 @@ export class LeaveController {
         tenantId: req.user?.tenantId,
         userId: req.user?.userId,
         leaveType,
-        startDate,
-        endDate,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         totalDays,
         isHalfDay: isHalfDay ?? false,
         halfDayPeriod,
         reason,
-        attachments,
         status: LeaveStatus.PENDING
       });
 
@@ -209,7 +209,7 @@ export class LeaveController {
   static async updateLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { leaveId } = req.params;
-      const { leaveType, startDate, endDate, isHalfDay, halfDayPeriod, reason } = req.body;
+      const { leaveType, startDate, endDate, isHalfDay, halfDayPeriod, reason }: IUpdateLeaveRequestRequest = req.body;
 
       const leave = await LeaveRequest.findOne({
         _id: leaveId,
@@ -228,8 +228,8 @@ export class LeaveController {
       }
 
       if (leaveType) leave.leaveType = leaveType;
-      if (startDate) leave.startDate = startDate;
-      if (endDate) leave.endDate = endDate;
+      if (startDate) leave.startDate = new Date(startDate);
+      if (endDate) leave.endDate = new Date(endDate);
       if (isHalfDay !== undefined) leave.isHalfDay = isHalfDay;
       if (halfDayPeriod) leave.halfDayPeriod = halfDayPeriod;
       if (reason) leave.reason = reason;
@@ -248,7 +248,7 @@ export class LeaveController {
   static async cancelLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { leaveId } = req.params;
-      const { cancellationReason } = req.body;
+      const { cancellationReason }: ICancelLeaveRequest = req.body;
 
       const leave = await LeaveRequest.findOne({
         _id: leaveId,
@@ -314,7 +314,7 @@ export class LeaveController {
   static async approveLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { leaveId } = req.params;
-      const { comments } = req.body;
+      const { comments }: IApproveLeaveRequest = req.body;
 
       const leave = await LeaveRequest.findOne({
         _id: leaveId,
@@ -346,7 +346,7 @@ export class LeaveController {
   static async rejectLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { leaveId } = req.params;
-      const { comments } = req.body;
+      const { comments }: IRejectLeaveRequest = req.body;
 
       if (!comments) {
         return ApiResponse.error(res, 'Rejection comments are required', 400);

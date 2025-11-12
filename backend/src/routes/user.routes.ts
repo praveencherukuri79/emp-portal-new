@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth.middleware';
-import { authorize } from '../middleware/authorization.middleware';
+import { authorize, authorizeSelfOrRole } from '../middleware/authorization.middleware';
 import { UserRole } from '../types';
 
 const router = Router();
@@ -21,7 +21,7 @@ router.get('/', authorize(UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserC
 router.post('/', authorize(UserRole.ADMIN), UserController.createUser);
 
 // Get user by ID (Admin/HR/Employer or self)
-router.get('/:userId', UserController.getUserById);
+router.get('/:userId', authorizeSelfOrRole(UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserController.getUserById);
 
 // Update employee information (Admin/HR)
 router.put('/:userId/employee-info', authorize(UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserController.updateEmployeeInfo);

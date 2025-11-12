@@ -1,29 +1,73 @@
-export enum UserRole {
-  PROSPECT = 'prospect',
-  EMPLOYEE = 'employee',
-  SUPERVISOR = 'supervisor',
-  HR = 'hr',
-  ADMIN = 'admin',
-  EMPLOYER = 'employer'
-}
+/**
+ * User Model - Frontend
+ * Re-exports shared types and adds frontend-specific interfaces
+ */
 
-export enum EmploymentType {
-  FULL_TIME = 'full_time',
-  PART_TIME = 'part_time',
-  CONTRACT = 'contract',
-  INTERN = 'intern'
-}
+// Import enums as values for use in this file
+import {
+  UserRole,
+  EmploymentType,
+  Gender,
+  VisaStatus,
+  TimesheetStatus,
+  LeaveType,
+  LeaveStatus,
+  DocumentCategory,
+  NotificationType,
+  NotificationPriority
+} from '@shared/types';
 
-export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other'
-}
+// Re-export enums as values
+export {
+  UserRole,
+  EmploymentType,
+  Gender,
+  VisaStatus,
+  TimesheetStatus,
+  LeaveType,
+  LeaveStatus,
+  DocumentCategory,
+  NotificationType,
+  NotificationPriority
+} from '@shared/types';
 
+// Import types for use in this file
+import type {
+  IAddress,
+  ISalary,
+  IVisa,
+  ILeaveBalance,
+  IApiResponse,
+  IPaginatedResponse,
+  IRegisterDTO,
+  ILoginDTO,
+  IPasswordResetRequestDTO,
+  IPasswordResetDTO,
+  ITimesheetEntryDTO,
+  ILeaveRequestDTO
+} from '@shared/types';
+
+// Re-export types
+export type {
+  IAddress,
+  ISalary,
+  IVisa,
+  ILeaveBalance,
+  IApiResponse,
+  IPaginatedResponse,
+  IRegisterDTO,
+  ILoginDTO,
+  IPasswordResetRequestDTO,
+  IPasswordResetDTO,
+  ITimesheetEntryDTO,
+  ILeaveRequestDTO
+} from '@shared/types';
+
+// Frontend-specific interfaces
 export interface User {
   _id: string;
   tenantId: string;
-  employeeId: string;
+  employeeId?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -31,28 +75,23 @@ export interface User {
   role: UserRole;
   department?: string;
   designation?: string;
-  dateOfJoining?: Date;
-  dateOfBirth?: Date;
+  dateOfJoining?: Date | string;
+  dateOfBirth?: Date | string;
   gender?: Gender;
-  address?: string;
+  address?: IAddress | string;
   employmentType?: EmploymentType;
   reportingManagerId?: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  // Additional frontend-only fields
+  fullName?: string;
+  avatar?: string;
 }
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+export interface LoginRequest extends ILoginDTO {}
 
-export interface RegisterRequest {
-  // Single-tenant deployment - no tenantId needed
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
+export interface RegisterRequest extends IRegisterDTO {
   phoneNumber?: string;
   department?: string;
   designation?: string;
@@ -60,13 +99,14 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  status: string;  // Backend returns 'success' or 'error'
-  message: string;
-  data: {
+  status: 'success' | 'error';
+  message?: string;
+  data?: {
     user: User;
     accessToken: string;
     refreshToken: string;
   };
+  errors?: string[];
 }
 
 // Helper to check if response was successful
@@ -79,11 +119,6 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
-export interface ForgotPasswordRequest {
-  email: string;
-}
+export interface ForgotPasswordRequest extends IPasswordResetRequestDTO {}
 
-export interface ResetPasswordRequest {
-  token: string;
-  newPassword: string;
-}
+export interface ResetPasswordRequest extends IPasswordResetDTO {}

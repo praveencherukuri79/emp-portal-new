@@ -15,7 +15,10 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
   [UserRole.HR]: 4,
   [UserRole.ADMIN]: 5,
   [UserRole.EMPLOYER]: 6
-};
+} as const;
+
+// Helper function to get role hierarchy value
+const getRoleValue = (role: UserRole): number => ROLE_HIERARCHY[role];
 
 /**
  * Check if user has at least the minimum required role
@@ -28,7 +31,7 @@ export const authorize = (...allowedRoles: UserRole[]) => {
 
     const userRole = req.user.role;
     const hasPermission = allowedRoles.some(
-      role => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[role]
+      role => getRoleValue(userRole) >= getRoleValue(role)
     );
 
     if (!hasPermission) {
@@ -74,7 +77,7 @@ export const authorizeSelfOrRole = (...roles: UserRole[]) => {
     const targetUserId = req.params.userId || req.params.id;
     const isSelf = req.user.userId === targetUserId;
     const hasRole = roles.some(
-      role => ROLE_HIERARCHY[req.user!.role] >= ROLE_HIERARCHY[role]
+      role => getRoleValue(req.user!.role) >= getRoleValue(role)
     );
 
     if (!isSelf && !hasRole) {

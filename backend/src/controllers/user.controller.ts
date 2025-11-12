@@ -1,7 +1,8 @@
 import { Response } from 'express';
 import { User } from '../models';
 import { ApiResponse } from '@utils/response.util';
-import { IAuthRequest } from '../types';
+import { IAuthRequest, Gender, EmploymentType } from '../types';
+import { IUpdateProfileRequest, IUpdateEmployeeInfoRequest, ICreateUserRequest, IUpdateUserRoleRequest } from '@shared/types/requests';
 
 export class UserController {
   /**
@@ -38,7 +39,7 @@ export class UserController {
         phone,
         avatar,
         address 
-      } = req.body;
+      }: IUpdateProfileRequest = req.body;
 
       const user = await User.findById(req.user?.userId);
 
@@ -50,8 +51,8 @@ export class UserController {
       // Update only allowed fields
       if (firstName) user.firstName = firstName;
       if (lastName) user.lastName = lastName;
-      if (dateOfBirth) user.dateOfBirth = dateOfBirth;
-      if (gender) user.gender = gender;
+      if (dateOfBirth) user.dateOfBirth = new Date(dateOfBirth);
+      if (gender) user.gender = gender as Gender;
       if (phone) user.phone = phone;
       if (avatar) user.avatar = avatar;
       if (address) user.address = address;
@@ -83,7 +84,7 @@ export class UserController {
         salary,
         reportingTo,
         visa
-      } = req.body;
+      }: IUpdateEmployeeInfoRequest = req.body;
 
       const user = await User.findOne({ 
         _id: userId, 
@@ -99,8 +100,8 @@ export class UserController {
       if (employeeId) user.employeeId = employeeId;
       if (department) user.department = department;
       if (designation) user.designation = designation;
-      if (joiningDate) user.joiningDate = joiningDate;
-      if (employmentType) user.employmentType = employmentType;
+      if (joiningDate) user.joiningDate = new Date(joiningDate);
+      if (employmentType) user.employmentType = employmentType as EmploymentType;
       if (salary) user.salary = salary;
       if (reportingTo) user.reportingTo = reportingTo;
       if (visa) user.visa = visa;
@@ -203,7 +204,7 @@ export class UserController {
   static async createUser(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const userData = {
-        ...req.body,
+        ...req.body as ICreateUserRequest,
         tenantId: req.user?.tenantId
       };
 
@@ -236,7 +237,7 @@ export class UserController {
   static async updateUserRole(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { userId } = req.params;
-      const { role } = req.body;
+      const { role }: IUpdateUserRoleRequest = req.body;
 
       const user = await User.findOne({ 
         _id: userId, 

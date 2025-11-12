@@ -3,6 +3,7 @@ import User from '../models/user.model';
 import Tenant from '../models/tenant.model';
 import { ApiResponse, TokenUtil, PasswordUtil, EmailUtil } from '../utils';
 import { IRegisterDTO, ILoginDTO, IPasswordResetRequestDTO, IPasswordResetDTO, IAuthRequest } from '../types';
+import { IChangePasswordRequest, IRefreshTokenRequest } from '@shared/types/requests';
 
 /**
  * Authentication Controller
@@ -141,7 +142,7 @@ export class AuthController {
    */
   static async refreshToken(req: Request, res: Response): Promise<Response> {
     try {
-      const { refreshToken } = req.body;
+      const { refreshToken }: IRefreshTokenRequest = req.body;
 
       if (!refreshToken) {
         return ApiResponse.error(res, 'Refresh token is required', 400);
@@ -323,7 +324,7 @@ export class AuthController {
         return ApiResponse.unauthorized(res);
       }
 
-      const { currentPassword, newPassword } = req.body;
+      const { currentPassword, newPassword }: IChangePasswordRequest = req.body;
 
       // Get user with password
       const user = await User.findById(req.user.userId).select('+password');

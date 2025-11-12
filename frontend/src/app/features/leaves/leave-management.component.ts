@@ -15,7 +15,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LeaveService } from '../../core/services/leave.service';
 import { UINotificationService } from '../../core/services/notification.service';
-import { LeaveType, LeaveRequest, LeaveBalance, HalfDayPeriod } from '../../core/models/leave.model';
+import { LeaveType, LeaveRequest, LeaveBalance } from '../../core/models/leave.model';
+import { LeaveType as SharedLeaveType } from '@shared/types';
+import { getStatusColor } from '../../shared/utils/formatters';
 import dayjs from 'dayjs';
 
 @Component({
@@ -47,8 +49,8 @@ export class LeaveManagementComponent implements OnInit {
   loading = signal(false);
   submitting = signal(false);
 
-  leaveTypes = Object.values(LeaveType);
-  halfDayOptions = Object.values(HalfDayPeriod);
+  leaveTypes = Object.values(SharedLeaveType);
+  halfDayOptions: Array<'full_day' | 'morning' | 'afternoon'> = ['full_day', 'morning', 'afternoon'];
   displayedColumns = ['leaveType', 'dates', 'days', 'status', 'actions'];
 
   private uiNotification = inject(UINotificationService);
@@ -69,13 +71,13 @@ export class LeaveManagementComponent implements OnInit {
       leaveType: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      halfDay: [HalfDayPeriod.FULL_DAY, Validators.required],
+      halfDay: ['full_day', Validators.required],
       reason: ['', [Validators.required, Validators.maxLength(500)]]
     });
   }
 
   loadBalances() {
-    this.leaveService.getMyBalances().subscribe({
+    this.leaveService.getMyLeaveBalance().subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
           // Backend returns an object like { annual: {...}, sick: {...} }
@@ -107,7 +109,7 @@ export class LeaveManagementComponent implements OnInit {
 
   loadLeaves() {
     this.loading.set(true);
-    this.leaveService.getMyLeaves().subscribe({
+    this.leaveService.getMyLeaveRequests().subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
           this.leaves.set(response.data);
@@ -134,14 +136,14 @@ export class LeaveManagementComponent implements OnInit {
       leaveType: formValue.leaveType,
       startDate: this.formatDate(formValue.startDate),
       endDate: this.formatDate(formValue.endDate),
-      isHalfDay: formValue.halfDay !== HalfDayPeriod.FULL_DAY,
-      halfDayPeriod: formValue.halfDay !== HalfDayPeriod.FULL_DAY ? formValue.halfDay : undefined,
+      isHalfDay: formValue.halfDay !== 'full_day',
+      halfDayPeriod: formValue.halfDay !== 'full_day' ? (formValue.halfDay as 'morning' | 'afternoon') : undefined,
       reason: formValue.reason
     }).subscribe({
       next: (response) => {
         if (response.status === 'success') {
           this.submitting.set(false);
-          this.leaveForm.reset({ halfDay: HalfDayPeriod.FULL_DAY });
+          this.leaveForm.reset({ halfDay: 'full_day' });
           this.loadBalances();
           this.loadLeaves();
           this.uiNotification.showSuccess('Leave request submitted successfully!');
@@ -171,7 +173,7 @@ export class LeaveManagementComponent implements OnInit {
 
     if (!confirmed) return;
 
-    this.leaveService.cancelLeave(leave._id).subscribe({
+    this.leaveService.cancelLeaveRequest(leave._id, undefined).subscribe({
       next: () => {
         this.loadLeaves();
         this.loadBalances();
@@ -188,12 +190,14 @@ export class LeaveManagementComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'approved': return 'success';
-      case 'pending': return 'warning';
-      case 'rejected': return 'error';
-      default: return 'default';
-    }
+    const color = getStatusColor(status);
+    const colorMap: Record<string, string> = {
+      'primary': 'success',
+      'accent': 'warning',
+      'warn': 'error',
+      '': 'default'
+    };
+    return colorMap[color] || 'default';
   }
 
   getUsagePercentage(balance: LeaveBalance): number {

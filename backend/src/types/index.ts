@@ -1,124 +1,60 @@
 // Type definitions for the application
+// Re-export shared types and add backend-specific types
 
 import { Request } from 'express';
 import { Document } from 'mongoose';
 
-// ==================== ENUMS ====================
+// Import shared types for use in this file
+import type {
+  UserRole,
+  EmploymentType,
+  Gender,
+  TimesheetStatus,
+  LeaveType,
+  LeaveStatus,
+  DocumentCategory,
+  NotificationType,
+  NotificationPriority,
+  IAddress,
+  ISalary,
+  IVisa,
+  ILeaveBalance
+} from '@shared/types';
 
-export enum UserRole {
-  PROSPECT = 'prospect',
-  EMPLOYEE = 'employee',
-  SUPERVISOR = 'supervisor',
-  HR = 'hr',
-  ADMIN = 'admin',
-  EMPLOYER = 'employer'
-}
+// Re-export enums as values (needed for runtime usage)
+export {
+  UserRole,
+  EmploymentType,
+  Gender,
+  VisaStatus,
+  TimesheetStatus,
+  LeaveType,
+  LeaveStatus,
+  DocumentCategory,
+  NotificationType,
+  NotificationPriority
+} from '@shared/types';
 
-export enum EmploymentType {
-  FULL_TIME = 'full-time',
-  PART_TIME = 'part-time',
-  CONTRACT = 'contract',
-  INTERN = 'intern'
-}
+// Re-export types and interfaces
+export type {
+  IAddress,
+  ISalary,
+  IVisa,
+  ILeaveBalance,
+  IApiResponse,
+  IPaginatedResponse,
+  IRegisterDTO,
+  ILoginDTO,
+  IPasswordResetRequestDTO,
+  IPasswordResetDTO,
+  ITimesheetEntryDTO,
+  ILeaveRequestDTO,
+  Nullable,
+  Optional,
+  AsyncFunction
+} from '@shared/types';
 
-export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
-  PREFER_NOT_TO_SAY = 'prefer-not-to-say'
-}
-
-export enum VisaStatus {
-  ACTIVE = 'active',
-  EXPIRED = 'expired',
-  PENDING = 'pending',
-  NOT_APPLICABLE = 'not-applicable'
-}
-
-export enum TimesheetStatus {
-  DRAFT = 'draft',
-  SUBMITTED = 'submitted',
-  APPROVED = 'approved',
-  REJECTED = 'rejected'
-}
-
-export enum LeaveType {
-  ANNUAL = 'annual',
-  SICK = 'sick',
-  PERSONAL = 'personal',
-  UNPAID = 'unpaid',
-  MATERNITY = 'maternity',
-  PATERNITY = 'paternity'
-}
-
-export enum LeaveStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-  CANCELLED = 'cancelled'
-}
-
-export enum DocumentCategory {
-  VISA = 'visa',
-  PASSPORT = 'passport',
-  CONTRACT = 'contract',
-  CERTIFICATION = 'certification',
-  TAX = 'tax',
-  INSURANCE = 'insurance',
-  OTHER = 'other'
-}
-
-export enum NotificationType {
-  TIMESHEET_SUBMITTED = 'timesheet_submitted',
-  TIMESHEET_APPROVED = 'timesheet_approved',
-  TIMESHEET_REJECTED = 'timesheet_rejected',
-  LEAVE_SUBMITTED = 'leave_submitted',
-  LEAVE_APPROVED = 'leave_approved',
-  LEAVE_REJECTED = 'leave_rejected',
-  DOCUMENT_EXPIRING = 'document_expiring',
-  DOCUMENT_SHARED = 'document_shared',
-  PASSWORD_RESET = 'password_reset',
-  SYSTEM_ANNOUNCEMENT = 'system_announcement',
-  OTHER = 'other'
-}
-
-export enum NotificationPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  URGENT = 'urgent'
-}
-
-// ==================== INTERFACES ====================
-
-export interface IAddress {
-  street?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  zipCode?: string;
-}
-
-export interface ISalary {
-  amount?: number;
-  currency?: string;
-}
-
-export interface IVisa {
-  type?: string;
-  number?: string;
-  expiryDate?: Date;
-  status?: VisaStatus;
-}
-
-export interface ILeaveBalance {
-  annual: number;
-  sick: number;
-  personal: number;
-  unpaid: number;
-  maternity: number;
-  paternity: number;
-}
+// ==================== BACKEND-SPECIFIC INTERFACES ====================
 
 export interface ITenantSettings {
   workDaysPerWeek: number;
@@ -325,77 +261,4 @@ export interface IFilterQuery extends IPaginationQuery {
   [key: string]: any;
 }
 
-// ==================== RESPONSE INTERFACES ====================
-
-export interface IApiResponse<T = any> {
-  status: 'success' | 'error';
-  message?: string;
-  data?: T;
-  errors?: string[];
-  meta?: {
-    page?: number;
-    limit?: number;
-    total?: number;
-    totalPages?: number;
-  };
-}
-
-export interface IPaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-// ==================== DTO INTERFACES ====================
-
-export interface IRegisterDTO {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  // Single-tenant deployment - no tenantDomain needed
-}
-
-export interface ILoginDTO {
-  email: string;
-  password: string;
-  // Single-tenant deployment - no tenantDomain needed
-}
-
-export interface IPasswordResetRequestDTO {
-  email: string;
-  // Single-tenant deployment - no tenantDomain needed
-}
-
-export interface IPasswordResetDTO {
-  token: string;
-  newPassword: string;
-}
-
-export interface ITimesheetEntryDTO {
-  date: Date;
-  project: string;
-  task?: string;
-  description?: string;
-  hours: number;
-  isBillable?: boolean;
-}
-
-export interface ILeaveRequestDTO {
-  leaveType: LeaveType;
-  startDate: Date;
-  endDate: Date;
-  isHalfDay?: boolean;
-  halfDayPeriod?: 'morning' | 'afternoon';
-  reason: string;
-}
-
-// ==================== UTILITY TYPES ====================
-
-export type Nullable<T> = T | null;
-export type Optional<T> = T | undefined;
-export type AsyncFunction<T = void> = (...args: any[]) => Promise<T>;
+// DTOs are re-exported from shared types above

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { API_ENDPOINTS } from '@shared/types/constants';
 
 export type ReportFormat = 'json' | 'pdf' | 'excel';
 
@@ -10,7 +11,7 @@ export type ReportFormat = 'json' | 'pdf' | 'excel';
 })
 export class ReportService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/reports`;
+  private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.REPORTS.TIMESHEET}`;
 
   getTimesheetReport(params: {
     startDate?: string;
@@ -20,19 +21,19 @@ export class ReportService {
   }): Observable<any> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && key !== 'format') {
         httpParams = httpParams.set(key, value.toString());
       }
     });
 
     if (params.format === 'pdf' || params.format === 'excel') {
-      return this.http.get(`${this.apiUrl}/timesheet`, {
+      return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TIMESHEET}`, {
         params: httpParams,
         responseType: 'blob'
       });
     }
 
-    return this.http.get(`${this.apiUrl}/timesheet`, { params: httpParams });
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TIMESHEET}`, { params: httpParams });
   }
 
   getLeaveReport(params: {
@@ -44,19 +45,19 @@ export class ReportService {
   }): Observable<any> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && key !== 'format') {
         httpParams = httpParams.set(key, value.toString());
       }
     });
 
     if (params.format === 'pdf' || params.format === 'excel') {
-      return this.http.get(`${this.apiUrl}/leave`, {
+      return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.LEAVE}`, {
         params: httpParams,
         responseType: 'blob'
       });
     }
 
-    return this.http.get(`${this.apiUrl}/leave`, { params: httpParams });
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.LEAVE}`, { params: httpParams });
   }
 
   getTeamReport(params?: {
@@ -66,20 +67,20 @@ export class ReportService {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined) {
+        if (value !== undefined && key !== 'format') {
           httpParams = httpParams.set(key, value.toString());
         }
       });
     }
 
     if (params?.format === 'pdf' || params?.format === 'excel') {
-      return this.http.get(`${this.apiUrl}/team`, {
+      return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TEAM}`, {
         params: httpParams,
         responseType: 'blob'
       });
     }
 
-    return this.http.get(`${this.apiUrl}/team`, { params: httpParams });
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TEAM}`, { params: httpParams });
   }
 
   downloadFile(blob: Blob, filename: string): void {
@@ -91,4 +92,3 @@ export class ReportService {
     window.URL.revokeObjectURL(url);
   }
 }
-

@@ -2,6 +2,7 @@ import { Response } from 'express';
 import Notification from '../models/notification.model';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest, NotificationPriority } from '../types';
+import { ICreateNotificationRequest } from '@shared/types/requests';
 
 export class NotificationController {
   /**
@@ -18,7 +19,7 @@ export class NotificationController {
         actionUrl,
         priority,
         sendEmail
-      } = req.body as any;
+      }: ICreateNotificationRequest = req.body;
 
       const notification = new Notification({
         tenantId: req.user?.tenantId,

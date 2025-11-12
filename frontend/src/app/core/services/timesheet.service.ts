@@ -1,168 +1,150 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {
-  TimesheetEntry,
-  WeeklyTimesheet,
-  Project,
-  CreateTimesheetRequest,
-  UpdateTimesheetRequest,
-  SubmitWeekRequest
-} from '../models/timesheet.model';
+import { TimesheetStatus, ITimesheetEntryDTO } from '@shared/types';
+import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
+import { API_ENDPOINTS } from '@shared/types/constants';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
 dayjs.extend(isoWeek);
 
+export interface TimesheetEntry extends ITimesheetEntryDTO {
+  _id?: string;
+  projectId?: string;
+  project: string; // Required from ITimesheetEntryDTO
+  hours: number; // Required from ITimesheetEntryDTO
+  hoursWorked?: number;
+  task?: string;
+  description?: string;
+  isBillable?: boolean;
+  billable?: boolean;
+  status?: TimesheetStatus;
+}
+
+export interface WeeklyTimesheet {
+  weekStart: Date | string;
+  weekEnd: Date | string;
+  entries: TimesheetEntry[];
+  totalHours: number;
+  billableHours: number;
+  status: TimesheetStatus;
+  submittedAt?: Date | string;
+}
+
+export interface Project {
+  _id: string;
+  name: string;
+  code: string;
+  isActive: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class TimesheetService {
-  private readonly API_URL = `${environment.apiUrl}/timesheets`;
-  private readonly PROJECT_URL = `${environment.apiUrl}/projects`;
+  private http = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`;
 
-  constructor(private http: HttpClient) {}
-
-  /**
-   * Get all projects for dropdown
-   */
-  getProjects(): Observable<{ status: string; data: Project[]; message?: string }> {
-    return this.http.get<{ status: string; data: Project[]; message?: string }>(this.PROJECT_URL);
+  getProjects(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`);
   }
 
-  /**
-   * Get timesheet entries for a specific week
-   */
-  getWeeklyEntries(weekStart: string, weekEnd: string): Observable<{ status: string; data: WeeklyTimesheet; message?: string }> {
-    return this.http.get<{ status: string; data: WeeklyTimesheet; message?: string }>(
-      `${this.API_URL}/week/${weekStart}`
-    );
+  getWeeklyEntries(weekStart: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.WEEK(weekStart)}`);
   }
 
-  /**
-   * Create a new timesheet entry
-   */
-  createEntry(entry: CreateTimesheetRequest): Observable<{ status: string; data: TimesheetEntry; message?: string }> {
-    return this.http.post<{ status: string; data: TimesheetEntry; message?: string }>(`${this.API_URL}/entries`, entry);
+  createEntry(entry: TimesheetEntry): Observable<any> {
+    const dto: ITimesheetEntryDTO = {
+      date: entry.date,
+      project: entry.projectId || entry.project || '',
+      task: entry.task,
+      description: entry.description,
+      hours: entry.hours || entry.hoursWorked || 0,
+      isBillable: entry.isBillable !== undefined ? entry.isBillable : (entry.billable !== undefined ? entry.billable : true)
+    };
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`, dto);
   }
 
-  /**
-   * Batch create multiple timesheet entries
-   */
-  batchCreateEntries(entries: CreateTimesheetRequest[]): Observable<{ status: string; data: TimesheetEntry[]; message?: string }> {
-    return this.http.post<{ status: string; data: TimesheetEntry[]; message?: string }>(`${this.API_URL}/entries/batch`, { entries });
+  batchCreateEntries(entries: TimesheetEntry[]): Observable<any> {
+    const dtos = entries.map(entry => ({
+      date: entry.date,
+      project: entry.projectId || entry.project || '',
+      task: entry.task,
+      description: entry.description,
+      hours: entry.hours || entry.hoursWorked || 0,
+      isBillable: entry.isBillable !== undefined ? entry.isBillable : (entry.billable !== undefined ? entry.billable : true)
+    }));
+    const body: IBatchTimesheetEntriesRequest = { entries: dtos };
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.BATCH_ENTRIES}`, body);
   }
 
-  /**
-   * Update an existing timesheet entry (only if Draft or Rejected)
-   */
-  updateEntry(entry: UpdateTimesheetRequest): Observable<{ status: string; data: TimesheetEntry; message?: string }> {
-    return this.http.put<{ status: string; data: TimesheetEntry; message?: string }>(`${this.API_URL}/entries/${entry._id}`, entry);
-  }
-
-  /**
-   * Delete a timesheet entry (only if Draft or Rejected)
-   */
-  deleteEntry(entryId: string): Observable<{ status: string; message?: string }> {
-    return this.http.delete<{ status: string; message?: string }>(`${this.API_URL}/entries/${entryId}`);
-  }
-
-  /**
-   * Submit entire week for approval
-   */
-  submitWeek(data: SubmitWeekRequest): Observable<{ status: string; data: WeeklyTimesheet; message?: string }> {
-    return this.http.post<{ status: string; data: WeeklyTimesheet; message?: string }>(`${this.API_URL}/submit`, data);
-  }
-
-  /**
-   * Get timesheet history with optional filters
-   */
-  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<{ status: string; data: TimesheetEntry[]; message?: string }> {
-    let queryParams = '';
-    if (params) {
-      const queryArray: string[] = [];
-      if (params.startDate) queryArray.push(`startDate=${params.startDate}`);
-      if (params.endDate) queryArray.push(`endDate=${params.endDate}`);
-      if (params.status) queryArray.push(`status=${params.status}`);
-      if (queryArray.length > 0) {
-        queryParams = '?' + queryArray.join('&');
-      }
+  updateEntry(entryId: string, updates: Partial<TimesheetEntry>): Observable<any> {
+    const body: IUpdateTimesheetEntryRequest = {};
+    if (updates.projectId || updates.project) body.project = updates.projectId || updates.project || '';
+    if (updates.task !== undefined) body.task = updates.task;
+    if (updates.description !== undefined) body.description = updates.description;
+    if (updates.hours !== undefined || updates.hoursWorked !== undefined) {
+      body.hours = updates.hours || updates.hoursWorked || 0;
     }
-    return this.http.get<{ status: string; data: TimesheetEntry[]; message?: string }>(`${this.API_URL}/history${queryParams}`);
+    if (updates.isBillable !== undefined || updates.billable !== undefined) {
+      body.isBillable = updates.isBillable !== undefined ? updates.isBillable : (updates.billable || false);
+    }
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`, body);
   }
 
-  /**
-   * Get current week date range (Mon-Sun)
-   */
+  deleteEntry(entryId: string): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`);
+  }
+
+  submitWeek(weekStartDate: string): Observable<any> {
+    const body: ISubmitWeekRequest = { weekStartDate };
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.SUBMIT}`, body);
+  }
+
+  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
+    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.HISTORY}`, { params: httpParams });
+  }
+
+  getPendingTimesheets(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.PENDING_APPROVALS}`);
+  }
+
+  approveTimesheet(entryIds: string[], comments?: string): Observable<any> {
+    const body: IApproveTimesheetEntriesRequest = { entryIds, comments };
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.APPROVE}`, body);
+  }
+
+  rejectTimesheet(entryIds: string[], reason: string): Observable<any> {
+    const body: IRejectTimesheetEntriesRequest = { entryIds, comments: reason };
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.REJECT}`, body);
+  }
+
   getCurrentWeekRange(): { start: Date; end: Date } {
     const today = dayjs();
     const monday = today.startOf('isoWeek');
     const sunday = monday.add(6, 'days').endOf('day');
-
-    return { 
-      start: monday.toDate(), 
-      end: sunday.toDate() 
-    };
+    return { start: monday.toDate(), end: sunday.toDate() };
   }
 
-  /**
-   * Get previous week range
-   */
   getPreviousWeek(currentStart: Date): { start: Date; end: Date } {
     const start = dayjs(currentStart).subtract(7, 'days');
     const end = start.add(6, 'days').endOf('day');
-
-    return { 
-      start: start.toDate(), 
-      end: end.toDate() 
-    };
+    return { start: start.toDate(), end: end.toDate() };
   }
 
-  /**
-   * Get next week range
-   */
   getNextWeek(currentStart: Date): { start: Date; end: Date } {
     const start = dayjs(currentStart).add(7, 'days');
     const end = start.add(6, 'days').endOf('day');
-
-    return { 
-      start: start.toDate(), 
-      end: end.toDate() 
-    };
+    return { start: start.toDate(), end: end.toDate() };
   }
 
-  /**
-   * Format date to YYYY-MM-DD for API
-   */
   formatDate(date: Date): string {
     return dayjs(date).format('YYYY-MM-DD');
-  }
-
-  /**
-   * Get pending timesheets for approval (Supervisor/HR/Admin/Employer)
-   */
-  getPendingTimesheets(): Observable<{ status: string; data: WeeklyTimesheet[]; message?: string }> {
-    return this.http.get<{ status: string; data: WeeklyTimesheet[]; message?: string }>(`${this.API_URL}/approvals/pending`);
-  }
-
-  /**
-   * Approve timesheet entries
-   */
-  approveTimesheet(entryIds: string[], comments?: string): Observable<{ status: string; data: any; message?: string }> {
-    return this.http.post<{ status: string; data: any; message?: string }>(
-      `${this.API_URL}/approvals/approve`,
-      { entryIds, comments }
-    );
-  }
-
-  /**
-   * Reject timesheet entries
-   */
-  rejectTimesheet(entryIds: string[], reason: string): Observable<{ status: string; data: any; message?: string }> {
-    return this.http.post<{ status: string; data: any; message?: string }>(
-      `${this.API_URL}/approvals/reject`,
-      { entryIds, comments: reason }
-    );
   }
 }

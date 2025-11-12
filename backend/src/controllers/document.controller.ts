@@ -5,6 +5,7 @@ import fs from 'fs';
 import { Document } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, DocumentCategory, UserRole } from '../types';
+import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/requests';
 import dayjs from 'dayjs';
 
 // Configure multer for file upload
@@ -58,7 +59,7 @@ export class DocumentController {
         return;
       }
 
-      const { category, description, documentNumber, issueDate, expiryDate } = req.body;
+      const { category, description, documentNumber, issueDate, expiryDate }: IUpdateDocumentRequest = req.body;
 
       const document = new Document({
         tenantId: req.user?.tenantId,
@@ -184,7 +185,7 @@ export class DocumentController {
   static async shareDocument(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { documentId } = req.params;
-      const { userIds, canDownload } = req.body;
+      const { userIds, canDownload }: IShareDocumentRequest = req.body;
 
       const document = await Document.findOne({
         _id: documentId,
@@ -281,7 +282,7 @@ export class DocumentController {
   static async updateDocument(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { documentId } = req.params;
-      const { category, description, documentNumber, issueDate, expiryDate } = req.body;
+      const { category, description, documentNumber, issueDate, expiryDate }: IUpdateDocumentRequest = req.body;
 
       const document = await Document.findOne({
         _id: documentId,

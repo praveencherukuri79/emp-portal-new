@@ -1,122 +1,88 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {
-  LeaveRequest,
-  LeaveBalance,
-  CreateLeaveRequest,
-  ApproveRejectLeaveRequest,
-  LeaveType
-} from '../models/leave.model';
+import { LeaveType, LeaveStatus, ILeaveRequestDTO } from '@shared/types';
+import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
+import { API_ENDPOINTS } from '@shared/types/constants';
+
+export interface LeaveRequest extends ILeaveRequestDTO {
+  _id?: string;
+  status?: LeaveStatus;
+  totalDays?: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class LeaveService {
-  private readonly API_URL = `${environment.apiUrl}/leaves`;
+  private http = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`;
 
-  constructor(private http: HttpClient) {}
-
-  /**
-   * Get all leave requests for current user
-   */
-  getMyLeaves(): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
-    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(`${this.API_URL}/my-requests`);
-  }
-
-  /**
-   * Get leave balances for current user
-   */
-  getMyBalances(): Observable<{ status: string; data: any; message?: string }> {
-    return this.http.get<{ status: string; data: any; message?: string }>(`${this.API_URL}/my-balance`);
-  }
-
-  /**
-   * Create a new leave request
-   */
-  createLeaveRequest(request: CreateLeaveRequest): Observable<{ status: string; data: LeaveRequest; message?: string }> {
-    return this.http.post<{ status: string; data: LeaveRequest; message?: string }>(this.API_URL, request);
-  }
-
-  /**
-   * Cancel a pending leave request
-   */
-  cancelLeave(leaveId: string): Observable<{ status: string; message?: string }> {
-    return this.http.put<{ status: string; message?: string }>(`${this.API_URL}/${leaveId}/cancel`, {});
-  }
-
-  /**
-   * Get pending leave requests for approval (Supervisor/HR/Admin)
-   */
-  getPendingApprovals(): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
-    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(`${this.API_URL}/approvals/pending`);
-  }
-
-  /**
-   * Approve or reject a leave request (Supervisor/HR/Admin)
-   */
-  approveRejectLeave(request: ApproveRejectLeaveRequest): Observable<{ status: string; data: LeaveRequest; message?: string }> {
-    const { leaveId, action, reason } = request;
-    return this.http.put<{ status: string; data: LeaveRequest; message?: string }>(`${this.API_URL}/${leaveId}/${action}`, { reason });
-  }
-
-  /**
-   * Get all leaves for calendar view
-   */
-  getCalendarLeaves(startDate: string, endDate: string): Observable<{ status: string; data: LeaveRequest[]; message?: string }> {
-    return this.http.get<{ status: string; data: LeaveRequest[]; message?: string }>(
-      `${this.API_URL}/calendar?start=${startDate}&end=${endDate}`
-    );
-  }
-
-  /**
-   * Calculate number of days between two dates (excluding weekends)
-   */
-  calculateLeaveDays(startDate: Date, endDate: Date, halfDay: string): number {
-    let days = 0;
-    const current = new Date(startDate);
-    const end = new Date(endDate);
-
-    while (current <= end) {
-      const dayOfWeek = current.getDay();
-      // Skip weekends (0 = Sunday, 6 = Saturday)
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        days++;
-      }
-      current.setDate(current.getDate() + 1);
-    }
-
-    // Adjust for half-day
-    if (halfDay === 'morning' || halfDay === 'afternoon') {
-      days = days - 0.5;
-    }
-
-    return days;
-  }
-
-  /**
-   * Format date to YYYY-MM-DD for API
-   */
-  formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Get leave type display name
-   */
-  getLeaveTypeName(type: LeaveType): string {
-    const names: Record<LeaveType, string> = {
-      [LeaveType.ANNUAL]: 'Annual Leave',
-      [LeaveType.SICK]: 'Sick Leave',
-      [LeaveType.PERSONAL]: 'Personal Leave',
-      [LeaveType.UNPAID]: 'Unpaid Leave',
-      [LeaveType.MATERNITY]: 'Maternity Leave',
-      [LeaveType.PATERNITY]: 'Paternity Leave'
+  createLeaveRequest(request: LeaveRequest): Observable<any> {
+    const dto: ILeaveRequestDTO = {
+      leaveType: request.leaveType,
+      startDate: request.startDate,
+      endDate: request.endDate,
+      isHalfDay: request.isHalfDay,
+      halfDayPeriod: request.halfDayPeriod?.toLowerCase() as 'morning' | 'afternoon' | undefined,
+      reason: request.reason
     };
-    return names[type];
+    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto);
+  }
+
+  getMyLeaveRequests(params?: { status?: LeaveStatus; leaveType?: LeaveType }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
+    if (params?.leaveType) httpParams = httpParams.set('leaveType', params.leaveType.toLowerCase());
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_REQUESTS}`, { params: httpParams });
+  }
+
+  getMyLeaveBalance(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_BALANCE}`);
+  }
+
+  getLeaveCalendar(params?: { startDate?: string; endDate?: string }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
+    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CALENDAR}`, { params: httpParams });
+  }
+
+  updateLeaveRequest(leaveId: string, updates: Partial<LeaveRequest>): Observable<any> {
+    const body: IUpdateLeaveRequestRequest = {};
+    if (updates.leaveType) body.leaveType = updates.leaveType;
+    if (updates.startDate) body.startDate = updates.startDate;
+    if (updates.endDate) body.endDate = updates.endDate;
+    if (updates.isHalfDay !== undefined) body.isHalfDay = updates.isHalfDay;
+    if (updates.halfDayPeriod) body.halfDayPeriod = updates.halfDayPeriod.toLowerCase() as 'morning' | 'afternoon';
+    if (updates.reason) body.reason = updates.reason;
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.BY_ID(leaveId)}`, body);
+  }
+
+  cancelLeaveRequest(leaveId: string, cancellationReason?: string): Observable<any> {
+    const body: ICancelLeaveRequest = { cancellationReason };
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CANCEL(leaveId)}`, body);
+  }
+
+  getPendingApprovals(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.PENDING_APPROVALS}`);
+  }
+
+  approveLeaveRequest(leaveId: string, comments?: string): Observable<any> {
+    const body: IApproveLeaveRequest = { comments };
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.APPROVE(leaveId)}`, body);
+  }
+
+  rejectLeaveRequest(leaveId: string, reason: string): Observable<any> {
+    const body: IRejectLeaveRequest = { comments: reason };
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.REJECT(leaveId)}`, body);
+  }
+
+  getLeaveStatistics(params?: { userId?: string; year?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params?.userId) httpParams = httpParams.set('userId', params.userId);
+    if (params?.year) httpParams = httpParams.set('year', params.year.toString());
+    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.STATISTICS}`, { params: httpParams });
   }
 }

@@ -5,30 +5,46 @@
 
   <!-- Week Navigation -->
   <div class="week-nav">
-    <div class="week-nav__controls">
-      <button mat-icon-button (click)="previousWeek()" matTooltip="Previous Week">
+    <div class="week-nav__left">
+      <button 
+        mat-icon-button 
+        (click)="previousWeek()" 
+        matTooltip="Previous Week">
         <mat-icon>chevron_left</mat-icon>
       </button>
       
-      <div class="week-nav__range">
-        <h2>{{ weekStart() | date:'MMM d' }} - {{ weekEnd() | date:'MMM d, y' }}</h2>
-        <mat-chip [class]="'status-badge ' + weekStatus()">{{ weekStatus() }}</mat-chip>
+      <div class="week-nav__date">
+        <span class="date-range">{{ weekStart() | date:'MMM d' }} - {{ weekEnd() | date:'MMM d, y' }}</span>
       </div>
       
-      <button mat-icon-button (click)="nextWeek()" matTooltip="Next Week">
+      <button 
+        mat-icon-button 
+        (click)="nextWeek()" 
+        matTooltip="Next Week">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
     
-    <div class="week-nav__actions">
-      <button mat-stroked-button (click)="goToCurrentWeek()">
+    <div class="week-nav__right">
+      <div class="week-nav__status">
+        <mat-chip [class]="'status-chip ' + weekStatus()">
+          <mat-icon class="status-icon">{{ getStatusIcon(weekStatus()) }}</mat-icon>
+          <span>{{ weekStatus() }}</span>
+        </mat-chip>
+      </div>
+      
+      <button 
+        mat-icon-button 
+        (click)="goToCurrentWeek()"
+        matTooltip="Go to Current Week">
         <mat-icon>today</mat-icon>
-        Current Week
       </button>
       
-      <button mat-stroked-button (click)="viewHistory()">
+      <button 
+        mat-icon-button 
+        (click)="viewHistory()"
+        matTooltip="View History">
         <mat-icon>history</mat-icon>
-        View History
       </button>
     </div>
   </div>
@@ -66,7 +82,11 @@
       <div class="empty-state">
         <mat-icon>event_note</mat-icon>
         <h3>No projects added yet</h3>
-        <p>Add a project below to start tracking your time</p>
+        @if (projects().length === 0) {
+          <p>No projects assigned. Please contact your administrator to assign projects before creating timesheets.</p>
+        } @else {
+          <p>Add a project below to start tracking your time</p>
+        }
       </div>
     }
 
@@ -147,42 +167,47 @@
     <!-- Add Project Section -->
     @if (canEdit()) {
       <div class="add-project-section">
-        <mat-form-field appearance="outline">
-          <mat-label>Select or Enter Project</mat-label>
-          <mat-select [(ngModel)]="selectedProject">
-            @for (project of projects(); track project._id) {
-              <mat-option [value]="project._id">
-                <mat-icon style="vertical-align: middle; margin-right: 8px; font-size: 18px;">folder</mat-icon>
-                {{ project.name }}
-              </mat-option>
-            }
-          </mat-select>
-          <mat-hint>Select a project from the list</mat-hint>
-        </mat-form-field>
+        @if (projects().length === 0) {
+          <div class="no-projects-warning">
+            <mat-icon>warning</mat-icon>
+            <div>
+              <h4>No Projects Assigned</h4>
+              <p>You don't have any projects assigned. Please contact your administrator to assign projects before creating timesheets.</p>
+            </div>
+          </div>
+        } @else {
+          <mat-form-field appearance="outline">
+            <mat-label>Select Project</mat-label>
+            <mat-select [(ngModel)]="selectedProject">
+              @for (project of availableProjects(); track project._id) {
+                <mat-option [value]="project._id">
+                  <mat-icon style="vertical-align: middle; margin-right: 8px; font-size: 18px;">folder</mat-icon>
+                  {{ project.name }}
+                </mat-option>
+              }
+              @if (availableProjects().length === 0) {
+                <mat-option disabled>All projects already added</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Select a project from your assigned projects</mat-hint>
+          </mat-form-field>
 
-        <span style="align-self: center; color: var(--text-secondary); font-weight: 600;">OR</span>
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <input matInput [(ngModel)]="projectDescription">
+          </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>New Project Name</mat-label>
-          <input matInput [(ngModel)]="customProjectName" placeholder="Enter new project name">
-          <mat-hint>Type a new project name if not in list</mat-hint>
-        </mat-form-field>
+          <mat-checkbox [(ngModel)]="projectBillable">Billable</mat-checkbox>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Description</mat-label>
-          <input matInput [(ngModel)]="projectDescription" placeholder="Optional description">
-        </mat-form-field>
-
-        <mat-checkbox [(ngModel)]="projectBillable">Billable</mat-checkbox>
-
-        <button 
-          mat-raised-button 
-          color="primary" 
-          (click)="addProject()"
-          [disabled]="!selectedProject() && !customProjectName()">
-          <mat-icon>add</mat-icon>
-          Add Project
-        </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="addProject()"
+            [disabled]="!selectedProject()">
+            <mat-icon>add</mat-icon>
+            Add Project
+          </button>
+        }
       </div>
     }
   </div>

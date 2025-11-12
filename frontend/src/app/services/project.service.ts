@@ -4,14 +4,25 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { API_ENDPOINTS } from '@shared/types/constants';
 
+export interface Project {
+  _id: string;
+  name: string;
+  code: string;
+  description?: string;
+  isActive: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class DashboardService {
+export class ProjectService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}${API_ENDPOINTS.DASHBOARD.BASE}`;
+  private apiUrl = `${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`;
 
-  getDashboard(): Observable<any> {
+  getAllProjects(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
 }
+
