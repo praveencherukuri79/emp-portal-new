@@ -5,6 +5,7 @@
 
 @import '../../../styles/mixins/components';
 @import '../../../styles/mixins/layout';
+@import '../../../styles/tokens/breakpoints';
 
 .approvals-container {
   @include container;
@@ -41,36 +42,11 @@
     }
   }
 
-  .table-container {
-    overflow-x: auto;
-  }
+  // Use global .table-container class
+  // Use global .table-base class for .approvals-table
 
+  // Component-specific table cell styles
   .approvals-table {
-    width: 100%;
-    background: transparent;
-
-    th {
-      font-weight: var(--font-weight-semibold);
-      color: var(--text-primary);
-      background: var(--table-header-background);
-      padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--border-primary);
-    }
-
-    td {
-      color: var(--text-secondary);
-      padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--table-border);
-    }
-
-    .table-row {
-      transition: background-color var(--transition-fast);
-
-      &:hover {
-        background: var(--table-row-hover);
-      }
-    }
-
     .employee-info {
       @include flex-center;
       justify-content: flex-start;
@@ -109,21 +85,11 @@
     }
   }
 
-  .loading-container {
-    @include loading-state;
-  }
-
-  .error-container {
-    @include error-state;
-  }
-
-  .empty-state {
-    @include empty-state;
-  }
+  // Use global .loading-container, .error-container, .empty-state classes
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .approvals-container {
     padding: var(--spacing-page-padding);
   }

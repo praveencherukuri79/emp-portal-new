@@ -1,5 +1,6 @@
 @import '../../../../styles/mixins/components.scss';
 @import '../../../../styles/mixins/layout.scss';
+@import '../../../../styles/tokens/breakpoints.scss';
 
 .admin-dashboard {
   @include container;
@@ -68,23 +69,11 @@
   }
 
   .activity-list {
-    display: flex;
-    flex-direction: column;
+    @include flex-column;
     gap: var(--spacing-4);
 
     .activity-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-4);
-      padding: var(--spacing-4);
-      background: var(--background-tertiary);
-      border-radius: var(--radius-md);
-      transition: all var(--transition-normal);
-
-      &:hover {
-        background: var(--table-row-hover);
-        transform: translateX(4px);
-      }
+      @include activity-item;
 
       .activity-icon {
         mat-icon {
@@ -108,8 +97,7 @@
 
       .activity-details {
         flex: 1;
-        display: flex;
-        flex-direction: column;
+        @include flex-column;
         gap: var(--spacing-1);
 
         strong {
@@ -131,9 +119,7 @@
   }
 
   .management-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-4);
+    @include grid-auto-fit(250px);
 
     .action-btn {
       display: flex;
@@ -171,9 +157,7 @@
   }
 
   .reports-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--spacing-4);
+    @include grid-auto-fit(180px);
 
     .report-btn {
       display: flex;
@@ -199,48 +183,5 @@
     }
   }
 
-  .empty-state {
-    text-align: center;
-    padding: var(--spacing-12) var(--spacing-4);
-    color: var(--text-secondary);
-
-    mat-icon {
-      font-size: var(--font-size-5xl);
-      width: var(--font-size-5xl);
-      height: var(--font-size-5xl);
-      margin-bottom: var(--spacing-4);
-      display: block;
-      opacity: 0.5;
-      color: var(--text-tertiary);
-    }
-
-    p {
-      margin: 0;
-      font-size: var(--font-size-md);
-    }
-  }
-
-  .loading-container,
-  .error-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-16);
-    gap: var(--spacing-4);
-
-    p {
-      color: var(--text-secondary);
-    }
-  }
-
-  .error-container {
-    mat-icon {
-      font-size: var(--font-size-5xl);
-      width: var(--font-size-5xl);
-      height: var(--font-size-5xl);
-      color: var(--status-error);
-      margin-bottom: var(--spacing-4);
-    }
-  }
+  // Use global .empty-state, .loading-container, .error-container classes
 }

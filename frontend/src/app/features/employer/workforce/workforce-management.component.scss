@@ -5,6 +5,7 @@
 
 @import '../../../../styles/mixins/components.scss';
 @import '../../../../styles/mixins/layout.scss';
+@import '../../../../styles/tokens/breakpoints.scss';
 
 .workforce-page {
   @include container;
@@ -17,7 +18,7 @@
     align-items: flex-start;
     gap: var(--spacing-4);
 
-    @media (max-width: 768px) {
+    @include breakpoint-down(sm) {
       flex-direction: column;
     }
   }

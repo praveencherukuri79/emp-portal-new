@@ -5,6 +5,7 @@
 
 @import '../../../styles/mixins/components';
 @import '../../../styles/mixins/layout';
+@import '../../../styles/tokens/breakpoints';
 
 .profile-page {
   width: 100%;
@@ -12,9 +13,7 @@
   @include rich-background;
 }
 
-.profile-header {
-  @include page-header;
-}
+// Use global .page-header class
 
 .profile-card {
   @include card;
@@ -31,7 +30,7 @@
       justify-content: flex-start;
       gap: var(--spacing-6);
 
-      @media (max-width: 768px) {
+      @include breakpoint-down(sm) {
         flex-direction: column;
         text-align: center;
       }
@@ -42,7 +41,7 @@
         box-shadow: var(--shadow-md);
       }
 
-      .profile-header-info {
+      .profile-info {
         flex: 1;
 
         mat-card-title {
@@ -71,30 +70,7 @@
   }
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-6); // Consistent gap between all form fields
-  margin-bottom: 0;
-
-  // Remove margin-bottom from form fields since grid gap handles spacing
-  ::ng-deep .mat-mdc-form-field {
-    margin-bottom: 0;
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-
-  .full-width {
-    grid-column: span 2;
-
-    @media (max-width: 768px) {
-      grid-column: span 1;
-    }
-  }
-}
+// Use global .form-grid class
 
 .form-actions {
   @include form-actions;
@@ -102,11 +78,9 @@
   margin-top: var(--spacing-6);
 }
 
-.loading-container {
-  @include loading-state;
-}
+// Use global .loading-container class
 
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .profile-card {
     mat-card-header {
       .card-header-content {

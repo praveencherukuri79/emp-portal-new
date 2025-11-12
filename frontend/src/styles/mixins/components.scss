@@ -5,6 +5,7 @@
 
 @import './animations.scss';
 @import './forms.scss';
+@import '../tokens/breakpoints.scss';
 
 /* Button Mixins */
 @mixin button-base {
@@ -341,7 +342,7 @@
   margin-bottom: var(--spacing-8);  /* Margin below stats grid */
   width: 100%;
 
-  @media (max-width: 768px) {
+  @include breakpoint-down(sm) {
     grid-template-columns: 1fr;
     gap: var(--spacing-4);
     margin-bottom: var(--spacing-6);
@@ -356,7 +357,7 @@
   margin-bottom: var(--spacing-8);  /* Margin below content */
   width: 100%;
 
-  @media (max-width: 992px) {
+  @include breakpoint-down(md) {
     grid-template-columns: 1fr;
     gap: var(--spacing-4);
   }
@@ -438,5 +439,87 @@
     border-width: var(--border-focus-width);
     transform: translateX(4px);
     box-shadow: var(--shadow-sm);
+  }
+}
+
+/* Card Header - STANDARDIZED pattern for card headers with icon */
+@mixin card-header {
+  border-bottom: var(--border-width-thin) solid var(--border-primary);
+  padding: 0 0 var(--spacing-5) 0;
+  margin-bottom: var(--spacing-5);
+
+  .card-header-content {
+    @include flex-center;
+    justify-content: flex-start;
+    gap: var(--spacing-4);
+    width: 100%;
+
+    .card-header-icon {
+      @include icon-container(var(--spacing-12)); /* 48px equivalent */
+      @include icon-container-gradient(var(--action-primary));
+    }
+
+    mat-card-title {
+      margin: 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    mat-card-subtitle {
+      margin: var(--spacing-1) 0 0 0;
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+  }
+}
+
+/* Table Mixins - STANDARDIZED table styles */
+@mixin table-base {
+  width: 100%;
+  background: transparent;
+
+  th {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    background: var(--table-header-background);
+    padding: var(--spacing-card-padding);
+    border-bottom: var(--border-default) solid var(--border-primary);
+  }
+
+  td {
+    color: var(--text-secondary);
+    padding: var(--spacing-card-padding);
+    border-bottom: var(--border-default) solid var(--table-border);
+  }
+
+  .table-row {
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+      background: var(--table-row-hover);
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+@mixin table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Table with card styling */
+@mixin table-card {
+  @include table-base;
+  background: var(--card-background);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: var(--border-default) solid var(--border-secondary);
+
+  th {
+    background: var(--table-header-background);
   }
 }

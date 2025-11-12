@@ -1,5 +1,6 @@
 @import '../../../../styles/mixins/components.scss';
 @import '../../../../styles/mixins/layout.scss';
+@import '../../../../styles/tokens/breakpoints.scss';
 
 .prospect-dashboard {
   @include container;
@@ -46,7 +47,7 @@
       gap: var(--spacing-4);
       justify-content: center;
 
-      @media (max-width: 768px) {
+      @include breakpoint-down(sm) {
         flex-direction: column;
       }
 
@@ -168,7 +169,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .prospect-dashboard {
     padding: var(--spacing-4);
   }

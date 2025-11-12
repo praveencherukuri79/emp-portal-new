@@ -5,6 +5,7 @@
 
 @import '../../../../styles/mixins/components';
 @import '../../../../styles/mixins/layout';
+@import '../../../../styles/tokens/breakpoints';
 
 .login-container {
   display: flex;
@@ -101,7 +102,7 @@ mat-form-field {
 }
 
 /* Responsive Design - Mobile First */
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .login-container {
     padding: var(--spacing-4);
     align-items: flex-start;
@@ -132,7 +133,7 @@ mat-form-field {
   }
 }
 
-@media (max-width: 480px) {
+@include breakpoint-down(xs) {
   .login-container {
     padding: var(--spacing-3);
     padding-top: var(--spacing-6);
@@ -154,7 +155,7 @@ mat-form-field {
 }
 
 /* Tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
+@include breakpoint-between(769px, 1024px) {
   .login-container {
     padding: var(--spacing-6);
   }
@@ -165,7 +166,7 @@ mat-form-field {
 }
 
 /* Large Desktop */
-@media (min-width: 1440px) {
+@include breakpoint-up(lg) {
   .login-card {
     max-width: 500px;
     // Global material override handles padding automatically

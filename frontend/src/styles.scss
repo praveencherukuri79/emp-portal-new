@@ -12,6 +12,7 @@
 @import './styles/mixins/animations.scss';
 @import './styles/mixins/layout.scss';
 @import './styles/mixins/components.scss';
+@import './styles/tokens/breakpoints.scss';
 
 /* Custom Angular Material theme (replaces indigo-pink) */
 @import './styles/material-theme.scss';
@@ -104,7 +105,7 @@ body {
   gap: var(--spacing-4);
   margin-bottom: var(--spacing-4);
 
-  @media (max-width: 768px) {
+  @include breakpoint-down(sm) {
     grid-template-columns: 1fr;
   }
 }
@@ -119,7 +120,7 @@ body {
     margin-bottom: 0;
   }
 
-  @media (max-width: 768px) {
+  @include breakpoint-down(sm) {
     grid-template-columns: 1fr;
     gap: var(--spacing-4);
   }
@@ -127,7 +128,7 @@ body {
   .full-width {
     grid-column: span 2;
 
-    @media (max-width: 768px) {
+    @include breakpoint-down(sm) {
       grid-column: span 1;
     }
   }
@@ -135,6 +136,19 @@ body {
 
 .form-actions {
   @include form-actions;
+}
+
+/* Table Classes - STANDARDIZED - Use these everywhere */
+.table-container {
+  @include table-container;
+}
+
+.table-base {
+  @include table-base;
+}
+
+.table-card {
+  @include table-card;
 }
 
 /* Tab Content - Material handles padding, only use for custom spacing if needed */

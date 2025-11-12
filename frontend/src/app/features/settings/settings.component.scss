@@ -5,6 +5,7 @@
 
 @import '../../../styles/mixins/components';
 @import '../../../styles/mixins/layout';
+@import '../../../styles/tokens/breakpoints';
 
 .settings-page {
   @include container;
@@ -13,9 +14,7 @@
   @include rich-background;
 }
 
-.settings-header {
-  @include page-header;
-}
+// Use global .page-header class
 
 .content-medium {
   @include flex-column;
@@ -26,33 +25,7 @@
   @include card;
 
   mat-card-header {
-    border-bottom: var(--border-width-thin) solid var(--border-primary);
-    margin-bottom: 0;
-
-    .card-header-content {
-      @include flex-center;
-      justify-content: flex-start;
-      gap: var(--spacing-4);
-      width: 100%;
-
-      .card-header-icon {
-        @include icon-container(var(--spacing-12)); /* 48px equivalent */
-        @include icon-container-gradient(var(--action-primary));
-      }
-
-      mat-card-title {
-        margin: 0;
-        font-size: var(--font-size-xl);
-        font-weight: var(--font-weight-semibold);
-        color: var(--text-primary);
-      }
-
-      mat-card-subtitle {
-        margin: var(--spacing-1) 0 0 0;
-        font-size: var(--font-size-sm);
-        color: var(--text-secondary);
-      }
-    }
+    @include card-header;
   }
 
   mat-card-content {
@@ -114,12 +87,12 @@
   }
 }
 
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .settings-page {
     padding: var(--spacing-page-padding);
   }
 
-  .settings-header h1 {
+  .page-header h1 {
     font-size: var(--font-size-2xl);
   }
 }

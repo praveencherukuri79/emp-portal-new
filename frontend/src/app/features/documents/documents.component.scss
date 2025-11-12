@@ -6,6 +6,7 @@
 
 @import '../../../styles/mixins/components.scss';
 @import '../../../styles/mixins/layout.scss';
+@import '../../../styles/tokens/breakpoints.scss';
 
 .documents-container {
   width: 100%;
@@ -174,37 +175,10 @@ button {
 
 // Removed card styles - tab content is already styled as card via .mat-mdc-tab-group
 
+// Use global .table-card class for .documents-table and .expiry-table
 .documents-table,
 .expiry-table {
-  width: 100%;
-  background: var(--card-background);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: var(--border-default) solid var(--border-secondary);
   margin-top: var(--spacing-4);
-
-  th {
-    background: var(--table-header-background);
-    color: var(--text-primary);
-    font-weight: var(--font-weight-semibold);
-    padding: var(--spacing-card-padding);
-    text-align: left;
-    border-bottom: var(--border-default) solid var(--border-primary);
-  }
-
-  td {
-    padding: var(--spacing-card-padding);
-    color: var(--text-primary);
-    border-bottom: var(--border-default) solid var(--table-border);
-  }
-
-  tr:hover {
-    background: var(--table-row-hover);
-  }
-
-  tr:last-child td {
-    border-bottom: none;
-  }
 }
 
 .doc-name {
@@ -243,7 +217,7 @@ button {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@include breakpoint-down(sm) {
   .documents-container {
     padding: var(--spacing-page-padding);
   }
@@ -269,7 +243,7 @@ button {
   }
 }
 
-@media (max-width: 480px) {
+@include breakpoint-down(xs) {
   .documents-container {
     padding: var(--spacing-4);
   }
