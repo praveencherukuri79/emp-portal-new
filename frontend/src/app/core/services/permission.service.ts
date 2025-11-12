@@ -1,14 +1,9 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Injectable, inject, Signal } from '@angular/core';
 import { AuthService } from './auth.service';
 import { 
-  Permission, 
-  hasPermission, 
-  hasAnyPermission, 
-  hasAllPermissions,
-  getRolePermissions,
+  Permission,
   FeatureGroups
 } from '@shared/types/permissions';
-import { UserRole } from '@shared/types';
 
 /**
  * Permission Service - Frontend
@@ -21,41 +16,40 @@ import { UserRole } from '@shared/types';
 export class PermissionService {
   private authService = inject(AuthService);
 
-  // Current user's role
-  private currentRole = computed(() => this.authService.currentUser()?.role);
-
-  // All permissions for current user
-  permissions = computed(() => {
-    const role = this.currentRole();
-    return role ? getRolePermissions(role) : [];
-  });
+  // Get cached permissions from AuthService (loaded once at login)
+  private userPermissions: Signal<Permission[]> = this.authService.userPermissions;
 
   /**
    * Check if current user has a specific permission
+   * Uses cached permissions loaded at login for optimal performance
    */
   hasPermission(permission: Permission): boolean {
-    return hasPermission(this.currentRole(), permission);
+    const permissions = this.userPermissions();
+    return permissions.includes(permission);
   }
 
   /**
    * Check if current user has ANY of the specified permissions
    */
   hasAnyPermission(permissions: Permission[]): boolean {
-    return hasAnyPermission(this.currentRole(), permissions);
+    const userPerms = this.userPermissions();
+    return permissions.some(p => userPerms.includes(p));
   }
 
   /**
    * Check if current user has ALL of the specified permissions
    */
   hasAllPermissions(permissions: Permission[]): boolean {
-    return hasAllPermissions(this.currentRole(), permissions);
+    const userPerms = this.userPermissions();
+    return permissions.every(p => userPerms.includes(p));
   }
 
   /**
    * Check if current user can access a feature group
    */
   canAccessFeatureGroup(group: keyof typeof FeatureGroups): boolean {
-    return this.hasAllPermissions([...FeatureGroups[group]]);
+    const permissions = FeatureGroups[group] as readonly Permission[];
+    return this.hasAllPermissions([...permissions]);
   }
 
   // ==================== CONVENIENCE METHODS ====================
@@ -153,21 +147,31 @@ export class PermissionService {
     return this.hasPermission(Permission.DEFAULT_TO_LEAVE_TAB);
   }
 
-  // ==================== DEBUG HELPER ====================
+  // ==================== UTILITY METHODS ====================
   
   /**
-   * Get all permissions for debugging
+   * Get all permissions for the current user
+   * Useful for debugging and displaying in UI
    */
   getAllPermissions(): Permission[] {
-    return this.permissions();
+    return this.userPermissions();
+  }
+  
+  /**
+   * Get the role configuration for the current user
+   */
+  getRoleConfig() {
+    return this.authService.roleConfig();
   }
 
   /**
    * Log current user's permissions (dev only)
    */
   logPermissions(): void {
-    console.log('Current Role:', this.currentRole());
-    console.log('Permissions:', this.permissions());
+    const role = this.authService.currentUser()?.role;
+    console.log('Current Role:', role);
+    console.log('Permissions:', this.userPermissions());
+    console.log('Role Config:', this.authService.roleConfig());
   }
 }
 

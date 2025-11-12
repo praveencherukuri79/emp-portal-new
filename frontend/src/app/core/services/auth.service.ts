@@ -15,6 +15,8 @@ import { IChangePasswordRequest, IRefreshTokenRequest, ILogoutRequest } from '@s
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ILoginResponse, IRegisterResponse, IRefreshTokenResponse, IUserResponse } from '@shared/types/responses';
+import { Permission, getRolePermissions } from '@shared/types/permissions';
+import { RoleConfig, getRoleConfig } from '@shared/types/role-config';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +32,10 @@ export class AuthService {
   // Observable for current user
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  
+  // Role configuration cached after login - loaded once per session
+  userPermissions = signal<Permission[]>([]);
+  roleConfig = signal<RoleConfig | null>(null);
   
   // Cached Observable for user loading - prevents duplicate API calls
   private userLoad$: Observable<User | null> | null = null;
@@ -189,11 +195,31 @@ export class AuthService {
   }
 
   /**
-   * Set current user
+   * Set current user and load their role configuration
    */
   private setCurrentUser(user: User): void {
     this.currentUser.set(user);
     this.currentUserSubject.next(user);
+    // Load and cache role configuration for this user
+    this.loadRoleConfiguration(user);
+  }
+  
+  /**
+   * Load and cache the role configuration for the current user
+   * Called once after login/user load for better performance
+   */
+  private loadRoleConfiguration(user: User): void {
+    const role = user.role;
+    
+    // Get permissions for this role from shared config
+    const permissions = getRolePermissions(role);
+    this.userPermissions.set(permissions);
+    
+    // Get role metadata from shared config
+    const config = getRoleConfig(role);
+    this.roleConfig.set(config);
+    
+    console.log(`[AuthService] Loaded ${permissions.length} permissions for role: ${role}`);
   }
 
   /**
@@ -228,6 +254,9 @@ export class AuthService {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.currentUser.set(null);
     this.currentUserSubject.next(null);
+    // Clear cached role configuration
+    this.userPermissions.set([]);
+    this.roleConfig.set(null);
     this.userLoad$ = null;
   }
 
