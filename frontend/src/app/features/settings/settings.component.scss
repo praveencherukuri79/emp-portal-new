@@ -1,98 +1,136 @@
 /**
- * Settings Component - Refactored
- * Uses ONLY mixins and theme tokens - NO hardcoded values
+ * Settings Component - Enterprise Grade
+ * BEM Methodology: .settings__element--modifier
  */
 
 @import '../../../styles/mixins/components';
 @import '../../../styles/mixins/layout';
 @import '../../../styles/tokens/breakpoints';
 
-.settings-page {
-  @include container;
-  padding: 0;
-  min-height: calc(100vh - var(--header-height));
-  @include rich-background;
-}
-
-// Use global .page-header class
-
-.content-medium {
-  @include flex-column;
-  gap: var(--spacing-section-gap);
-}
-
-.settings-card {
-  @include card;
-
-  mat-card-header {
-    @include card-header;
+.settings {
+  &__page {
+    @include container;
+    padding: var(--spacing-page-padding);
+    min-height: calc(100vh - var(--header-height));
+    @include rich-background;
   }
 
-  mat-card-content {
-    // Component-level: Add spacing between header border and content
-    padding-top: var(--spacing-6);
-  }
-}
-
-.setting-item {
-  @include flex-between;
-  padding: var(--spacing-4) 0;
-  border-bottom: var(--border-width-thin) solid var(--border-secondary);
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-  
-  &:first-child {
-    padding-top: 0;
+  &__content {
+    @include flex-column;
+    gap: var(--spacing-10);
+    max-width: 900px;
+    margin: 0 auto;
   }
 
-  .setting-info {
+  &__card {
+    @include card;
+    margin-bottom: var(--spacing-8);
+
+    mat-card-header {
+      @include card-header;
+    }
+
+    mat-card-content {
+      padding-top: var(--spacing-8);
+    }
+  }
+
+  &__item {
+    @include flex-between;
+    padding: var(--spacing-6) 0;
+    border-bottom: var(--border-width-thin) solid var(--border-secondary);
+    transition: all var(--transition-normal);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:hover {
+      background: var(--table-row-hover);
+      margin: 0 calc(var(--spacing-4) * -1);
+      padding-left: var(--spacing-4);
+      padding-right: var(--spacing-4);
+      border-radius: var(--radius-md);
+    }
+  }
+
+  &__info {
     flex: 1;
+    padding-right: var(--spacing-6);
 
-    .setting-label {
+    .settings__label {
       font-size: var(--font-size-md);
       font-weight: var(--font-weight-semibold);
       color: var(--text-primary);
-      margin-bottom: var(--spacing-1);
+      margin-bottom: var(--spacing-2);
+      letter-spacing: -0.01em;
     }
 
-    .setting-description {
+    .settings__description {
       font-size: var(--font-size-sm);
       color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
     }
   }
-}
 
-.full-width {
-  width: 100%;
-}
+  &__actions {
+    @include flex-center;
+    justify-content: flex-end;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-10);
+    padding-top: var(--spacing-8);
+    border-top: var(--border-width-medium) solid var(--border-secondary);
 
-.settings-actions {
-  @include flex-center;
-  justify-content: flex-end;
-  gap: var(--spacing-4);
-  // Component-level: Add spacing from last settings card
-  margin-top: var(--spacing-8);
+    button {
+      min-width: 140px;
+      font-weight: var(--font-weight-semibold);
 
-  button {
-    mat-icon {
-      margin-right: var(--spacing-2);
-    }
+      mat-icon {
+        margin-right: var(--spacing-2);
+      }
 
-    mat-spinner {
-      margin-right: var(--spacing-2);
+      mat-spinner {
+        margin-right: var(--spacing-2);
+      }
     }
   }
 }
 
 @include breakpoint-down(sm) {
-  .settings-page {
-    padding: var(--spacing-page-padding);
-  }
+  .settings {
+    &__page {
+      padding: var(--spacing-6);
+    }
 
-  .page-header h1 {
-    font-size: var(--font-size-2xl);
+    &__item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-4);
+
+      &:hover {
+        margin: 0;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+
+    &__info {
+      padding-right: 0;
+      width: 100%;
+    }
+
+    &__actions {
+      flex-direction: column-reverse;
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
+    }
   }
 }

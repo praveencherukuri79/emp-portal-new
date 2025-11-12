@@ -1,17 +1,17 @@
-<div class="documents-container">
-  <mat-card class="header-card">
+<div class="documents__container">
+  <mat-card class="documents__header">
     <mat-card-header>
       <mat-card-title>Document Management</mat-card-title>
     </mat-card-header>
   </mat-card>
 
-  <mat-tab-group class="documents-tabs">
+  <mat-tab-group class="documents__tabs">
     <!-- Upload Document Tab -->
     <mat-tab label="Upload Document">
-      <div class="tab-content">
+      <div class="documents__tab-content">
         <div class="content-medium">
           <h2>Upload New Document</h2>
-          <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="upload-form">
+          <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="documents__form">
               <div class="form-row">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Document Category</mat-label>
@@ -46,7 +46,7 @@
                 </mat-form-field>
               </div>
 
-              <div class="file-upload-section">
+              <div class="documents__upload-area">
                 <input
                   type="file"
                   id="file-input"
@@ -85,7 +85,7 @@
 
     <!-- My Documents Tab -->
     <mat-tab label="My Documents">
-      <div class="tab-content">
+      <div class="documents__tab-content">
         <div *ngIf="loading()" class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
         </div>
@@ -95,12 +95,12 @@
           <p>No documents uploaded yet</p>
         </div>
 
-        <table mat-table [dataSource]="documents()" *ngIf="!loading() && documents().length > 0" class="documents-table">
+        <table mat-table [dataSource]="documents()" *ngIf="!loading() && documents().length > 0" class="documents__table table-card">
               <!-- Document Title Column -->
               <ng-container matColumnDef="title">
                 <th mat-header-cell *matHeaderCellDef>Document Title</th>
                 <td mat-cell *matCellDef="let doc">
-                  <div class="doc-name">
+                  <div class="documents__doc-name">
                     <mat-icon>description</mat-icon>
                     {{ doc.title }}
                   </div>
@@ -131,7 +131,7 @@
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let doc">
-                  <mat-chip [class]="'status-' + getExpiryStatus(doc.expiryDate)">
+                  <mat-chip [class]="'documents__status--' + getExpiryStatus(doc.expiryDate)">
                     {{ getExpiryStatus(doc.expiryDate) | uppercase }}
                   </mat-chip>
                 </td>
@@ -158,19 +158,19 @@
 
     <!-- Expiry Alerts Tab -->
     <mat-tab label="Expiry Alerts">
-      <div class="tab-content">
+      <div class="documents__tab-content">
         <h2>Documents Expiring Soon</h2>
             <div *ngIf="expiringDocuments().length === 0" class="empty-state">
               <mat-icon>check_circle</mat-icon>
               <p>No documents expiring soon</p>
             </div>
 
-            <table mat-table [dataSource]="expiringDocuments()" *ngIf="expiringDocuments().length > 0" class="expiry-table">
+            <table mat-table [dataSource]="expiringDocuments()" *ngIf="expiringDocuments().length > 0" class="documents__table table-card">
               <!-- Document Title Column -->
               <ng-container matColumnDef="title">
                 <th mat-header-cell *matHeaderCellDef>Document Title</th>
                 <td mat-cell *matCellDef="let doc">
-                  <div class="doc-name">
+                  <div class="documents__doc-name">
                     <mat-icon>warning</mat-icon>
                     {{ doc.title }}
                   </div>

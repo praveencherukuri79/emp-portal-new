@@ -1,110 +1,120 @@
 /**
- * Dark Theme - High Contrast, Rich Colors
- * WCAG AA compliant contrast ratios
+ * Dark Theme - High Contrast, Professional Colors
+ * WCAG AA compliant contrast ratios (4.5:1 minimum)
  */
 
 @import '../tokens/colors.scss';
 
 :root[data-theme="dark"] {
-  /* Background colors - Rich dark with high contrast */
-  --background-primary: #0f172a;                    /* Slate 900 */
+  /* Background colors - Professional dark with excellent contrast */
+  --background-primary: #0f172a;                    /* Slate 900 - Deeper, richer */
   --background-secondary: #1e293b;                 /* Slate 800 */
   --background-tertiary: #334155;                  /* Slate 700 */
   --background-elevated: #1e293b;
-  --background-overlay: rgba(0, 0, 0, var(--opacity-overlay-dark));
+  --background-overlay: rgba(0, 0, 0, 0.8);
   
-  /* Rich dark background patterns */
-  --background-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --background-gradient-secondary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --background-gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --background-gradient-card: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  --background-gradient-surface: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  /* Professional gradient backgrounds with better contrast */
+  --background-gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+  --background-gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #10b981 100%);
+  --background-gradient-accent: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  --background-gradient-card: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  --background-gradient-surface: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --background-gradient-hero: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   
-  /* Vibrant dark background patterns */
+  /* Subtle background patterns */
   --background-pattern: 
-    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.12) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
   
   /* Colored surface backgrounds for dark */
-  --surface-primary: #1e3a5f;                      /* Dark blue */
-  --surface-secondary: #2d1b3d;                    /* Dark purple */
+  --surface-primary: #1e3a8a;                      /* Dark blue */
+  --surface-secondary: #581c87;                    /* Dark purple */
   --surface-success: #064e3b;                      /* Dark green */
   --surface-warning: #78350f;                      /* Dark amber */
   --surface-error: #7f1d1d;                        /* Dark red */
   --surface-info: #1e3a8a;                         /* Dark blue */
 
-  /* Text colors - High contrast for readability (WCAG AA - 4.5:1 minimum) */
-  --text-primary: #ffffff;                           /* Pure white - Highest contrast */
-  --text-secondary: #e2e8f0;                      /* Slate 200 - High contrast */
-  --text-tertiary: #cbd5e0;                         /* Slate 300 - Good contrast */
-  --text-disabled: #94a3b8;                        /* Slate 400 */
+  /* Text colors - High contrast for excellent readability (WCAG AA - 4.5:1 minimum) */
+  --text-primary: #f8fafc;                          /* Slate 50 - Excellent contrast */
+  --text-secondary: #e2e8f0;                        /* Slate 200 - High contrast */
+  --text-tertiary: #cbd5e1;                         /* Slate 300 - Good contrast */
+  --text-disabled: #64748b;                         /* Slate 500 - Still readable */
   --text-inverse: var(--color-neutral-900);
-  --text-on-primary: var(--color-white);
+  --text-on-primary: #ffffff;                       /* Pure white on gradients */
+  --text-accent: #a5b4fc;                           /* Indigo 300 - Bright accent */
 
-  /* Border colors - Visible in dark */
-  --border-primary: #475569;                       /* Slate 600 */
-  --border-secondary: #334155;                    /* Slate 700 */
-  --border-tertiary: #1e293b;                     /* Slate 800 */
-  --border-focus: #818cf8;                         /* Indigo 400 */
-  --border-error: #f87171;                         /* Red 400 */
-  --border-success: #34d399;                      /* Green 400 */
-  --border-warning: #fbbf24;                       /* Amber 400 */
+  /* Border colors - More visible in dark */
+  --border-primary: #475569;                        /* Slate 600 - Better visibility */
+  --border-secondary: #334155;                     /* Slate 700 */
+  --border-tertiary: #1e293b;                      /* Slate 800 */
+  --border-focus: #818cf8;                          /* Indigo 400 - Bright focus */
+  --border-error: #f87171;                          /* Red 400 */
+  --border-success: #34d399;                        /* Green 400 */
+  --border-warning: #fbbf24;                        /* Amber 400 */
   
   /* Border width */
   --border-default: var(--border-width-thin);
   --border-focus-width: var(--border-width-medium);
 
-  /* Action colors - Bright for dark theme */
-  --action-primary: #818cf8;                       /* Indigo 400 */
-  --action-primary-hover: #a5b4fc;                 /* Indigo 300 */
-  --action-primary-active: #6366f1;                 /* Indigo 500 */
-  --action-primary-light: #312e81;                 /* Indigo 900 */
-  --action-disabled: #475569;                      /* Slate 600 */
+  /* Action colors - Bright and vibrant for dark theme */
+  --action-primary: #818cf8;                        /* Indigo 400 - Bright */
+  --action-primary-hover: #a5b4fc;                  /* Indigo 300 - Lighter */
+  --action-primary-active: #6366f1;                 /* Indigo 500 - Deeper */
+  --action-primary-light: rgba(129, 140, 248, 0.15); /* Indigo 400 with opacity */
+  --action-primary-gradient: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+  --action-disabled: #475569;                       /* Slate 600 */
 
   /* Status colors - High contrast for dark theme */
-  --status-success: #34d399;                       /* Green 400 */
-  --status-success-light: #064e3b;                 /* Green 900 */
-  --status-success-bg: #065f46;                    /* Green 800 */
-  --status-warning: #fbbf24;                       /* Amber 400 */
-  --status-warning-light: #78350f;                 /* Amber 900 */
-  --status-warning-bg: #92400e;                    /* Amber 800 */
-  --status-error: #f87171;                         /* Red 400 */
-  --status-error-light: #7f1d1d;                   /* Red 900 */
-  --status-error-bg: #991b1b;                      /* Red 800 */
-  --status-info: #60a5fa;                           /* Blue 400 */
-  --status-info-light: #1e3a8a;                    /* Blue 900 */
-  --status-info-bg: #1e40af;                       /* Blue 800 */
+  --status-success: #34d399;                        /* Green 400 - Bright */
+  --status-success-light: rgba(52, 211, 153, 0.15);
+  --status-success-bg: #065f46;                     /* Green 800 */
+  --status-warning: #fbbf24;                         /* Amber 400 - Bright */
+  --status-warning-light: rgba(251, 191, 36, 0.15);
+  --status-warning-bg: #92400e;                     /* Amber 800 */
+  --status-error: #f87171;                           /* Red 400 - Bright */
+  --status-error-light: rgba(248, 113, 113, 0.15);
+  --status-error-bg: #991b1b;                       /* Red 800 */
+  --status-info: #60a5fa;                            /* Blue 400 - Bright */
+  --status-info-light: rgba(96, 165, 250, 0.15);
+  --status-info-bg: #1e40af;                        /* Blue 800 */
 
-  /* Component-specific backgrounds */
-  --card-background: #1e293b;
-  --card-background-hover: #334155;
-  --card-background-accent: #1e3a5f;
+  /* Premium component-specific backgrounds */
+  --card-background: #1e293b;                        /* Slate 800 */
+  --card-background-hover: #334155;                  /* Slate 700 */
+  --card-background-accent: #1e3a8a;                  /* Dark blue */
+  --card-background-glass: rgba(30, 41, 59, 0.9);
   --input-background: #1e293b;
   --input-background-focus: #334155;
-  --sidebar-background: #1e293b;
-  --header-background: var(--background-gradient-primary);
-  --header-text: var(--color-white);
+  --sidebar-background: rgba(15, 23, 42, 0.98);
+  
+  /* Header - Professional solid color with better contrast */
+  --header-background: #1e293b;                      /* Solid slate 800 - Better contrast */
+  --header-background-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  --header-text: #f8fafc;                            /* Slate 50 - High contrast */
+  --header-glass: rgba(30, 41, 59, 0.95);
   
   /* Table colors */
-  --table-header-background: #334155;
-  --table-row-background: #1e293b;
-  --table-row-hover: #334155;
-  --table-border: #475569;
+  --table-header-background: #334155;                 /* Slate 700 */
+  --table-row-background: #1e293b;                    /* Slate 800 */
+  --table-row-hover: #334155;                         /* Slate 700 */
+  --table-border: #475569;                            /* Slate 600 */
 
-  /* Shadow colors */
-  --shadow-color-light: rgba(0, 0, 0, 0.3);
-  --shadow-color-medium: rgba(0, 0, 0, 0.4);
-  --shadow-color-dark: rgba(0, 0, 0, 0.6);
-  --shadow-color-overlay: rgba(0, 0, 0, var(--opacity-overlay-dark));
+  /* Premium shadow colors with depth for dark theme */
+  --shadow-color-light: rgba(0, 0, 0, 0.5);
+  --shadow-color-medium: rgba(0, 0, 0, 0.6);
+  --shadow-color-dark: rgba(0, 0, 0, 0.8);
+  --shadow-color-overlay: rgba(0, 0, 0, 0.85);
   
-  /* Colored shadow overlays */
+  /* Rich colored shadow overlays for depth */
   --shadow-primary-color: rgba(129, 140, 248, 0.3);
+  --shadow-primary-lg: rgba(129, 140, 248, 0.4);
   --shadow-success-color: rgba(52, 211, 153, 0.3);
   --shadow-error-color: rgba(248, 113, 113, 0.3);
+  --shadow-accent-color: rgba(167, 139, 250, 0.3);
   
   /* Gradient overlays */
-  --gradient-overlay-light: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  --gradient-overlay-primary: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(129, 140, 248, 0.1) 100%);
-  --gradient-overlay-accent: linear-gradient(135deg, rgba(96, 165, 250, 0.18) 0%, rgba(96, 165, 250, 0.09) 100%);
+  --gradient-overlay-light: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gradient-overlay-primary: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0.08) 100%);
+  --gradient-overlay-accent: linear-gradient(135deg, rgba(96, 165, 250, 0.12) 0%, rgba(96, 165, 250, 0.06) 100%);
 }

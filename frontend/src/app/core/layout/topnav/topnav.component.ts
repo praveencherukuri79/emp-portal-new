@@ -230,10 +230,13 @@ export class TopnavComponent implements OnInit, OnDestroy {
       // Close all menus if clicked outside
       this.expandedMenus.set(new Set());
     } else {
-      // Check if clicked on a nav link (not dropdown trigger)
-      const isNavLink = target.closest('.nav-link:not(.dropdown-trigger)');
-      if (isNavLink && !target.closest('.dropdown-menu')) {
-        // Close all menus when clicking a regular nav link
+      // Check if clicked on a regular nav link (not dropdown trigger or menu)
+      const isDropdownTrigger = target.closest('.topnav__dropdown-trigger');
+      const isDropdownMenu = target.closest('.topnav__dropdown-menu');
+      const isRegularNavLink = target.closest('.topnav__link:not(.topnav__dropdown-trigger)');
+      
+      // Only close menus if clicking a regular nav link (not dropdown trigger or menu)
+      if (isRegularNavLink && !isDropdownTrigger && !isDropdownMenu) {
         this.expandedMenus.set(new Set());
       }
     }

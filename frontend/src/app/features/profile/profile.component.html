@@ -1,4 +1,4 @@
-<div class="profile-page">
+<div class="profile__page">
   <div class="page-header">
     <h1>My Profile</h1>
     <p class="subtitle">Manage your personal information and account settings</p>
@@ -10,18 +10,18 @@
       <p>Loading profile...</p>
     </div>
   } @else {
-    <div class="content-medium">
+    <div class="profile__content">
       <!-- Profile Information Card -->
-      <mat-card class="profile-card">
+      <mat-card class="profile__card">
         <mat-card-header>
-          <div class="card-header-content">
-            <div class="profile-avatar-large">
+          <div class="profile__header-content">
+            <div class="profile__avatar">
               {{ getUserInitials() }}
             </div>
-            <div class="profile-header-info">
+            <div class="profile__info">
               <mat-card-title>{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</mat-card-title>
               <mat-card-subtitle>{{ currentUser()?.email }}</mat-card-subtitle>
-              <div class="profile-badge">
+              <div class="profile__badge">
                 <mat-icon>badge</mat-icon>
                 <span>{{ getRoleName() }}</span>
               </div>
@@ -29,7 +29,7 @@
           </div>
         </mat-card-header>
         <mat-card-content>
-          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile__form">
             <div class="form-grid">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>First Name</mat-label>
@@ -95,7 +95,7 @@
               </mat-form-field>
             </div>
 
-            <div class="form-actions">
+            <div class="profile__actions">
               <button mat-raised-button color="primary" type="submit" [disabled]="profileForm.invalid || saving()">
                 @if (saving()) {
                   <mat-spinner diameter="20"></mat-spinner>

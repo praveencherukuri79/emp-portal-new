@@ -1,90 +1,130 @@
 /**
- * Profile Component - Refactored
- * Uses ONLY mixins and theme tokens - NO hardcoded values
+ * Profile Component - Enterprise Grade
+ * BEM Methodology: .profile__element--modifier
  */
 
 @import '../../../styles/mixins/components';
 @import '../../../styles/mixins/layout';
 @import '../../../styles/tokens/breakpoints';
 
-.profile-page {
-  width: 100%;
-  min-height: calc(100vh - var(--header-height));
-  @include rich-background;
-}
+.profile {
+  &__page {
+    width: 100%;
+    min-height: calc(100vh - var(--header-height));
+    @include rich-background;
+    padding: var(--spacing-page-padding);
+  }
 
-// Use global .page-header class
+  &__content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-.profile-card {
-  @include card;
-  // Material override already sets padding: 0 on .mat-mdc-card
-  // We'll add padding to header and content sections
+  &__card {
+    @include card;
+    margin-bottom: var(--spacing-10);
 
-  mat-card-header {
-    border-bottom: var(--border-width-thin) solid var(--border-primary);
-    // Component-level: Add spacing after header border when content follows
-    margin-bottom: 0;
+    mat-card-header {
+      border-bottom: var(--border-width-thin) solid var(--border-primary);
+      margin-bottom: 0;
+      padding-bottom: var(--spacing-6);
 
-    .card-header-content {
-      @include flex-center;
-      justify-content: flex-start;
-      gap: var(--spacing-6);
+      .profile__header-content {
+        @include flex-center;
+        justify-content: flex-start;
+        gap: var(--spacing-8);
 
-      @include breakpoint-down(sm) {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .profile-avatar-large {
-        @include icon-container(calc(var(--spacing-20) * 1.25)); /* 100px equivalent */
-        @include icon-container-gradient(var(--action-primary));
-        box-shadow: var(--shadow-md);
-      }
-
-      .profile-info {
-        flex: 1;
-
-        mat-card-title {
-          font-size: var(--font-size-3xl);
-          font-weight: var(--font-weight-bold);
-          color: var(--text-primary);
-          margin: 0 0 var(--spacing-1) 0;
-        }
-
-        mat-card-subtitle {
-          font-size: var(--font-size-md);
-          color: var(--text-secondary);
-          margin: 0 0 var(--spacing-3) 0;
-        }
-
-        .profile-badge {
-          @include badge-variant(var(--action-primary));
+        @include breakpoint-down(sm) {
+          flex-direction: column;
+          text-align: center;
+          gap: var(--spacing-6);
         }
       }
     }
+
+    mat-card-content {
+      padding-top: var(--spacing-8);
+    }
   }
 
-  mat-card-content {
-    // Component-level: Add spacing between header border and form fields
-    padding-top: var(--spacing-6);
+  &__avatar {
+    @include icon-container(calc(var(--spacing-20) * 1.25));
+    @include icon-container-gradient(var(--action-primary));
+    box-shadow: var(--shadow-lg);
+    border: 4px solid var(--card-background);
+    transition: all var(--transition-normal);
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-xl), var(--shadow-primary);
+    }
+  }
+
+  &__info {
+    flex: 1;
+
+    mat-card-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-2) 0;
+      letter-spacing: -0.02em;
+    }
+
+    mat-card-subtitle {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+      margin: 0 0 var(--spacing-4) 0;
+    }
+
+    .profile__badge {
+      @include badge-variant('primary');
+      font-size: var(--font-size-sm);
+      padding: var(--spacing-2) var(--spacing-4);
+    }
+  }
+
+  &__form {
+    margin-top: var(--spacing-6);
+  }
+
+  &__actions {
+    @include form-actions;
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-8);
+    border-top: var(--border-width-medium) solid var(--border-secondary);
+
+    button {
+      min-width: 140px;
+      font-weight: var(--font-weight-semibold);
+
+      mat-icon {
+        margin-right: var(--spacing-2);
+      }
+    }
   }
 }
-
-// Use global .form-grid class
-
-.form-actions {
-  @include form-actions;
-  // Component-level: Add spacing from form grid above
-  margin-top: var(--spacing-6);
-}
-
-// Use global .loading-container class
 
 @include breakpoint-down(sm) {
-  .profile-card {
-    mat-card-header {
-      .card-header-content {
-        gap: var(--spacing-4);
+  .profile {
+    &__page {
+      padding: var(--spacing-6);
+    }
+
+    &__card {
+      mat-card-header {
+        .profile__header-content {
+          gap: var(--spacing-4);
+        }
+      }
+    }
+
+    &__actions {
+      flex-direction: column-reverse;
+      width: 100%;
+
+      button {
+        width: 100%;
       }
     }
   }

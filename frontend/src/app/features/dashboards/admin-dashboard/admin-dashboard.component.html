@@ -1,4 +1,4 @@
-<div class="admin-dashboard">
+<div class="dashboard__container">
   <div class="page-header">
     <h1>Admin Dashboard</h1>
     <p class="subtitle">System administration and management</p>
@@ -26,9 +26,9 @@
     </div>
   }
 
-  <div class="dashboard-content">
+  <div class="dashboard__content">
     <!-- System Health -->
-    <mat-card class="clickable" [routerLink]="'/admin/settings'">
+    <mat-card class="dashboard__card dashboard__card--clickable" [routerLink]="'/admin/settings'">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>monitor_heart</mat-icon>
@@ -41,11 +41,11 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div class="health-metrics">
-          <div class="metric">
-            <div class="metric-header">
-              <span class="metric-label">CPU Usage</span>
-              <span class="metric-value">{{ systemHealth().cpu }}%</span>
+        <div class="dashboard__health-metrics">
+          <div class="dashboard__health-metric">
+            <div class="dashboard__metric-header">
+              <span class="dashboard__metric-label">CPU Usage</span>
+              <span class="dashboard__metric-value">{{ systemHealth().cpu }}%</span>
             </div>
             <mat-progress-bar 
               mode="determinate" 
@@ -54,10 +54,10 @@
             </mat-progress-bar>
           </div>
 
-          <div class="metric">
-            <div class="metric-header">
-              <span class="metric-label">Memory Usage</span>
-              <span class="metric-value">{{ systemHealth().memory }}%</span>
+          <div class="dashboard__health-metric">
+            <div class="dashboard__metric-header">
+              <span class="dashboard__metric-label">Memory Usage</span>
+              <span class="dashboard__metric-value">{{ systemHealth().memory }}%</span>
             </div>
             <mat-progress-bar 
               mode="determinate" 
@@ -66,10 +66,10 @@
             </mat-progress-bar>
           </div>
 
-          <div class="metric">
-            <div class="metric-header">
-              <span class="metric-label">Storage Usage</span>
-              <span class="metric-value">{{ systemHealth().storage }}%</span>
+          <div class="dashboard__health-metric">
+            <div class="dashboard__metric-header">
+              <span class="dashboard__metric-label">Storage Usage</span>
+              <span class="dashboard__metric-value">{{ systemHealth().storage }}%</span>
             </div>
             <mat-progress-bar 
               mode="determinate" 
@@ -82,7 +82,7 @@
     </mat-card>
 
     <!-- Activity Log -->
-    <mat-card class="clickable" [routerLink]="'/admin/users'">
+    <mat-card class="dashboard__card dashboard__card--clickable" [routerLink]="'/admin/users'">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>history</mat-icon>
@@ -93,7 +93,7 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div class="activity-list">
+        <div class="dashboard__activity-list">
           @if (activityLogs().length === 0) {
             <div class="empty-state">
               <mat-icon>schedule</mat-icon>
@@ -101,18 +101,18 @@
             </div>
           } @else {
             @for (log of activityLogs(); track log.id) {
-              <div class="activity-item" [class]="'type-' + log.type">
-                <div class="activity-icon">
+              <div class="dashboard__activity-item">
+                <div class="dashboard__activity-icon" [class]="'dashboard__activity-icon--' + log.type">
                   @switch (log.type) {
                     @case ('info') { <mat-icon>info</mat-icon> }
                     @case ('warning') { <mat-icon>warning</mat-icon> }
                     @case ('error') { <mat-icon>error</mat-icon> }
                   }
                 </div>
-                <div class="activity-details">
+                <div class="dashboard__activity-details">
                   <strong>{{ log.user }}</strong>
                   <span>{{ log.action }}</span>
-                  <span class="timestamp">{{ log.timestamp | date:'short' }}</span>
+                  <span class="dashboard__activity-timestamp">{{ log.timestamp | date:'short' }}</span>
                 </div>
               </div>
             }
@@ -123,74 +123,74 @@
   </div>
 
   <!-- User Management -->
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>admin_panel_settings</mat-icon>
-        User Management
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="management-grid">
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/users">
-          <mat-icon>people</mat-icon>
-          <div class="action-content">
-            <span>Manage Users</span>
-            <small>Create, edit, and delete users</small>
-          </div>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/roles">
-          <mat-icon>shield</mat-icon>
-          <div class="action-content">
-            <span>Role Assignment</span>
-            <small>Assign and manage user roles</small>
-          </div>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/settings">
-          <mat-icon>business</mat-icon>
-          <div class="action-content">
-            <span>Departments</span>
-            <small>Manage departments and teams</small>
-          </div>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/admin/settings">
-          <mat-icon>settings</mat-icon>
-          <div class="action-content">
-            <span>System Settings</span>
-            <small>Configure system preferences</small>
-          </div>
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <div class="dashboard__section">
+    <h2 class="dashboard__section-title">
+      <mat-icon>admin_panel_settings</mat-icon>
+      User Management
+    </h2>
+    <mat-card class="dashboard__card">
+      <mat-card-content>
+        <div class="dashboard__management-grid">
+          <button mat-raised-button color="primary" class="dashboard__management-button" routerLink="/admin/users">
+            <mat-icon>people</mat-icon>
+            <div class="dashboard__management-content">
+              <span>Manage Users</span>
+              <small>Create, edit, and delete users</small>
+            </div>
+          </button>
+          <button mat-raised-button color="primary" class="dashboard__management-button" routerLink="/admin/roles">
+            <mat-icon>shield</mat-icon>
+            <div class="dashboard__management-content">
+              <span>Role Assignment</span>
+              <small>Assign and manage user roles</small>
+            </div>
+          </button>
+          <button mat-raised-button color="primary" class="dashboard__management-button" routerLink="/admin/settings">
+            <mat-icon>business</mat-icon>
+            <div class="dashboard__management-content">
+              <span>Departments</span>
+              <small>Manage departments and teams</small>
+            </div>
+          </button>
+          <button mat-raised-button color="primary" class="dashboard__management-button" routerLink="/admin/settings">
+            <mat-icon>settings</mat-icon>
+            <div class="dashboard__management-content">
+              <span>System Settings</span>
+              <small>Configure system preferences</small>
+            </div>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
   <!-- Reports & Analytics -->
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>assessment</mat-icon>
-        Reports & Analytics
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="reports-grid">
-        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
-          <mat-icon>people</mat-icon>
-          <span>User Reports</span>
-        </button>
-        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
-          <mat-icon>bar_chart</mat-icon>
-          <span>Activity Reports</span>
-        </button>
-        <button mat-stroked-button class="report-btn" routerLink="/admin/settings">
-          <mat-icon>dns</mat-icon>
-          <span>System Reports</span>
-        </button>
-        <button mat-stroked-button class="report-btn" routerLink="/admin/users">
-          <mat-icon>description</mat-icon>
-          <span>Audit Logs</span>
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <div class="dashboard__section">
+    <h2 class="dashboard__section-title">
+      <mat-icon>assessment</mat-icon>
+      Reports & Analytics
+    </h2>
+    <mat-card class="dashboard__card">
+      <mat-card-content>
+        <div class="dashboard__reports-grid">
+          <button mat-stroked-button class="dashboard__reports-button" routerLink="/admin/users">
+            <mat-icon>people</mat-icon>
+            <span>User Reports</span>
+          </button>
+          <button mat-stroked-button class="dashboard__reports-button" routerLink="/admin/users">
+            <mat-icon>bar_chart</mat-icon>
+            <span>Activity Reports</span>
+          </button>
+          <button mat-stroked-button class="dashboard__reports-button" routerLink="/admin/settings">
+            <mat-icon>dns</mat-icon>
+            <span>System Reports</span>
+          </button>
+          <button mat-stroked-button class="dashboard__reports-button" routerLink="/admin/users">
+            <mat-icon>description</mat-icon>
+            <span>Audit Logs</span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>

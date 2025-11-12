@@ -1,43 +1,43 @@
-<mat-toolbar class="topnav-toolbar">
-  <div class="topnav-container">
+<mat-toolbar class="topnav__toolbar">
+  <div class="topnav__container">
     <!-- Logo -->
-    <a routerLink="/" class="logo">
+    <a routerLink="/" class="topnav__logo">
       <mat-icon>business</mat-icon>
       <span>Employee Portal</span>
     </a>
 
     <!-- Navigation Items -->
-    <nav class="topnav-menu">
+    <nav class="topnav__menu">
       @for (item of getVisibleNavItems(); track item.route) {
         @if (!item.children) {
           <a 
             [routerLink]="item.route" 
-            [class.active]="isActive(item.route)"
-            class="nav-link">
+            [class.topnav__link--active]="isActive(item.route)"
+            class="topnav__link">
             <mat-icon>{{ item.icon }}</mat-icon>
             <span>{{ item.label }}</span>
           </a>
         } @else {
-          <div class="nav-dropdown" #dropdownRef>
+          <div class="topnav__dropdown">
             <button 
-              class="nav-link dropdown-trigger"
-              [class.active]="isActive(item.route)"
+              class="topnav__dropdown-trigger topnav__link"
+              [class.topnav__link--active]="isActive(item.route)"
               (click)="toggleMenu(item.label, $event)"
               [attr.aria-expanded]="isMenuExpanded(item.label)">
               <mat-icon>{{ item.icon }}</mat-icon>
               <span>{{ item.label }}</span>
-              <mat-icon class="dropdown-icon" [class.expanded]="isMenuExpanded(item.label)">
+              <mat-icon class="topnav__dropdown-icon" [class.topnav__dropdown-icon--expanded]="isMenuExpanded(item.label)">
                 keyboard_arrow_down
               </mat-icon>
             </button>
             @if (isMenuExpanded(item.label)) {
-              <div class="dropdown-menu" (click)="$event.stopPropagation()">
+              <div class="topnav__dropdown-menu" (click)="$event.stopPropagation()">
                 @for (child of item.children; track child.route) {
                   @if (hasAccess(child.roles)) {
                     <a 
                       [routerLink]="child.route" 
-                      [class.active]="isActive(child.route)"
-                      class="dropdown-item"
+                      [class.topnav__dropdown-menu-item--active]="isActive(child.route)"
+                      class="topnav__dropdown-menu-item"
                       (click)="navigateAndClose(item.label, child.route, $event)">
                       <mat-icon>{{ child.icon }}</mat-icon>
                       <span>{{ child.label }}</span>
@@ -52,13 +52,13 @@
     </nav>
 
     <!-- Right Side Actions -->
-    <div class="topnav-actions">
+    <div class="topnav__actions">
       <!-- Theme Toggle -->
       <button 
         mat-icon-button 
         (click)="themeService.toggle()" 
         [attr.aria-label]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
-        class="action-button">
+        class="topnav__action-button">
         <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
 
@@ -66,17 +66,17 @@
       <app-notification-dropdown />
 
       <!-- User Menu -->
-      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="topnav__user-trigger">
         <div class="user-avatar">{{ getUserInitials() }}</div>
       </button>
 
       <mat-menu #userMenu="matMenu" xPosition="before" class="user-menu">
-        <div class="user-menu-header">
-          <div class="user-menu-avatar">{{ getUserInitials() }}</div>
-          <div class="user-menu-info">
-            <div class="user-menu-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</div>
-            <div class="user-menu-email">{{ currentUser()?.email }}</div>
-            <div class="user-menu-role">{{ getRoleName() }}</div>
+        <div class="user-menu__header">
+          <div class="user-menu__avatar">{{ getUserInitials() }}</div>
+          <div class="user-menu__info">
+            <div class="user-menu__name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</div>
+            <div class="user-menu__email">{{ currentUser()?.email }}</div>
+            <div class="user-menu__role">{{ getRoleName() }}</div>
           </div>
         </div>
         <mat-divider></mat-divider>

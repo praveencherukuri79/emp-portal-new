@@ -24,14 +24,14 @@
   --spacing-20: calc(var(--spacing-unit) * 10);   /* 80px */
   --spacing-24: calc(var(--spacing-unit) * 12);   /* 96px */
 
-  /* Component-specific spacing - STANDARDIZED */
-  --spacing-page-padding: var(--spacing-6);        /* 24px - Page container padding */
-  --spacing-section-padding: var(--spacing-8);      /* 32px - Section padding */
-  --spacing-card-padding: var(--spacing-6);        /* 24px - Card padding (consistent) */
-  --spacing-card-padding-sm: var(--spacing-4);     /* 16px - Small card padding */
-  --spacing-card-padding-lg: var(--spacing-8);      /* 32px - Large card padding */
-  --spacing-section-gap: var(--spacing-8);         /* 32px - Gap between sections */
-  --spacing-element-gap: var(--spacing-4);         /* 16px - Gap between elements */
+  /* Component-specific spacing - Premium, generous spacing */
+  --spacing-page-padding: var(--spacing-8);        /* 32px - More breathing room */
+  --spacing-section-padding: var(--spacing-10);    /* 40px - Generous section padding */
+  --spacing-card-padding: var(--spacing-8);        /* 32px - Premium card padding */
+  --spacing-card-padding-sm: var(--spacing-6);     /* 24px - Small card padding */
+  --spacing-card-padding-lg: var(--spacing-10);    /* 40px - Large card padding */
+  --spacing-section-gap: var(--spacing-10);        /* 40px - More space between sections */
+  --spacing-element-gap: var(--spacing-6);         /* 24px - Better element spacing */
   --spacing-input-padding: var(--spacing-3) var(--spacing-4);  /* 12px 16px - Input padding */
   --spacing-button-padding: var(--spacing-3) var(--spacing-6); /* 12px 24px - Button padding */
   --spacing-button-padding-sm: var(--spacing-2) var(--spacing-4); /* 8px 16px - Small button */
@@ -53,18 +53,19 @@
   --border-width-thick: 3px;     /* Strong border - Use for active states */
   --border-width-thickest: 4px;  /* Maximum border - Rare use */
 
-  /* Shadows - Enhanced with color */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  /* Premium shadows with rich depth and color */
+  --shadow-sm: 0 2px 4px 0 rgba(15, 23, 42, 0.08), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(15, 23, 42, 0.12), 0 2px 4px -1px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 40px -8px rgba(15, 23, 42, 0.2), 0 8px 16px -4px rgba(15, 23, 42, 0.12);
+  --shadow-2xl: 0 32px 64px -12px rgba(15, 23, 42, 0.3), 0 16px 32px -8px rgba(15, 23, 42, 0.2);
   
-  /* Colored shadows for depth */
-  --shadow-primary: 0 4px 14px 0 rgba(33, 150, 243, 0.15);
-  --shadow-primary-lg: 0 10px 30px 0 rgba(33, 150, 243, 0.2);
-  --shadow-success: 0 4px 14px 0 rgba(76, 175, 80, 0.15);
-  --shadow-error: 0 4px 14px 0 rgba(244, 67, 54, 0.15);
+  /* Rich colored shadows for premium depth */
+  --shadow-primary: 0 8px 24px -4px rgba(99, 102, 241, 0.25), 0 4px 8px -2px rgba(99, 102, 241, 0.15);
+  --shadow-primary-lg: 0 16px 48px -8px rgba(99, 102, 241, 0.35), 0 8px 16px -4px rgba(99, 102, 241, 0.2);
+  --shadow-success: 0 8px 24px -4px rgba(5, 150, 105, 0.25), 0 4px 8px -2px rgba(5, 150, 105, 0.15);
+  --shadow-error: 0 8px 24px -4px rgba(220, 38, 38, 0.25), 0 4px 8px -2px rgba(220, 38, 38, 0.15);
+  --shadow-accent: 0 8px 24px -4px rgba(139, 92, 246, 0.25), 0 4px 8px -2px rgba(139, 92, 246, 0.15);
 
   /* Z-index layers */
   --z-index-dropdown: 1000;

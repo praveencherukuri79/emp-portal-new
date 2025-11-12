@@ -2,7 +2,26 @@
  * Angular Material Theme Override
  * Uses ONLY theme variables - NO hardcoded colors
  * Import this AFTER Angular Material styles in styles.scss
+ * 
+ * CRITICAL: All text must use theme variables to prevent black text in dark theme
  */
+
+/* Global Material Text Override - Prevent Black Text */
+.mat-mdc-form-field,
+.mat-mdc-select,
+.mdc-text-field,
+.mdc-text-field__input,
+.mdc-floating-label,
+.mdc-text-field-helper-text,
+.mdc-text-field-helper-line {
+  color: var(--text-primary) !important;
+}
+
+/* Force all Material components to use theme text colors */
+.mat-mdc-base,
+.mdc-base {
+  color: var(--text-primary) !important;
+}
 
 /* Button Overrides */
 .mat-mdc-button,
@@ -132,12 +151,15 @@
   // Material handles padding - only override colors if needed
 }
 
-/* Form Field Overrides - Colors and Visual Only */
+/* Form Field Overrides - Colors and Visual Only - THEME AWARE */
 /* DO NOT override margin-bottom - Material handles spacing */
 .mat-mdc-form-field {
+  color: var(--text-primary) !important;
+  
   .mat-mdc-text-field-wrapper {
     background-color: var(--input-background) !important;
     border-radius: var(--radius-md) !important;
+    color: var(--text-primary) !important;
   }
   
   .mat-mdc-form-field-focus-overlay {
@@ -172,6 +194,13 @@
   }
 }
 
+/* Label Overrides - Ensure no black text */
+.mat-mdc-form-field-label,
+.mdc-floating-label,
+.mdc-floating-label--float-above {
+  color: var(--text-secondary) !important;
+}
+
 .mat-mdc-form-field-label {
   color: var(--text-secondary) !important;
   
@@ -180,22 +209,35 @@
   }
 }
 
-.mat-mdc-input-element {
+/* Input Element Overrides - Force theme colors */
+.mat-mdc-input-element,
+.mdc-text-field__input,
+input.mat-mdc-input-element {
   color: var(--text-primary) !important;
   font-size: var(--font-size-md) !important;
+  caret-color: var(--border-focus) !important;
   
   &::placeholder {
     color: var(--text-tertiary) !important;
     opacity: 0.7;
   }
+  
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-primary) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-background) inset !important;
+  }
 }
 
-.mat-mdc-form-field-hint {
+.mat-mdc-form-field-hint,
+.mdc-text-field-helper-text {
   color: var(--text-tertiary) !important;
   font-size: var(--font-size-xs) !important;
 }
 
-.mat-mdc-form-field-error {
+.mat-mdc-form-field-error,
+.mdc-text-field-helper-text--error {
   color: var(--status-error) !important;
   font-size: var(--font-size-xs) !important;
   font-weight: var(--font-weight-medium) !important;
@@ -250,23 +292,97 @@
   // Material handles padding - don't override
 }
 
-/* Additional Form Field Styles */
+/* Additional Form Field Styles - Prevent Black Text */
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   background-color: var(--input-background) !important;
+  color: var(--text-primary) !important;
   
   .mdc-line-ripple::after {
     border-bottom-color: var(--border-focus) !important;
+  }
+  
+  .mdc-text-field__input {
+    color: var(--text-primary) !important;
   }
 }
 
 .mat-mdc-form-field.mat-focused {
   .mdc-text-field__input {
+    color: var(--text-primary) !important;
     caret-color: var(--border-focus) !important;
   }
   
-  .mat-mdc-form-field-floating-label {
+  .mat-mdc-form-field-floating-label,
+  .mdc-floating-label {
     color: var(--border-focus) !important;
   }
+}
+
+/* Force all Material text to use theme colors */
+.mdc-text-field__input,
+.mdc-text-field__input::placeholder {
+  color: var(--text-primary) !important;
+}
+
+.mdc-floating-label {
+  color: var(--text-secondary) !important;
+}
+
+.mdc-floating-label--float-above {
+  color: var(--border-focus) !important;
+}
+
+/* Material Typography Overrides - Prevent Black Text */
+.mat-mdc-typography,
+.mat-typography {
+  color: var(--text-primary) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.mat-mdc-typography h1,
+.mat-mdc-typography h2,
+.mat-mdc-typography h3,
+.mat-mdc-typography h4,
+.mat-mdc-typography h5,
+.mat-mdc-typography h6 {
+  color: var(--text-primary) !important;
+}
+
+p, span, div, label,
+.mat-mdc-typography p,
+.mat-mdc-typography span,
+.mat-mdc-typography div {
+  color: var(--text-primary) !important;
+}
+
+/* Material Form Field Wrapper - Prevent Black Text */
+.mat-mdc-form-field-wrapper,
+.mdc-text-field {
+  color: var(--text-primary) !important;
+}
+
+/* Material Input Value - Critical for preventing black text */
+.mdc-text-field__input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea {
+  color: var(--text-primary) !important;
+  
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 0.7;
+  }
+}
+
+/* Material Select Value Text */
+.mdc-select__selected-text,
+.mat-mdc-select-value-text {
+  color: var(--text-primary) !important;
 }
 
 /* Additional Select Overrides */
@@ -290,16 +406,17 @@
   color: var(--text-primary) !important;
   
   &:hover:not(.mat-mdc-option-disabled) {
-    background-color: rgba(var(--color-primary-500-rgb), var(--opacity-hover)) !important;
+    background-color: var(--table-row-hover) !important;
   }
   
   &.mat-mdc-option-active {
-    background-color: rgba(var(--color-primary-500-rgb), var(--opacity-selected)) !important;
+    background-color: var(--action-primary-light) !important;
   }
 }
 
 .mat-mdc-option.mat-selected:not(.mat-mdc-option-multiple) {
-  background-color: rgba(var(--color-primary-500-rgb), var(--opacity-selected)) !important;
+  background-color: var(--action-primary-light) !important;
+  color: var(--action-primary) !important;
 }
 
 /* Checkbox Overrides */
@@ -418,10 +535,8 @@
 .mat-mdc-menu-panel {
   background-color: var(--background-elevated) !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid var(--border-secondary) !important;
+  box-shadow: var(--shadow-xl) !important;
+  border: var(--border-default) solid var(--border-secondary) !important;
   padding: var(--spacing-3) !important;
   min-width: 300px !important;
   max-width: 400px !important;
@@ -464,16 +579,9 @@
   }
   
   &:hover:not([disabled]) {
-    background: linear-gradient(90deg, 
-      color-mix(in srgb, var(--action-primary) 8%, transparent) 0%,
-      color-mix(in srgb, var(--action-primary) 4%, transparent) 100%
-    ) !important;
+    background: var(--action-primary-light) !important;
     transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-    
-    &::before {
-      transform: scaleY(1);
-    }
+    box-shadow: var(--shadow-sm) !important;
     
     .mat-icon {
       color: var(--action-primary) !important;
@@ -505,42 +613,23 @@
 
 /* User Menu Header Styling - Colors Only */
 .user-menu-header {
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--action-primary) 5%, var(--background-elevated)) 0%,
-    var(--background-elevated) 100%
-  ) !important;
+  background: var(--background-elevated) !important;
   border-bottom: 1px solid var(--border-secondary) !important;
   position: relative !important;
   // Material handles padding/margin - don't override
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: var(--spacing-5);
-    right: var(--spacing-5);
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%,
-      var(--border-primary) 50%,
-      transparent 100%
-    );
-  }
 
   .user-menu-avatar {
     width: 56px !important;
     height: 56px !important;
     border-radius: var(--radius-full) !important;
-    background: linear-gradient(135deg, var(--action-primary), var(--color-primary-600)) !important;
+    background: var(--action-primary-gradient) !important;
     color: var(--text-inverse) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-weight: var(--font-weight-bold) !important;
     font-size: var(--font-size-md) !important;
-    box-shadow: 
-      0 4px 12px rgba(33, 150, 243, 0.3),
-      0 2px 4px rgba(33, 150, 243, 0.2) !important;
+    box-shadow: var(--shadow-lg), var(--shadow-primary-color) !important;
     border: 2px solid var(--background-elevated) !important;
     transition: all 0.2s ease !important;
   }
@@ -651,7 +740,7 @@
   }
   
   .mdc-linear-progress__buffer-bar {
-    background-color: var(--color-primary-100) !important;
+    background-color: var(--action-primary-light) !important;
   }
 }
 
@@ -767,10 +856,12 @@
   background-color: var(--action-primary) !important;
 }
 
-/* Tooltip Overrides */
+/* Tooltip Overrides - Theme Aware */
 .mat-mdc-tooltip {
-  background-color: var(--color-neutral-800) !important;
-  color: var(--text-inverse) !important;
+  background-color: var(--background-secondary) !important;
+  color: var(--text-primary) !important;
+  border: var(--border-width-thin) solid var(--border-primary) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 /* Datepicker Overrides */
@@ -804,7 +895,7 @@
 
 /* Ripple Effect */
 .mat-ripple-element {
-  background-color: rgba(var(--color-primary-500-rgb), 0.1) !important;
+  background-color: var(--action-primary-light) !important;
 }
 
 /* Focus Indicators */

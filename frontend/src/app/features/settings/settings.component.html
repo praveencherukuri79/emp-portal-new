@@ -1,13 +1,13 @@
-<div class="settings-page">
+<div class="settings__page">
   <div class="page-header">
     <h1>Settings</h1>
     <p class="subtitle">Manage your preferences and account settings</p>
   </div>
 
-    <div class="content-medium">
+  <div class="settings__content">
     <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
       <!-- Appearance Settings -->
-      <mat-card class="settings-card">
+      <mat-card class="settings__card">
         <mat-card-header>
           <div class="card-header-content">
             <div class="card-header-icon">
@@ -38,7 +38,7 @@
       </mat-card>
 
       <!-- Notification Settings -->
-      <mat-card class="settings-card">
+      <mat-card class="settings__card">
         <mat-card-header>
           <div class="card-header-content">
             <div class="card-header-icon">
@@ -51,18 +51,18 @@
           </div>
         </mat-card-header>
         <mat-card-content>
-          <div class="setting-item">
-            <div class="setting-info">
-              <div class="setting-label">Push Notifications</div>
-              <div class="setting-description">Receive notifications in the browser</div>
+          <div class="settings__item">
+            <div class="settings__info">
+              <div class="settings__label">Push Notifications</div>
+              <div class="settings__description">Receive notifications in the browser</div>
             </div>
             <mat-slide-toggle formControlName="notifications"></mat-slide-toggle>
           </div>
 
-          <div class="setting-item">
-            <div class="setting-info">
-              <div class="setting-label">Email Notifications</div>
-              <div class="setting-description">Receive notifications via email</div>
+          <div class="settings__item">
+            <div class="settings__info">
+              <div class="settings__label">Email Notifications</div>
+              <div class="settings__description">Receive notifications via email</div>
             </div>
             <mat-slide-toggle formControlName="emailNotifications"></mat-slide-toggle>
           </div>
@@ -70,7 +70,7 @@
       </mat-card>
 
       <!-- Language Settings -->
-      <mat-card class="settings-card">
+      <mat-card class="settings__card">
         <mat-card-header>
           <div class="card-header-content">
             <div class="card-header-icon">
@@ -96,7 +96,7 @@
       </mat-card>
 
       <!-- Save Button -->
-      <div class="settings-actions">
+      <div class="settings__actions">
         <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
           @if (saving()) {
             <mat-spinner diameter="20"></mat-spinner>

@@ -38,6 +38,9 @@ html, body {
   color: var(--text-primary);
   background-color: var(--background-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -151,6 +154,70 @@ body {
   @include table-card;
 }
 
+/* Loading Container - STANDARDIZED - Centered */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-16);
+  min-height: 400px;
+  gap: var(--spacing-4);
+  text-align: center;
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-md);
+    margin: 0;
+  }
+}
+
+/* Error Container - STANDARDIZED */
+.error-container {
+  @extend .loading-container;
+  
+  mat-icon {
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
+    color: var(--status-error);
+    margin-bottom: var(--spacing-4);
+  }
+}
+
+/* Empty State - STANDARDIZED */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12) var(--spacing-4);
+  text-align: center;
+  color: var(--text-secondary);
+
+  mat-icon {
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.4;
+    color: var(--text-tertiary);
+  }
+
+  h3 {
+    margin: 0 0 var(--spacing-2) 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-md);
+    color: var(--text-secondary);
+  }
+}
+
 /* Tab Content - Material handles padding, only use for custom spacing if needed */
 
 .text-primary {
@@ -181,36 +248,77 @@ body {
   padding: var(--spacing-4);
 }
 
-/* Scrollbar styling */
+/* Premium scrollbar styling */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--background-tertiary);
-  border-radius: 8px;
+  background: var(--background-tertiary);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--border-primary);
-  border-radius: 8px;
+  background: linear-gradient(135deg, var(--border-primary), var(--action-primary));
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all var(--transition-normal);
   
   &:hover {
-    background-color: var(--text-tertiary);
+    background: linear-gradient(135deg, var(--action-primary), var(--action-primary-hover));
+    border: 1px solid transparent;
+  }
+
+  &:active {
+    background: var(--action-primary-active);
   }
 }
 
-/* Smooth transitions for all interactive elements */
+/* Premium smooth transitions for all interactive elements */
 a, button, input, select, textarea {
-  transition: all 0.2s ease-in-out;
+  transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Improved focus states for accessibility */
+/* Enhanced link styling */
+a {
+  color: var(--action-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  position: relative;
+
+  &:hover {
+    color: var(--action-primary-hover);
+  }
+
+  /* Underline animation */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--action-primary-gradient);
+    transition: width var(--transition-normal);
+    border-radius: var(--radius-full);
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+/* Premium focus states for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid var(--border-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 4px var(--action-primary-light);
+  transition: all var(--transition-fast);
 }
 
 /* Animation utility classes */

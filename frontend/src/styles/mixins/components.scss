@@ -32,19 +32,38 @@
 
 @mixin button-primary {
   @include button-base;
-  background: var(--action-primary);
+  background: var(--action-primary-gradient);
   color: var(--text-on-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-primary);
+  font-weight: var(--font-weight-semibold);
+  position: relative;
+  overflow: hidden;
+
+  /* Shine effect on hover */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
 
   &:hover:not(:disabled) {
     background: var(--action-primary-hover);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary-lg);
+    transform: translateY(-2px);
+
+    &::before {
+      left: 100%;
+    }
   }
 
   &:active:not(:disabled) {
     background: var(--action-primary-active);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-primary);
     transform: translateY(0);
   }
 }
@@ -79,14 +98,16 @@
 
 @mixin card {
   background: var(--card-background);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: var(--spacing-card-padding);  /* Consistent padding */
-  border: var(--border-default) solid var(--border-secondary);  /* Consistent border */
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-card-padding);  /* Premium padding */
+  border: var(--border-default) solid var(--border-secondary);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 
+  /* Premium gradient top border */
   &::before {
     content: '';
     position: absolute;
@@ -98,17 +119,41 @@
     transform: scaleX(0);
     transform-origin: left;
     transition: transform var(--transition-normal);
+    z-index: 1;
+  }
+
+  /* Subtle inner glow effect */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-xl);
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    pointer-events: none;
   }
 
   &:hover {
     background: var(--card-background-hover);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl), var(--shadow-primary);
+    transform: translateY(-4px);
     border-color: var(--border-focus);
     border-width: var(--border-focus-width);
 
     &::before {
       transform: scaleX(1);
+    }
+
+    &::after {
+      opacity: 1;
     }
   }
 }
@@ -234,12 +279,32 @@
   }
 }
 
-/* Rich Background with Pattern - Colored */
+/* Rich Background with Pattern - Premium Colored */
 @mixin rich-background {
   background: var(--background-primary);
   background-image: var(--background-pattern);
   background-attachment: fixed;
+  background-size: cover;
   min-height: 100vh;
+  position: relative;
+
+  /* Add subtle overlay for depth - uses theme-aware gradient */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-overlay-light);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* Loading State */
@@ -304,25 +369,42 @@
   }
 }
 
-/* Page Header - STANDARDIZED - Use this mixin or .page-header class */
+/* Page Header - Premium STANDARDIZED - Use this mixin or .page-header class */
 @mixin page-header {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-10);
+  padding-bottom: var(--spacing-6);
+  border-bottom: var(--border-width-thin) solid var(--border-secondary);
+  position: relative;
+
+  /* Decorative accent line */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: var(--background-gradient-primary);
+    border-radius: var(--radius-full);
+  }
 
   h1 {
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
-    margin: 0 0 var(--spacing-2) 0;
+    margin: 0 0 var(--spacing-3) 0;
     line-height: var(--line-height-tight);
     display: flex;
     align-items: center;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
+    letter-spacing: -0.02em;
 
     mat-icon {
       color: var(--action-primary);
       font-size: var(--font-size-2xl);
       width: var(--font-size-2xl);
       height: var(--font-size-2xl);
+      filter: drop-shadow(0 2px 4px var(--shadow-primary-color));
     }
   }
 
@@ -330,71 +412,90 @@
     color: var(--text-secondary);
     font-size: var(--font-size-lg);
     margin: 0;
-    line-height: var(--line-height-normal);
+    line-height: var(--line-height-relaxed);
+    font-weight: var(--font-weight-medium);
   }
 }
 
-/* Stats Grid - Consistent gaps and margins */
+/* Stats Grid - Premium consistent gaps and margins */
 @mixin stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-6);  /* Consistent gap between cards */
-  margin-bottom: var(--spacing-8);  /* Margin below stats grid */
+  gap: var(--spacing-8);  /* Premium gap between cards */
+  margin-bottom: var(--spacing-10);  /* Generous margin below stats grid */
   width: 100%;
 
   @include breakpoint-down(sm) {
     grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-    margin-bottom: var(--spacing-6);
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
   }
 }
 
-/* Dashboard Content Grid - Consistent gaps */
+/* Dashboard Content Grid - Premium consistent gaps */
 @mixin dashboard-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-6);  /* Consistent gap between cards */
-  margin-bottom: var(--spacing-8);  /* Margin below content */
+  gap: var(--spacing-8);  /* Premium gap between cards */
+  margin-bottom: var(--spacing-10);  /* Generous margin below content */
   width: 100%;
 
   @include breakpoint-down(md) {
     grid-template-columns: 1fr;
-    gap: var(--spacing-4);
+    gap: var(--spacing-6);
   }
 }
 
-/* Hero Section */
+/* Hero Section - Premium with rich effects */
 @mixin hero-section {
   @include gradient-background('primary');
-  padding: var(--spacing-8) var(--spacing-6);
-  margin-bottom: var(--spacing-8);
+  padding: var(--spacing-12) var(--spacing-8);
+  margin-bottom: var(--spacing-10);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-2xl), var(--shadow-primary-lg);
   color: var(--text-on-primary);
+  border-radius: var(--radius-2xl);
 
+  /* Animated gradient orbs for depth */
   &::before,
   &::after {
     content: '';
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: pulse 3s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    filter: blur(40px);
   }
 
   &::before {
-    top: -50%;
-    right: -10%;
-    width: 500px;
-    height: 500px;
+    top: -30%;
+    right: -5%;
+    width: 600px;
+    height: 600px;
+    opacity: 0.8;
   }
 
   &::after {
-    bottom: -30%;
+    bottom: -20%;
     left: -5%;
-    width: 400px;
-    height: 400px;
-    animation-delay: 1.5s;
+    width: 500px;
+    height: 500px;
+    animation-delay: 2s;
+    opacity: 0.6;
+  }
+
+  /* Additional shimmer effect */
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 
@@ -474,30 +575,41 @@
   }
 }
 
-/* Table Mixins - STANDARDIZED table styles */
+/* Table Mixins - Premium STANDARDIZED table styles */
 @mixin table-base {
   width: 100%;
   background: transparent;
+  border-collapse: separate;
+  border-spacing: 0;
 
   th {
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     background: var(--table-header-background);
-    padding: var(--spacing-card-padding);
-    border-bottom: var(--border-default) solid var(--border-primary);
+    padding: var(--spacing-6) var(--spacing-8);
+    border-bottom: var(--border-width-medium) solid var(--border-primary);
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   td {
     color: var(--text-secondary);
-    padding: var(--spacing-card-padding);
+    padding: var(--spacing-6) var(--spacing-8);
     border-bottom: var(--border-default) solid var(--table-border);
+    transition: all var(--transition-fast);
   }
 
   .table-row {
-    transition: background-color var(--transition-fast);
+    transition: all var(--transition-normal);
 
     &:hover {
       background: var(--table-row-hover);
+      transform: scale(1.01);
+      box-shadow: var(--shadow-sm);
     }
   }
 
@@ -511,15 +623,27 @@
   width: 100%;
 }
 
-/* Table with card styling */
+/* Table with premium card styling */
 @mixin table-card {
   @include table-base;
   background: var(--card-background);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   border: var(--border-default) solid var(--border-secondary);
+  box-shadow: var(--shadow-lg);
 
   th {
     background: var(--table-header-background);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  tbody tr {
+    &:first-child td {
+      padding-top: var(--spacing-8);
+    }
+
+    &:last-child td {
+      padding-bottom: var(--spacing-8);
+    }
   }
 }
