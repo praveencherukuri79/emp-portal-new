@@ -64,7 +64,19 @@
                   <mat-icon>attach_file</mat-icon>
                   Select File
                 </button>
-                <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                @if (selectedFile) {
+                  <div class="selected-file-info">
+                    <span class="file-name">{{ selectedFile.name }}</span>
+                    <button 
+                      type="button"
+                      mat-icon-button 
+                      color="primary" 
+                      (click)="previewSelectedFile()" 
+                      matTooltip="Preview selected file">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </div>
+                }
               </div>
 
               <div class="form-actions">
@@ -102,7 +114,7 @@
                 <td mat-cell *matCellDef="let doc">
                   <div class="documents__doc-name">
                     <mat-icon>description</mat-icon>
-                    {{ doc.title }}
+                    {{ doc.description || doc.originalName || doc.fileName }}
                   </div>
                 </td>
               </ng-container>
@@ -141,6 +153,9 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let doc">
+                  <button mat-icon-button color="primary" (click)="previewDocument(doc)" matTooltip="Preview">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
                   <button mat-icon-button (click)="downloadDocument(doc)" matTooltip="Download">
                     <mat-icon>download</mat-icon>
                   </button>
@@ -172,7 +187,7 @@
                 <td mat-cell *matCellDef="let doc">
                   <div class="documents__doc-name">
                     <mat-icon>warning</mat-icon>
-                    {{ doc.title }}
+                    {{ doc.description || doc.originalName || doc.fileName }}
                   </div>
                 </td>
               </ng-container>

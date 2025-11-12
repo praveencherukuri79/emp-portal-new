@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../../core/services/auth.service';
 import { DashboardService } from '../../../services/dashboard.service';
 import { User } from '../../../core/models/user.model';
@@ -18,6 +20,7 @@ interface PendingApproval {
   employeeId: string;
   details: string;
   submittedDate: Date;
+  status?: string;
 }
 
 interface TeamMember {
@@ -26,6 +29,22 @@ interface TeamMember {
   hoursThisWeek: number;
   leaveDays: number;
   status: 'active' | 'on-leave' | 'inactive';
+  department?: string;
+}
+
+interface TeamActivity {
+  id: string;
+  type: 'timesheet' | 'leave' | 'document';
+  employeeName: string;
+  action: string;
+  timestamp: Date;
+}
+
+interface CalendarEvent {
+  date: Date;
+  employeeName: string;
+  type: 'leave' | 'holiday' | 'event';
+  status?: string;
 }
 
 @Component({
@@ -39,6 +58,8 @@ interface TeamMember {
     MatIconModule,
     MatCardModule,
     MatChipsModule,
+    MatTableModule,
+    MatTooltipModule,
     StatsCardComponent
   ],
   templateUrl: './supervisor-dashboard.component.html',
@@ -48,6 +69,8 @@ export class SupervisorDashboardComponent implements OnInit {
   currentUser = signal<User | null>(null);
   pendingApprovals = signal<PendingApproval[]>([]);
   teamMembers = signal<TeamMember[]>([]);
+  teamActivity = signal<TeamActivity[]>([]);
+  calendarEvents = signal<CalendarEvent[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   
@@ -55,10 +78,14 @@ export class SupervisorDashboardComponent implements OnInit {
     pendingLeaves: 0,
     pendingTimesheets: 0,
     teamSize: 0,
-    activeMembers: 0
+    activeMembers: 0,
+    teamHoursThisWeek: 0,
+    teamOnLeaveToday: 0
   });
 
   statsCards = signal<StatsCardData[]>([]);
+  approvalColumns = ['employee', 'type', 'details', 'submitted', 'actions'];
+  activityColumns = ['employee', 'action', 'time'];
 
   constructor(
     private authService: AuthService,
@@ -84,46 +111,48 @@ export class SupervisorDashboardComponent implements OnInit {
             pendingLeaves: data.pendingLeaves || 0,
             pendingTimesheets: data.pendingTimesheets || 0,
             teamSize: data.teamSize || 0,
-            activeMembers: data.activeMembers || 0
+            activeMembers: data.activeMembers || 0,
+            teamHoursThisWeek: data.teamHoursThisWeek || 0,
+            teamOnLeaveToday: data.teamOnLeaveToday || 0
           });
 
           // Create interactive stats cards
           this.statsCards.set([
             {
-              title: 'Pending Leaves',
-              value: (data.pendingLeaves || 0).toString(),
-              icon: 'event_busy',
-              color: 'warning',
-              route: '/supervisor/approvals?type=leave',
-              clickable: true,
-              subtitle: 'awaiting approval'
-            },
-            {
-              title: 'Pending Timesheets',
-              value: (data.pendingTimesheets || 0).toString(),
+              title: 'Pending Approvals',
+              value: ((data.pendingLeaves || 0) + (data.pendingTimesheets || 0)).toString(),
               icon: 'pending_actions',
               color: 'warning',
-              route: '/supervisor/approvals?type=timesheet',
+              route: '/supervisor/approvals',
               clickable: true,
-              subtitle: 'awaiting review'
+              subtitle: 'require attention'
+            },
+            {
+              title: 'Team Hours',
+              value: (data.teamHoursThisWeek || 0).toString(),
+              icon: 'schedule',
+              color: 'primary',
+              route: '/supervisor/reports',
+              clickable: true,
+              subtitle: 'this week'
             },
             {
               title: 'Team Members',
               value: (data.teamSize || 0).toString(),
               icon: 'groups',
-              color: 'primary',
+              color: 'info',
               route: '/supervisor/team',
               clickable: true,
               subtitle: 'total team size'
             },
             {
-              title: 'Active Today',
-              value: (data.activeMembers || 0).toString(),
-              icon: 'person',
-              color: 'success',
+              title: 'On Leave Today',
+              value: (data.teamOnLeaveToday || 0).toString(),
+              icon: 'event_busy',
+              color: 'warning',
               route: '/supervisor/team',
               clickable: true,
-              subtitle: 'currently active'
+              subtitle: 'currently on leave'
             }
           ]);
 
@@ -133,6 +162,14 @@ export class SupervisorDashboardComponent implements OnInit {
 
           if (data.teamMembers) {
             this.teamMembers.set(data.teamMembers);
+          }
+
+          if (data.teamActivity) {
+            this.teamActivity.set(data.teamActivity);
+          }
+
+          if (data.calendarEvents) {
+            this.calendarEvents.set(data.calendarEvents);
           }
         }
         this.loading.set(false);
@@ -146,12 +183,27 @@ export class SupervisorDashboardComponent implements OnInit {
   }
 
   approveItem(id: string): void {
-    // Navigate to approvals page with filter
     this.router.navigate(['/supervisor/approvals'], { queryParams: { id } });
   }
 
   rejectItem(id: string): void {
-    // Navigate to approvals page with filter
     this.router.navigate(['/supervisor/approvals'], { queryParams: { id } });
+  }
+
+  getStatusColor(status: string): string {
+    const colorMap: Record<string, string> = {
+      'active': 'success',
+      'on-leave': 'warning',
+      'inactive': 'default',
+      'pending': 'warning',
+      'approved': 'success',
+      'rejected': 'warn'
+    };
+    return colorMap[status] || 'default';
+  }
+
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString();
   }
 }

@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <mat-tab-group class="approvals-tabs" [dynamicHeight]="true">
+  <mat-tab-group class="approvals-tabs" [dynamicHeight]="true" [selectedIndex]="authService.currentUser()?.role === UserRole.HR || authService.currentUser()?.role === UserRole.ADMIN ? 1 : 0">
     <!-- Timesheet Approvals Tab -->
     <mat-tab label="Timesheet Approvals">
       <div class="tab-content">

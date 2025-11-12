@@ -27,12 +27,17 @@ export const routes: Routes = [
   {
     path: 'prospect',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.PROSPECT, UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER] },
+    data: { roles: [UserRole.PROSPECT] },
     children: [
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboards/prospect-dashboard/prospect-dashboard.component').then(m => m.ProspectDashboardComponent),
         title: 'Prospect Dashboard - Employee Portal'
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
+        title: 'Profile - Employee Portal'
       }
     ]
   },
@@ -75,7 +80,7 @@ export const routes: Routes = [
   {
     path: 'supervisor',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN] },
+    data: { roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER] },
     children: [
       {
         path: 'dashboard',
@@ -112,18 +117,13 @@ export const routes: Routes = [
         title: 'HR Dashboard - Employee Portal'
       },
       {
-        path: 'leaves',
-        loadComponent: () => import('./features/leaves/leave-management.component').then(m => m.LeaveManagementComponent),
-        title: 'Leave Management - Employee Portal'
-      },
-      {
         path: 'employees',
         loadComponent: () => import('./features/hr/employees/employee-management.component').then((m: any) => m.EmployeeManagementComponent),
         title: 'Employee Management - Employee Portal'
       },
       {
         path: 'documents',
-        loadComponent: () => import('./features/documents/documents.component').then(m => m.DocumentsComponent),
+        loadComponent: () => import('./features/hr/documents/hr-documents.component').then(m => m.HrDocumentsComponent),
         title: 'Document Management - Employee Portal'
       }
     ]

@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
 import { AuthService } from '../../../core/services/auth.service';
 import { DashboardService } from '../../../services/dashboard.service';
 import { User } from '../../../core/models/user.model';
@@ -27,6 +28,21 @@ interface ActivityLog {
   type: 'info' | 'warning' | 'error';
 }
 
+interface DepartmentSummary {
+  department: string;
+  employeeCount: number;
+  activeCount: number;
+  onLeaveCount: number;
+}
+
+interface RecentUserChange {
+  id: string;
+  user: string;
+  action: string;
+  timestamp: Date;
+  details?: string;
+}
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -39,6 +55,7 @@ interface ActivityLog {
     MatCardModule,
     MatProgressBarModule,
     MatChipsModule,
+    MatTableModule,
     StatsCardComponent
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -53,6 +70,8 @@ export class AdminDashboardComponent implements OnInit {
     status: 'healthy'
   });
   activityLogs = signal<ActivityLog[]>([]);
+  departmentSummary = signal<DepartmentSummary[]>([]);
+  recentUserChanges = signal<RecentUserChange[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   
@@ -60,10 +79,13 @@ export class AdminDashboardComponent implements OnInit {
     totalUsers: 0,
     activeUsers: 0,
     departments: 0,
-    systemUptime: ''
+    systemUptime: '',
+    recentChanges: 0
   });
 
   statsCards = signal<StatsCardData[]>([]);
+  departmentColumns = ['department', 'employees', 'active', 'onLeave'];
+  activityColumns = ['user', 'action', 'timestamp'];
 
   constructor(
     private authService: AuthService,
@@ -88,7 +110,8 @@ export class AdminDashboardComponent implements OnInit {
             totalUsers: data.totalUsers || 0,
             activeUsers: data.activeUsers || 0,
             departments: data.departments || 0,
-            systemUptime: data.systemUptime || 'N/A'
+            systemUptime: data.systemUptime || 'N/A',
+            recentChanges: data.recentChanges || 0
           });
 
           // Create interactive stats cards
@@ -138,6 +161,14 @@ export class AdminDashboardComponent implements OnInit {
           if (data.activityLogs) {
             this.activityLogs.set(data.activityLogs);
           }
+
+          if (data.departmentSummary) {
+            this.departmentSummary.set(data.departmentSummary);
+          }
+
+          if (data.recentUserChanges) {
+            this.recentUserChanges.set(data.recentUserChanges);
+          }
         }
         this.loading.set(false);
       },
@@ -156,5 +187,25 @@ export class AdminDashboardComponent implements OnInit {
     if (maxUsage >= 90) return 'critical';
     if (maxUsage >= 75) return 'warning';
     return 'healthy';
+  }
+
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getActivityIcon(type: string): string {
+    const iconMap: Record<string, string> = {
+      'info': 'info',
+      'warning': 'warning',
+      'error': 'error'
+    };
+    return iconMap[type] || 'info';
   }
 }

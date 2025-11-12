@@ -100,6 +100,9 @@
   @include stats-grid;
   @include container;
   margin-top: var(--spacing-6);  /* Top margin for spacing */
+  overflow: visible;
+  overflow-x: visible;
+  overflow-y: visible;
 }
 
 /* Dashboard Content */

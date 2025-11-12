@@ -455,6 +455,7 @@
   gap: var(--spacing-8);  /* Premium gap between cards */
   margin-bottom: var(--spacing-10);  /* Generous margin below stats grid */
   width: 100%;
+  overflow: visible;
 
   @include breakpoint-down(sm) {
     grid-template-columns: 1fr;

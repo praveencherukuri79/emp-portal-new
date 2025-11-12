@@ -10,11 +10,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DocumentService } from '../../core/services/document.service';
 import { UINotificationService } from '../../core/services/notification.service';
 import { DocumentCategory } from '../../core/models/document.model';
 import { Document } from '../../core/services/document.service';
+import { DocumentPreviewDialogComponent, DocumentPreviewData } from './document-preview-dialog.component';
 
 @Component({
   selector: 'app-documents',
@@ -31,7 +34,9 @@ import { Document } from '../../core/services/document.service';
     MatProgressSpinnerModule,
     MatInputModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule,
+    MatTooltipModule
   ],
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.scss'
@@ -40,6 +45,7 @@ export class DocumentsComponent implements OnInit {
   private documentService = inject(DocumentService);
   private fb = inject(FormBuilder);
   private uiNotification = inject(UINotificationService);
+  private dialog = inject(MatDialog);
 
   // Signals for reactive state
   documents = signal<Document[]>([]);
@@ -69,11 +75,11 @@ export class DocumentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDocuments();
-    // Don't load expiring documents separately - we'll filter from loaded documents
   }
 
   loadDocuments(): void {
     this.loading.set(true);
+    
     this.documentService.getMyDocuments().subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
@@ -122,17 +128,19 @@ export class DocumentsComponent implements OnInit {
     this.documentService.uploadDocument(this.selectedFile, metadata).subscribe({
       next: (response) => {
         if (response.status === 'success') {
+          this.uiNotification.showSuccess('Document uploaded successfully');
           this.uploading.set(false);
           this.uploadForm.reset();
           this.selectedFile = null;
-          this.loadDocuments(); // This will also update expiring documents
+          this.loadDocuments();
         } else {
           this.uploading.set(false);
-          console.error('Document upload failed:', response);
+          this.uiNotification.showError(response.message || 'Document upload failed');
         }
       },
       error: (error) => {
         console.error('Error uploading document:', error);
+        this.uiNotification.showError('Failed to upload document');
         this.uploading.set(false);
       }
     });
@@ -197,5 +205,65 @@ export class DocumentsComponent implements OnInit {
   formatDate(date: string | undefined): string {
     if (!date) return 'N/A';
     return new Date(date).toLocaleDateString();
+  }
+
+  previewDocument(doc: Document): void {
+    if (!doc._id) return;
+    
+    this.documentService.downloadDocument(doc._id).subscribe({
+      next: (blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        
+        const dialogData: DocumentPreviewData = {
+          documentId: doc._id!,
+          fileName: doc.originalName || doc.fileName,
+          mimeType: doc.mimeType || '',
+          blobUrl: blobUrl
+        };
+        
+        const dialogRef = this.dialog.open(DocumentPreviewDialogComponent, {
+          width: '90vw',
+          maxWidth: '1200px',
+          height: '90vh',
+          data: dialogData,
+          panelClass: 'document-preview-dialog'
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          // Clean up blob URL
+          URL.revokeObjectURL(blobUrl);
+        });
+      },
+      error: (error) => {
+        console.error('Error loading document for preview:', error);
+        this.uiNotification.showError('Failed to load document preview');
+      }
+    });
+  }
+
+  previewSelectedFile(): void {
+    if (!this.selectedFile) return;
+    
+    const blobUrl = URL.createObjectURL(this.selectedFile);
+    
+    const dialogData: DocumentPreviewData = {
+      documentId: 'preview',
+      fileName: this.selectedFile.name,
+      mimeType: this.selectedFile.type,
+      blobUrl: blobUrl
+    };
+    
+    const dialogRef = this.dialog.open(DocumentPreviewDialogComponent, {
+      width: '90vw',
+      maxWidth: '1200px',
+      height: '90vh',
+      data: dialogData,
+      panelClass: 'document-preview-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      // Clean up blob URL
+      URL.revokeObjectURL(blobUrl);
+    });
   }
 }

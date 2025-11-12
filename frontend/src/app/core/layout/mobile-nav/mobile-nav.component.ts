@@ -59,24 +59,24 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       roles: [UserRole.PROSPECT, UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     
-    // Employee Type Routes (Employee only - Prospect cannot access)
+    // Employee Type Routes (Employee and Supervisor only - for their own submissions)
     {
       label: 'Timesheets',
       icon: 'schedule',
       route: '/employee/timesheets',
-      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR]
     },
     {
       label: 'Leaves',
       icon: 'event_available',
       route: '/employee/leaves',
-      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR]
     },
     {
       label: 'Documents',
       icon: 'folder',
       route: '/employee/documents',
-      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+      roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR]
     },
     
     // Admin Type - Supervisor Routes
@@ -113,32 +113,18 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
     
-    // Admin Type - HR Routes
+    // Admin Type - HR Routes (Direct menu items, no dropdown)
     {
-      label: 'HR',
-      icon: 'business_center',
-      route: '/hr',
-      roles: [UserRole.HR, UserRole.ADMIN],
-      children: [
-        {
-          label: 'Employees',
-          icon: 'people',
-          route: '/hr/employees',
-          roles: [UserRole.HR, UserRole.ADMIN]
-        },
-        {
-          label: 'Leave Management',
-          icon: 'event_available',
-          route: '/hr/leaves',
-          roles: [UserRole.HR, UserRole.ADMIN]
-        },
-        {
-          label: 'Documents',
-          icon: 'folder_special',
-          route: '/hr/documents',
-          roles: [UserRole.HR, UserRole.ADMIN]
-        }
-      ]
+      label: 'Employees',
+      icon: 'people',
+      route: '/hr/employees',
+      roles: [UserRole.HR, UserRole.ADMIN]
+    },
+    {
+      label: 'Document Management',
+      icon: 'folder_special',
+      route: '/hr/documents',
+      roles: [UserRole.HR, UserRole.ADMIN]
     },
     
     // Admin Type - Admin Routes

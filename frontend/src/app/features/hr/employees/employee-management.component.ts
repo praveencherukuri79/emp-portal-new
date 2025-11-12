@@ -10,10 +10,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { UINotificationService } from '../../../core/services/notification.service';
 import { User } from '../../../core/models/user.model';
+import { EmployeeViewDialogComponent } from './employee-view-dialog.component';
+import { EmployeeEditDialogComponent } from './employee-edit-dialog.component';
 
 @Component({
   selector: 'app-employee-management',
@@ -30,6 +34,8 @@ import { User } from '../../../core/models/user.model';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
+    MatTooltipModule,
     FormsModule
   ],
   templateUrl: './employee-management.component.html',
@@ -38,6 +44,7 @@ import { User } from '../../../core/models/user.model';
 export class EmployeeManagementComponent implements OnInit {
   private userService = inject(UserService);
   private notification = inject(UINotificationService);
+  private dialog = inject(MatDialog);
 
   loading = signal(false);
   employees = signal<User[]>([]);
@@ -96,6 +103,51 @@ export class EmployeeManagementComponent implements OnInit {
     }
 
     return employees;
+  }
+
+  viewEmployee(employee: User): void {
+    const dialogRef = this.dialog.open(EmployeeViewDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: employee
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'edit') {
+        this.editEmployee(result.employee);
+      }
+    });
+  }
+
+  editEmployee(employee: User): void {
+    const dialogRef = this.dialog.open(EmployeeEditDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: employee
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'save') {
+        this.updateEmployee(employee._id!, result.data);
+      }
+    });
+  }
+
+  updateEmployee(userId: string, data: Partial<User>): void {
+    this.userService.updateProfile(data as any).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.notification.showSuccess('Employee updated successfully');
+          this.loadEmployees();
+        } else {
+          this.notification.showError(response.message || 'Failed to update employee');
+        }
+      },
+      error: (error) => {
+        console.error('Error updating employee:', error);
+        this.notification.showError(error.error?.message || 'Failed to update employee');
+      }
+    });
   }
 }
 

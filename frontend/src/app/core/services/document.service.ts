@@ -10,6 +10,7 @@ import { IDocumentResponse } from '@shared/types/responses';
 
 export interface Document {
   _id?: string;
+  userId?: string | { _id: string; firstName: string; lastName: string; email?: string; employeeId?: string };
   fileName: string;
   originalName: string;
   category: DocumentCategory;
@@ -24,6 +25,8 @@ export interface Document {
   isActive?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  title?: string;
+  uploadedAt?: Date | string;
 }
 
 export interface DocumentFilters {
@@ -45,6 +48,15 @@ export class DocumentService {
     if (filters?.status) params = params.set('status', filters.status.toLowerCase());
     if (filters?.search) params = params.set('search', filters.search);
     return this.http.get<IApiResponse<IDocumentResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.MY_DOCUMENTS}`, { params });
+  }
+
+  getAllDocuments(filters?: DocumentFilters & { userId?: string; expiringSoon?: boolean }): Observable<IApiResponse<IDocumentResponse[]>> {
+    let params = new HttpParams();
+    if (filters?.category) params = params.set('category', filters.category.toLowerCase());
+    if (filters?.userId) params = params.set('userId', filters.userId);
+    if (filters?.expiringSoon) params = params.set('expiringSoon', 'true');
+    if (filters?.search) params = params.set('search', filters.search);
+    return this.http.get<IApiResponse<IDocumentResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.ALL}`, { params });
   }
 
   uploadDocument(file: File, metadata: Partial<Document>): Observable<IApiResponse<IDocumentResponse>> {

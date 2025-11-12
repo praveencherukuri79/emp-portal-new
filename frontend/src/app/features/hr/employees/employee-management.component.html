@@ -103,11 +103,11 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let employee">
-                  <button mat-icon-button>
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button>
+                  <button mat-icon-button color="primary" (click)="viewEmployee(employee)" matTooltip="View Details">
                     <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="editEmployee(employee)" matTooltip="Edit Employee">
+                    <mat-icon>edit</mat-icon>
                   </button>
                 </td>
               </ng-container>

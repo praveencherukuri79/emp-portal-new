@@ -28,18 +28,21 @@
 
   <div class="dashboard-content">
     <!-- Leave Summary -->
-    <mat-card class="clickable" [routerLink]="'/hr/leaves'">
+    <mat-card class="leave-summary-card">
       <mat-card-header>
-        <mat-card-title>
-          <mat-icon>event_available</mat-icon>
-          Leave Summary
-        </mat-card-title>
-        <mat-card-subtitle>
-          <button mat-button color="primary" routerLink="/hr/leaves">View All</button>
-        </mat-card-subtitle>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Leave Summary</mat-card-title>
+            <mat-card-subtitle>Organization-wide leave usage by type</mat-card-subtitle>
+          </div>
+        </div>
+        <button mat-button color="primary" routerLink="/hr/leaves">Manage Leaves</button>
       </mat-card-header>
       <mat-card-content>
-        <div class="leave-stats">
+        <div class="leave-stats-overview">
           <div class="leave-stat approved">
             <div class="stat-value">{{ leaveStats().approvedThisMonth }}</div>
             <div class="stat-label">Approved This Month</div>
@@ -52,37 +55,78 @@
             <div class="stat-value">{{ leaveStats().rejectedThisMonth }}</div>
             <div class="stat-label">Rejected This Month</div>
           </div>
+          <div class="leave-stat total">
+            <div class="stat-value">{{ leaveStats().totalLeaves }}</div>
+            <div class="stat-label">Total Requests</div>
+          </div>
         </div>
-        <div class="action-row">
-          <button mat-raised-button color="primary" routerLink="/hr/leaves">Manage Leaves</button>
-          <button mat-stroked-button color="primary" routerLink="/hr/leaves">Leave Policies</button>
-        </div>
+        
+        @if (leaveSummary().length > 0) {
+          <div class="leave-summary-table">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Leave Type</th>
+                  <th>Total</th>
+                  <th>Used</th>
+                  <th>Remaining</th>
+                  <th>Pending</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (summary of leaveSummary(); track summary.type) {
+                  <tr>
+                    <td><strong>{{ summary.type }}</strong></td>
+                    <td>{{ summary.total }} days</td>
+                    <td>{{ summary.used }} days</td>
+                    <td>
+                      <span [class.low-balance]="summary.remaining < 5">{{ summary.remaining }} days</span>
+                    </td>
+                    <td>{{ summary.pending }} requests</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>event_available</mat-icon>
+            <p>No leave summary data available</p>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
 
     <!-- Document Alerts -->
-    <mat-card class="clickable" [routerLink]="'/hr/documents'">
+    <mat-card class="document-alerts-card">
       <mat-card-header>
-        <mat-card-title>
-          <mat-icon>folder_special</mat-icon>
-          Document Alerts
-        </mat-card-title>
-        <mat-card-subtitle>
-          <button mat-button color="primary" routerLink="/hr/documents">View All</button>
-        </mat-card-subtitle>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Document Alerts</mat-card-title>
+            <mat-card-subtitle>Documents expiring in next 30 days</mat-card-subtitle>
+          </div>
+        </div>
+        <button mat-button color="primary" routerLink="/hr/documents">View All</button>
       </mat-card-header>
       <mat-card-content>
-        <div class="alerts-list">
-          @if (documentAlerts().length === 0) {
-            <div class="empty-state">
+        @if (documentAlerts().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
               <mat-icon>check_circle</mat-icon>
-              <p>No document alerts</p>
             </div>
-          } @else {
-            @for (alert of documentAlerts(); track alert.id) {
+            <h3>All documents up to date</h3>
+            <p>No document alerts at this time</p>
+          </div>
+        } @else {
+          <div class="alerts-list">
+            @for (alert of documentAlerts().slice(0, 10); track alert.id) {
               <div class="alert-item">
                 <div class="alert-info">
-                  <mat-chip [class]="'status-' + alert.status">
+                  <mat-chip [class]="'status-' + alert.status" [color]="getAlertStatusColor(alert.status)">
                     @switch (alert.status) {
                       @case ('expired') { EXPIRED }
                       @case ('expiring-soon') { EXPIRING SOON }
@@ -93,48 +137,134 @@
                     <strong>{{ alert.employeeName }}</strong>
                     <span class="document-type">{{ alert.documentType }}</span>
                     @if (alert.status !== 'missing') {
-                      <span class="expiry-date">Expires: {{ alert.expiryDate | date:'mediumDate' }}</span>
+                      <span class="expiry-date">
+                        <mat-icon>event</mat-icon>
+                        Expires: {{ formatDate(alert.expiryDate) }}
+                        @if (alert.daysUntilExpiry !== undefined) {
+                          <span class="days-remaining">({{ alert.daysUntilExpiry }} days)</span>
+                        }
+                      </span>
                     }
                   </div>
                 </div>
-                <button mat-raised-button color="primary" (click)="handleAlert(alert.id)">
+                <button mat-icon-button color="primary" (click)="handleAlert(alert.id)" matTooltip="Send notification">
                   <mat-icon>notifications</mat-icon>
-                  Notify
                 </button>
               </div>
             }
-          }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Compliance Tracking -->
+    <mat-card class="compliance-card">
+      <mat-card-header>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Compliance Tracking</mat-card-title>
+            <mat-card-subtitle>Visa/permit expiry tracking</mat-card-subtitle>
+          </div>
         </div>
+        <button mat-button color="primary" routerLink="/hr/documents">View Details</button>
+      </mat-card-header>
+      <mat-card-content>
+        @if (complianceMetrics().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
+              <mat-icon>verified</mat-icon>
+            </div>
+            <h3>No compliance data</h3>
+            <p>Compliance metrics will appear here</p>
+          </div>
+        } @else {
+          <div class="compliance-grid">
+            @for (metric of complianceMetrics(); track metric.label) {
+              <div class="compliance-metric">
+                <div class="metric-header">
+                  <span class="metric-label">{{ metric.label }}</span>
+                  <mat-chip [color]="getComplianceStatusColor(metric.status)">
+                    {{ metric.status | uppercase }}
+                  </mat-chip>
+                </div>
+                <div class="metric-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="metric.percentage"></div>
+                  </div>
+                  <div class="metric-value">
+                    {{ metric.value }} / {{ metric.total }} ({{ metric.percentage }}%)
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </mat-card-content>
     </mat-card>
   </div>
 
-  <!-- Employee Management -->
-  <mat-card>
+  <!-- Quick Actions -->
+  <mat-card class="quick-actions-card">
     <mat-card-header>
-      <mat-card-title>
-        <mat-icon>manage_accounts</mat-icon>
-        Employee Management
-      </mat-card-title>
+      <div class="card-header-content">
+        <div class="card-header-icon">
+          <mat-icon>flash_on</mat-icon>
+        </div>
+        <div>
+          <mat-card-title>Quick Actions</mat-card-title>
+          <mat-card-subtitle>Get things done faster</mat-card-subtitle>
+        </div>
+      </div>
     </mat-card-header>
     <mat-card-content>
-      <div class="management-actions">
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/employees">
-          <mat-icon>people</mat-icon>
-          <span>View All Employees</span>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/employees">
-          <mat-icon>person_add</mat-icon>
-          <span>Add New Employee</span>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/documents">
-          <mat-icon>description</mat-icon>
-          <span>Document Compliance</span>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/hr/leaves">
-          <mat-icon>assessment</mat-icon>
-          <span>HR Reports</span>
-        </button>
+      <div class="quick-actions-grid">
+        <a class="action-card" routerLink="/hr/employees">
+          <div class="action-icon primary">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Employee Directory</h3>
+            <p>View and manage employees</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/hr/leaves">
+          <div class="action-icon success">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Leave Management</h3>
+            <p>Manage leave requests</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/hr/documents">
+          <div class="action-icon warning">
+            <mat-icon>folder_special</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Review Documents</h3>
+            <p>Check document compliance</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/supervisor/approvals">
+          <div class="action-icon info">
+            <mat-icon>approval</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Approvals</h3>
+            <p>Review pending approvals</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
       </div>
     </mat-card-content>
   </mat-card>

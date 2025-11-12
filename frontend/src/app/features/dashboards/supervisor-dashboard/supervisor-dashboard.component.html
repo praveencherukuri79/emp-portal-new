@@ -27,113 +27,280 @@
   }
 
   <div class="dashboard-content">
-    <!-- Pending Approvals -->
-    <mat-card class="clickable" [routerLink]="'/supervisor/approvals'">
+    <!-- Pending Approvals Queue -->
+    <mat-card class="approval-queue-card">
       <mat-card-header>
-        <mat-card-title>
-          <mat-icon>pending_actions</mat-icon>
-          Pending Approvals
-        </mat-card-title>
-        <mat-card-subtitle>
-          <button mat-button color="primary" routerLink="/supervisor/approvals">View All</button>
-        </mat-card-subtitle>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Approval Queue</mat-card-title>
+            <mat-card-subtitle>Items requiring your attention</mat-card-subtitle>
+          </div>
+        </div>
+        <button mat-button color="primary" routerLink="/supervisor/approvals">View All</button>
       </mat-card-header>
       <mat-card-content>
-        <div class="approval-list">
-          @if (pendingApprovals().length === 0) {
-            <div class="empty-state">
+        @if (pendingApprovals().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
               <mat-icon>check_circle</mat-icon>
-              <p>No pending approvals</p>
             </div>
-          } @else {
-            @for (approval of pendingApprovals(); track approval.id) {
+            <h3>All caught up!</h3>
+            <p>No pending approvals at this time</p>
+          </div>
+        } @else {
+          <div class="approval-list">
+            @for (approval of pendingApprovals().slice(0, 5); track approval.id) {
               <div class="approval-item">
                 <div class="approval-info">
-                  <mat-chip [class]="'type-' + approval.type">
+                  <mat-chip [class]="'type-' + approval.type" [class.status-pending]="true">
                     {{ approval.type | uppercase }}
                   </mat-chip>
                   <div class="details">
                     <strong>{{ approval.employeeName }}</strong>
                     <span class="details-text">{{ approval.details }}</span>
-                    <span class="date">{{ approval.submittedDate | date:'short' }}</span>
+                    <span class="date">
+                      <mat-icon>schedule</mat-icon>
+                      {{ formatDate(approval.submittedDate) }}
+                    </span>
                   </div>
                 </div>
                 <div class="approval-actions">
-                  <button mat-raised-button color="primary" (click)="approveItem(approval.id)">
+                  <button mat-icon-button color="primary" (click)="approveItem(approval.id)" matTooltip="Approve">
                     <mat-icon>check</mat-icon>
-                    Approve
                   </button>
-                  <button mat-raised-button color="warn" (click)="rejectItem(approval.id)">
+                  <button mat-icon-button color="warn" (click)="rejectItem(approval.id)" matTooltip="Reject">
                     <mat-icon>close</mat-icon>
-                    Reject
                   </button>
                 </div>
               </div>
             }
-          }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Team Activity -->
+    <mat-card class="team-activity-card">
+      <mat-card-header>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>timeline</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Team Activity</mat-card-title>
+            <mat-card-subtitle>Recent team submissions and actions</mat-card-subtitle>
+          </div>
         </div>
+        <button mat-button color="primary" routerLink="/supervisor/team">View Team</button>
+      </mat-card-header>
+      <mat-card-content>
+        @if (teamActivity().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <h3>No recent activity</h3>
+            <p>Team activity will appear here</p>
+          </div>
+        } @else {
+          <div class="activity-list">
+            @for (activity of teamActivity().slice(0, 10); track activity.id) {
+              <div class="activity-item">
+                <div class="activity-icon-wrapper">
+                  <div class="activity-icon" [class]="'type-' + activity.type">
+                    @switch (activity.type) {
+                      @case ('timesheet') { <mat-icon>schedule</mat-icon> }
+                      @case ('leave') { <mat-icon>event_available</mat-icon> }
+                      @case ('document') { <mat-icon>folder</mat-icon> }
+                      @default { <mat-icon>info</mat-icon> }
+                    }
+                  </div>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">
+                    <strong>{{ activity.employeeName }}</strong> {{ activity.action }}
+                  </div>
+                  <div class="activity-time">
+                    <mat-icon>schedule</mat-icon>
+                    {{ formatDate(activity.timestamp) }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </mat-card-content>
     </mat-card>
 
     <!-- Team Summary -->
-    <mat-card class="clickable" [routerLink]="'/supervisor/team'">
+    <mat-card class="team-summary-card">
       <mat-card-header>
-        <mat-card-title>
-          <mat-icon>groups</mat-icon>
-          Team Summary
-        </mat-card-title>
-        <mat-card-subtitle>
-          <button mat-button color="primary" routerLink="/supervisor/team">View All</button>
-        </mat-card-subtitle>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>groups</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Team Summary</mat-card-title>
+            <mat-card-subtitle>Overview of your team</mat-card-subtitle>
+          </div>
+        </div>
+        <button mat-button color="primary" routerLink="/supervisor/team">Manage Team</button>
       </mat-card-header>
       <mat-card-content>
-        <div class="team-list">
-          @if (teamMembers().length === 0) {
-            <div class="empty-state">
+        @if (teamMembers().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
               <mat-icon>people</mat-icon>
-              <p>No team members assigned</p>
             </div>
-          } @else {
-            @for (member of teamMembers(); track member.id) {
+            <h3>No team members</h3>
+            <p>Team members will appear here once assigned</p>
+          </div>
+        } @else {
+          <div class="team-list">
+            @for (member of teamMembers().slice(0, 6); track member.id) {
               <div class="team-member">
+                <div class="member-avatar">
+                  <mat-icon>person</mat-icon>
+                </div>
                 <div class="member-info">
                   <strong>{{ member.name }}</strong>
-                  <mat-chip [class]="'status-' + member.status">{{ member.status }}</mat-chip>
+                  @if (member.department) {
+                    <span class="member-department">{{ member.department }}</span>
+                  }
+                  <div class="member-stats">
+                    <span class="stat-item">
+                      <mat-icon>schedule</mat-icon>
+                      {{ member.hoursThisWeek }}h
+                    </span>
+                    <span class="stat-item">
+                      <mat-icon>event_available</mat-icon>
+                      {{ member.leaveDays }} days
+                    </span>
+                  </div>
                 </div>
-                <div class="member-stats">
-                  <span>{{ member.hoursThisWeek }}h this week</span>
-                  <span>{{ member.leaveDays }} days leave</span>
-                </div>
+                <mat-chip [class]="'status-' + member.status">{{ member.status }}</mat-chip>
               </div>
             }
-          }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Team Calendar -->
+    <mat-card class="team-calendar-card">
+      <mat-card-header>
+        <div class="card-header-content">
+          <div class="card-header-icon">
+            <mat-icon>calendar_today</mat-icon>
+          </div>
+          <div>
+            <mat-card-title>Team Calendar</mat-card-title>
+            <mat-card-subtitle>Visual view of team availability</mat-card-subtitle>
+          </div>
         </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (calendarEvents().length === 0) {
+          <div class="empty-state">
+            <div class="empty-illustration">
+              <div class="empty-circle"></div>
+              <mat-icon>calendar_today</mat-icon>
+            </div>
+            <h3>No calendar events</h3>
+            <p>Team calendar events will appear here</p>
+          </div>
+        } @else {
+          <div class="calendar-view">
+            <div class="calendar-grid">
+              @for (event of calendarEvents().slice(0, 7); track event.date) {
+                <div class="calendar-day">
+                  <div class="day-header">
+                    <span class="day-name">{{ formatDate(event.date) | date:'EEE' }}</span>
+                    <span class="day-number">{{ formatDate(event.date) | date:'d' }}</span>
+                  </div>
+                  <div class="day-events">
+                    <div class="calendar-event" [class]="'type-' + event.type">
+                      @switch (event.type) {
+                        @case ('leave') { <mat-icon>event_available</mat-icon> }
+                        @case ('holiday') { <mat-icon>celebration</mat-icon> }
+                        @default { <mat-icon>event</mat-icon> }
+                      }
+                      <span>{{ event.employeeName }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
   </div>
 
   <!-- Quick Actions -->
-  <mat-card>
+  <mat-card class="quick-actions-card">
     <mat-card-header>
-      <mat-card-title>
-        <mat-icon>flash_on</mat-icon>
-        Quick Actions
-      </mat-card-title>
+      <div class="card-header-content">
+        <div class="card-header-icon">
+          <mat-icon>flash_on</mat-icon>
+        </div>
+        <div>
+          <mat-card-title>Quick Actions</mat-card-title>
+          <mat-card-subtitle>Get things done faster</mat-card-subtitle>
+        </div>
+      </div>
     </mat-card-header>
     <mat-card-content>
-      <div class="action-buttons">
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/supervisor/approvals">
-          <mat-icon>approval</mat-icon>
-          <span>Review Approvals</span>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/supervisor/team">
-          <mat-icon>manage_accounts</mat-icon>
-          <span>Manage Team</span>
-        </button>
-        <button mat-raised-button color="primary" class="action-btn" routerLink="/supervisor/reports">
-          <mat-icon>assessment</mat-icon>
-          <span>View Reports</span>
-        </button>
+      <div class="quick-actions-grid">
+        <a class="action-card" routerLink="/supervisor/approvals">
+          <div class="action-icon primary">
+            <mat-icon>approval</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Review Approvals</h3>
+            <p>Approve or reject requests</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/supervisor/team">
+          <div class="action-icon success">
+            <mat-icon>groups</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Manage Team</h3>
+            <p>View and manage team members</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/supervisor/reports">
+          <div class="action-icon info">
+            <mat-icon>assessment</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>View Reports</h3>
+            <p>Team productivity reports</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
+        
+        <a class="action-card" routerLink="/employee/timesheets">
+          <div class="action-icon warning">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>My Timesheets</h3>
+            <p>View your own timesheets</p>
+          </div>
+          <mat-icon class="action-arrow">arrow_forward</mat-icon>
+        </a>
       </div>
     </mat-card-content>
   </mat-card>
