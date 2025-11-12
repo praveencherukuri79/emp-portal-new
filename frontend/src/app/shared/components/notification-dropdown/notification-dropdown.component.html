@@ -3,7 +3,8 @@
   [matMenuTriggerFor]="notificationMenu"
   [matBadge]="unreadCount()" 
   matBadgeColor="warn"
-  matBadgeOverlap="false"
+  matBadgeOverlap="true"
+  matBadgeSize="small"
   [attr.aria-label]="'Notifications (' + unreadCount() + ' unread)'">
   <mat-icon>notifications</mat-icon>
 </button>

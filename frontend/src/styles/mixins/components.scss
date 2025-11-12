@@ -7,6 +7,49 @@
 @import './forms.scss';
 @import '../tokens/breakpoints.scss';
 
+/* ============================================
+   STANDARDIZED HOVER EFFECTS - Use these everywhere
+   ============================================ */
+
+/* Card Hover - Subtle shadow only (no jumping) */
+@mixin hover-card {
+  transition: box-shadow var(--transition-normal);
+  
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Interactive Element Hover - Background change */
+@mixin hover-interactive($bg-color: var(--action-primary-light), $text-color: var(--action-primary)) {
+  transition: all var(--transition-normal);
+  
+  &:hover {
+    background: $bg-color;
+    color: $text-color;
+  }
+}
+
+/* Button/Link Hover - Color transition */
+@mixin hover-link($color: var(--action-primary)) {
+  transition: color var(--transition-normal);
+  
+  &:hover {
+    color: $color;
+  }
+}
+
+/* Clickable Card Hover - Shadow and border only (no jumping) */
+@mixin hover-clickable {
+  cursor: pointer;
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+  
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-focus);
+  }
+}
+
 /* Button Mixins */
 @mixin button-base {
   display: inline-flex;
@@ -375,18 +418,6 @@
   padding-bottom: var(--spacing-6);
   border-bottom: var(--border-width-thin) solid var(--border-secondary);
   position: relative;
-
-  /* Decorative accent line */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: var(--background-gradient-primary);
-    border-radius: var(--radius-full);
-  }
 
   h1 {
     font-size: var(--font-size-4xl);

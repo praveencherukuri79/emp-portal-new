@@ -3,7 +3,7 @@
 
 .hr-dashboard {
   @include container;
-  padding: 0;
+  padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
 
   // Use global .page-header class
@@ -33,11 +33,11 @@
       padding: var(--spacing-6);
       border-radius: var(--radius-lg);
       background: var(--background-tertiary);
-      transition: all var(--transition-normal);
+      transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
 
       &:hover {
-        transform: translateY(-2px);
         box-shadow: var(--shadow-sm);
+        border-color: var(--action-accent);
       }
 
       .stat-value {
@@ -96,11 +96,10 @@
       background: var(--background-tertiary);
       border-radius: var(--radius-md);
       gap: var(--spacing-4);
-      transition: all var(--transition-normal);
+      transition: background-color var(--transition-normal);
 
       &:hover {
         background: var(--table-row-hover);
-        transform: translateX(4px);
       }
 
       .alert-info {

@@ -107,7 +107,7 @@ mat-form-field {
     color: var(--action-primary);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast);
 
     &:hover {
       text-decoration: underline;

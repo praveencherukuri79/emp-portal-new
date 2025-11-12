@@ -39,7 +39,7 @@
     @include flex-between;
     padding: var(--spacing-6) 0;
     border-bottom: var(--border-width-thin) solid var(--border-secondary);
-    transition: all var(--transition-normal);
+    transition: background-color var(--transition-normal);
 
     &:last-child {
       border-bottom: none;

@@ -4,7 +4,7 @@
 
 .prospect-dashboard {
   @include container;
-  padding: 0;
+  padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
   @include rich-background;
 }
@@ -56,7 +56,7 @@
         border-radius: var(--radius-md);
         font-weight: var(--font-weight-medium);
         cursor: pointer;
-        transition: all var(--transition-normal);
+        transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
         border: none;
         font-size: var(--font-size-md);
 
@@ -70,14 +70,12 @@
           box-shadow: var(--shadow-sm);
 
           &:hover {
-            background: var(--action-primary-hover);
+            background: var(--action-secondary);
             box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
           }
 
           &:active {
             background: var(--action-primary-active);
-            transform: translateY(0);
           }
         }
       }

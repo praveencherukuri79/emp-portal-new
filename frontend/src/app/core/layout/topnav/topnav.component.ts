@@ -368,8 +368,15 @@ export class TopnavComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        // Even if logout fails, navigate to login
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 }
 

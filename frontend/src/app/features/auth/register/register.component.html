@@ -16,7 +16,7 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>First Name</mat-label>
-            <input matInput formControlName="firstName" placeholder="John">
+            <input matInput formControlName="firstName">
             <mat-icon matPrefix>person</mat-icon>
             @if (f['firstName'].invalid && f['firstName'].touched) {
               <mat-error>First name is required</mat-error>
@@ -25,7 +25,7 @@
 
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Last Name</mat-label>
-            <input matInput formControlName="lastName" placeholder="Doe">
+            <input matInput formControlName="lastName">
             @if (f['lastName'].invalid && f['lastName'].touched) {
               <mat-error>Last name is required</mat-error>
             }
@@ -34,7 +34,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="your@email.com" autocomplete="email">
+          <input matInput type="email" formControlName="email" autocomplete="email">
           <mat-icon matPrefix>email</mat-icon>
           @if (f['email'].invalid && f['email'].touched) {
             <mat-error>
@@ -50,14 +50,14 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Phone Number</mat-label>
-          <input matInput formControlName="phoneNumber" placeholder="+1234567890">
+          <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel">
           <mat-icon matPrefix>phone</mat-icon>
         </mat-form-field>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Department</mat-label>
-            <input matInput formControlName="department" placeholder="Engineering">
+            <input matInput formControlName="department">
             @if (f['department'].invalid && f['department'].touched) {
               <mat-error>Department is required</mat-error>
             }
@@ -65,7 +65,7 @@
 
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Designation</mat-label>
-            <input matInput formControlName="designation" placeholder="Software Engineer">
+            <input matInput formControlName="designation">
             @if (f['designation'].invalid && f['designation'].touched) {
               <mat-error>Designation is required</mat-error>
             }

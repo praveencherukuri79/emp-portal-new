@@ -3,7 +3,7 @@
 
 .role-management {
   @include container;
-  padding: 0;
+  padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
 
   .page-header {

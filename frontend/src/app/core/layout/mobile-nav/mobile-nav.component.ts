@@ -271,9 +271,17 @@ export class MobileNavComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
-    this.closeSidenav();
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+        this.closeSidenav();
+      },
+      error: () => {
+        // Even if logout fails, navigate to login
+        this.router.navigate(['/auth/login']);
+        this.closeSidenav();
+      }
+    });
   }
 }
 

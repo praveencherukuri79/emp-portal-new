@@ -52,7 +52,7 @@
         padding: var(--spacing-4) var(--spacing-6);
         color: var(--text-primary);
         text-decoration: none;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         border-left: 3px solid transparent;
         margin: var(--spacing-1) var(--spacing-2);
         border-radius: var(--radius-md);
@@ -115,7 +115,7 @@
           background: transparent;
           border: none;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: background-color var(--transition-fast), color var(--transition-fast);
           text-align: left;
 
           &:hover {

@@ -2,7 +2,7 @@
 
 .history-container {
   @include container;
-  padding: 0;
+  padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
   animation: fadeIn 0.3s ease-out;
 }
@@ -85,7 +85,7 @@
     }
     
     .table-row {
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease;
       
       &:hover {
         background: var(--table-row-hover);

@@ -10,7 +10,7 @@
 .employee-dashboard {
   min-height: calc(100vh - var(--header-height));
   @include rich-background;
-  padding: 0;
+  padding: var(--spacing-page-padding);
 }
 
 /* Hero Header Section */
@@ -202,8 +202,7 @@ mat-card {
 
     .action-arrow {
       opacity: 0;
-      transform: translateX(-4px);
-      transition: all var(--transition-normal);
+      transition: opacity var(--transition-normal);
       color: var(--action-primary);
       font-size: var(--font-size-xl);
       width: var(--font-size-xl);
@@ -212,7 +211,6 @@ mat-card {
 
     &:hover .action-arrow {
       opacity: 1;
-      transform: translateX(4px);
     }
   }
 }

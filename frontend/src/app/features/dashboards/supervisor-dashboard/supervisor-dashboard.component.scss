@@ -3,7 +3,7 @@
 
 .supervisor-dashboard {
   @include container;
-  padding: 0;
+  padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
 
   // Use global .page-header class
@@ -31,11 +31,10 @@
       background: var(--background-tertiary);
       border-radius: var(--radius-md);
       gap: var(--spacing-4);
-      transition: all var(--transition-normal);
+      transition: background-color var(--transition-normal);
 
       &:hover {
         background: var(--table-row-hover);
-        transform: translateX(4px);
       }
 
       .approval-info {
@@ -103,11 +102,10 @@
       padding: var(--spacing-4);
       background: var(--background-tertiary);
       border-radius: var(--radius-md);
-      transition: all var(--transition-normal);
+      transition: background-color var(--transition-normal);
 
       &:hover {
         background: var(--table-row-hover);
-        transform: translateX(4px);
       }
 
       .member-info {
