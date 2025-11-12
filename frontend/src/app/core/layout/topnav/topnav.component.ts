@@ -50,12 +50,15 @@ export class TopnavComponent implements OnInit, OnDestroy {
   private routerSubscription?: Subscription;
 
   navItems: NavItem[] = [
+    // Dashboard - All roles
     {
       label: 'Dashboard',
       icon: 'dashboard',
       route: '',
       roles: [UserRole.PROSPECT, UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
+    
+    // Employee Type Routes (Employee only - Prospect cannot access)
     {
       label: 'Timesheets',
       icon: 'schedule',
@@ -74,6 +77,8 @@ export class TopnavComponent implements OnInit, OnDestroy {
       route: '/employee/documents',
       roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
+    
+    // Admin Type - Supervisor Routes
     {
       label: 'Approvals',
       icon: 'approval',
@@ -81,17 +86,19 @@ export class TopnavComponent implements OnInit, OnDestroy {
       roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
     {
-      label: 'Approvals',
-      icon: 'approval',
-      route: '/employer/approvals',
-      roles: [UserRole.EMPLOYER]
-    },
-    {
       label: 'Team',
       icon: 'groups',
       route: '/supervisor/team',
       roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
+    {
+      label: 'Reports',
+      icon: 'assessment',
+      route: '/supervisor/reports',
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+    },
+    
+    // Admin Type - HR Routes
     {
       label: 'HR',
       icon: 'business_center',
@@ -118,6 +125,8 @@ export class TopnavComponent implements OnInit, OnDestroy {
         }
       ]
     },
+    
+    // Admin Type - Admin Routes
     {
       label: 'Admin',
       icon: 'admin_panel_settings',
@@ -143,6 +152,14 @@ export class TopnavComponent implements OnInit, OnDestroy {
           roles: [UserRole.ADMIN]
         }
       ]
+    },
+    
+    // Admin Type - Employer Routes (NO employee routes)
+    {
+      label: 'Approvals',
+      icon: 'approval',
+      route: '/employer/approvals',
+      roles: [UserRole.EMPLOYER]
     },
     {
       label: 'Employer',

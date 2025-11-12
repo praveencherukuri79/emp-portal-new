@@ -18,6 +18,7 @@ import { UINotificationService } from '../../../core/services/notification.servi
 import { User, UserRole } from '../../../core/models/user.model';
 import { ROLE_LABELS } from '@shared/types/constants';
 import { ICreateUserRequest } from '@shared/types/requests';
+import { CreateUserDialogComponent } from './create-user-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -110,52 +111,32 @@ export class UserManagementComponent implements OnInit {
   }
 
   openCreateUserDialog(): void {
-    // For now, use a simple prompt-based approach
-    // In production, create a proper dialog component
-    const email = prompt('Enter email:');
-    if (!email) return;
-    
-    const password = prompt('Enter password (min 6 characters):');
-    if (!password || password.length < 6) {
-      this.notification.showError('Password must be at least 6 characters');
-      return;
-    }
-    
-    const firstName = prompt('Enter first name:');
-    if (!firstName) return;
-    
-    const lastName = prompt('Enter last name:');
-    if (!lastName) return;
-    
-    const roleStr = prompt(`Enter role (${this.roles.join(', ')}):`);
-    if (!roleStr || !this.roles.includes(roleStr as UserRole)) {
-      this.notification.showError('Invalid role');
-      return;
-    }
+    const dialogRef = this.dialog.open(CreateUserDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: {}
+    });
 
-    this.loading.set(true);
-    const userData: ICreateUserRequest = {
-      email,
-      password,
-      firstName,
-      lastName,
-      role: roleStr as UserRole
-    };
-
-    this.userService.createUser(userData).subscribe({
-      next: (response) => {
-        if (response.status === 'success') {
-          this.notification.showSuccess('User created successfully');
-          this.loadUsers();
-        } else {
-          this.notification.showError(response.message || 'Failed to create user');
-          this.loading.set(false);
-        }
-      },
-      error: (error) => {
-        console.error('Error creating user:', error);
-        this.notification.showError(error.error?.message || 'Failed to create user');
-        this.loading.set(false);
+    dialogRef.afterClosed().subscribe((userData: ICreateUserRequest | null) => {
+      if (userData) {
+        this.loading.set(true);
+        this.userService.createUser(userData).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('User created successfully');
+              this.loadUsers();
+            } else {
+              this.notification.showError(response.message || 'Failed to create user');
+              this.loading.set(false);
+            }
+          },
+          error: (error) => {
+            console.error('Error creating user:', error);
+            this.notification.showError(error.error?.message || 'Failed to create user');
+            this.loading.set(false);
+          }
+        });
       }
     });
   }

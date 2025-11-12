@@ -1,0 +1,156 @@
+<div class="create-user-dialog">
+  <h2 mat-dialog-title>Create New User</h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="user-form">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Email *</mat-label>
+            <input matInput type="email" formControlName="email" required>
+            <mat-icon matPrefix>email</mat-icon>
+            @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>Invalid email format</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Password *</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <mat-icon matPrefix>lock</mat-icon>
+            @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+              <mat-error>Password is required</mat-error>
+            }
+            @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+              <mat-error>Password must be at least 6 characters</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>First Name *</mat-label>
+            <input matInput formControlName="firstName" required>
+            <mat-icon matPrefix>person</mat-icon>
+            @if (form.get('firstName')?.hasError('required') && form.get('firstName')?.touched) {
+              <mat-error>First name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Last Name *</mat-label>
+            <input matInput formControlName="lastName" required>
+            <mat-icon matPrefix>person</mat-icon>
+            @if (form.get('lastName')?.hasError('required') && form.get('lastName')?.touched) {
+              <mat-error>Last name is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Phone Number</mat-label>
+            <input matInput type="tel" formControlName="phoneNumber">
+            <mat-icon matPrefix>phone</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Role *</mat-label>
+            <mat-select formControlName="role" required>
+              <mat-option *ngFor="let role of roles" [value]="role">
+                {{ getRoleLabel(role) }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>badge</mat-icon>
+            @if (form.get('role')?.hasError('required') && form.get('role')?.touched) {
+              <mat-error>Role is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Employee Information (shown only for Employee and Supervisor roles) -->
+      @if (showEmployeeFields) {
+        <div class="form-section">
+          <h3>Employee Information</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Employee ID</mat-label>
+              <input matInput formControlName="employeeId">
+              <mat-icon matPrefix>badge</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Department</mat-label>
+              <input matInput formControlName="department">
+              <mat-icon matPrefix>business</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Designation</mat-label>
+              <input matInput formControlName="designation">
+              <mat-icon matPrefix>work</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Employment Type</mat-label>
+              <mat-select formControlName="employmentType">
+                <mat-option value="">Select Type</mat-option>
+                <mat-option *ngFor="let type of employmentTypes" [value]="type">
+                  {{ getEmploymentTypeLabel(type) }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>work_outline</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Joining Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="joiningDate">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Reporting To</mat-label>
+              <mat-select formControlName="reportingTo">
+                <mat-option value="">None</mat-option>
+                <mat-option *ngFor="let supervisor of supervisors()" [value]="supervisor._id">
+                  {{ supervisor.firstName }} {{ supervisor.lastName }}
+                  @if (supervisor.employeeId) {
+                    ({{ supervisor.employeeId }})
+                  }
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>supervisor_account</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading()">Cancel</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()" 
+      [disabled]="form.invalid || loading()">
+      @if (loading()) {
+        <mat-spinner diameter="20" class="spinner"></mat-spinner>
+      } @else {
+        Create User
+      }
+    </button>
+  </mat-dialog-actions>
+</div>
+

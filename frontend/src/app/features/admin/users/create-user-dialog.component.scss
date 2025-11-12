@@ -1,0 +1,65 @@
+.create-user-dialog {
+  min-width: 600px;
+  max-width: 800px;
+
+  h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+
+  mat-dialog-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+
+  .user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .form-section {
+    h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #34495e;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 8px;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-field {
+    width: 100%;
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+
+    button {
+      margin-left: 8px;
+    }
+
+    .spinner {
+      display: inline-block;
+      margin-right: 8px;
+    }
+  }
+}
+

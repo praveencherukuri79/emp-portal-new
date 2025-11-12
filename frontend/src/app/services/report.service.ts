@@ -23,7 +23,7 @@ export class ReportService {
   }): Observable<IApiResponse<ITimesheetReportResponse> | Blob> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && key !== 'format') {
+      if (value !== undefined) {
         httpParams = httpParams.set(key, value.toString());
       }
     });
@@ -47,7 +47,7 @@ export class ReportService {
   }): Observable<IApiResponse<ILeaveReportResponse> | Blob> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && key !== 'format') {
+      if (value !== undefined) {
         httpParams = httpParams.set(key, value.toString());
       }
     });
@@ -69,7 +69,7 @@ export class ReportService {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && key !== 'format') {
+        if (value !== undefined) {
           httpParams = httpParams.set(key, value.toString());
         }
       });

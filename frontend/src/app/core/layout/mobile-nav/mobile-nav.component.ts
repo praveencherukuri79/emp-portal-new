@@ -51,12 +51,15 @@ export class MobileNavComponent implements OnInit, OnDestroy {
   private routerSubscription?: Subscription;
 
   navItems: NavItem[] = [
+    // Dashboard - All roles
     {
       label: 'Dashboard',
       icon: 'dashboard',
       route: '',
       roles: [UserRole.PROSPECT, UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
+    
+    // Employee Type Routes (Employee only - Prospect cannot access)
     {
       label: 'Timesheets',
       icon: 'schedule',
@@ -75,6 +78,8 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       route: '/employee/documents',
       roles: [UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
+    
+    // Admin Type - Supervisor Routes
     {
       label: 'Approvals',
       icon: 'approval',
@@ -102,6 +107,14 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
     {
+      label: 'Reports',
+      icon: 'assessment',
+      route: '/supervisor/reports',
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+    },
+    
+    // Admin Type - HR Routes
+    {
       label: 'HR',
       icon: 'business_center',
       route: '/hr',
@@ -127,6 +140,8 @@ export class MobileNavComponent implements OnInit, OnDestroy {
         }
       ]
     },
+    
+    // Admin Type - Admin Routes
     {
       label: 'Admin',
       icon: 'admin_panel_settings',
@@ -153,10 +168,12 @@ export class MobileNavComponent implements OnInit, OnDestroy {
         }
       ]
     },
+    
+    // Admin Type - Employer Routes (NO employee routes)
     {
-      label: 'Business',
-      icon: 'insights',
-      route: '/employer/dashboard',
+      label: 'Employer',
+      icon: 'business',
+      route: '/employer',
       roles: [UserRole.EMPLOYER],
       children: [
         {
@@ -166,15 +183,9 @@ export class MobileNavComponent implements OnInit, OnDestroy {
           roles: [UserRole.EMPLOYER]
         },
         {
-          label: 'Users',
-          icon: 'manage_accounts',
-          route: '/employer/users',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          route: '/employer/settings',
+          label: 'Workforce',
+          icon: 'work',
+          route: '/employer/workforce',
           roles: [UserRole.EMPLOYER]
         },
         {
@@ -190,9 +201,15 @@ export class MobileNavComponent implements OnInit, OnDestroy {
           roles: [UserRole.EMPLOYER]
         },
         {
-          label: 'Workforce',
-          icon: 'work',
-          route: '/employer/workforce',
+          label: 'Users',
+          icon: 'manage_accounts',
+          route: '/employer/users',
+          roles: [UserRole.EMPLOYER]
+        },
+        {
+          label: 'Settings',
+          icon: 'settings',
+          route: '/employer/settings',
           roles: [UserRole.EMPLOYER]
         }
       ]
