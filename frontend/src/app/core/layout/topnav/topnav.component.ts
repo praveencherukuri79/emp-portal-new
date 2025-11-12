@@ -1,4 +1,4 @@
-import { Component, computed, signal, effect, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, signal, effect, inject, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -42,6 +42,7 @@ export class TopnavComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   public themeService = inject(ThemeService);
+  private elementRef = inject(ElementRef);
   
   currentUser = computed(() => this.authService.currentUser());
   activeRoute = signal<string>('');
@@ -82,14 +83,26 @@ export class TopnavComponent implements OnInit, OnDestroy {
         {
           label: 'Timesheet Approvals',
           icon: 'schedule',
-          route: '/supervisor/approvals?type=timesheet',
-          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+          route: '/employer/approvals',
+          roles: [UserRole.EMPLOYER]
         },
         {
           label: 'Leave Approvals',
           icon: 'event_available',
-          route: '/supervisor/approvals?type=leave',
-          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+          route: '/employer/approvals',
+          roles: [UserRole.EMPLOYER]
+        },
+        {
+          label: 'Timesheet Approvals',
+          icon: 'schedule',
+          route: '/supervisor/approvals',
+          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+        },
+        {
+          label: 'Leave Approvals',
+          icon: 'event_available',
+          route: '/supervisor/approvals',
+          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
         }
       ]
     },
@@ -203,7 +216,27 @@ export class TopnavComponent implements OnInit, OnDestroy {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.updateActiveRoute();
+        // Close all menus on navigation
+        this.expandedMenus.set(new Set());
       });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const clickedInside = this.elementRef.nativeElement.contains(target);
+    
+    if (!clickedInside) {
+      // Close all menus if clicked outside
+      this.expandedMenus.set(new Set());
+    } else {
+      // Check if clicked on a nav link (not dropdown trigger)
+      const isNavLink = target.closest('.nav-link:not(.dropdown-trigger)');
+      if (isNavLink && !target.closest('.dropdown-menu')) {
+        // Close all menus when clicking a regular nav link
+        this.expandedMenus.set(new Set());
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -211,7 +244,27 @@ export class TopnavComponent implements OnInit, OnDestroy {
   }
 
   updateActiveRoute(): void {
-    this.activeRoute.set(this.router.url);
+    const url = this.router.url.split('?')[0]; // Remove query params
+    this.activeRoute.set(url);
+    
+    // Auto-expand parent menu if child route is active
+    const user = this.currentUser();
+    if (user) {
+      const visibleItems = this.getVisibleNavItems();
+      visibleItems.forEach(item => {
+        if (item.children) {
+          const hasActiveChild = item.children.some(child => {
+            if (child.route === '') return false;
+            return url.startsWith(child.route);
+          });
+          if (hasActiveChild) {
+            const expanded = new Set(this.expandedMenus());
+            expanded.add(item.label);
+            this.expandedMenus.set(expanded);
+          }
+        }
+      });
+    }
   }
 
   getVisibleNavItems(): NavItem[] {
@@ -226,20 +279,72 @@ export class TopnavComponent implements OnInit, OnDestroy {
   }
 
   isActive(route: string): boolean {
+    const currentRoute = this.activeRoute();
+    
     if (route === '') {
-      return this.activeRoute() === '/' || this.activeRoute() === '';
+      return currentRoute === '/' || currentRoute === '';
     }
-    return this.activeRoute().startsWith(route);
+    
+    // Exact match
+    if (currentRoute === route) {
+      return true;
+    }
+    
+    // For parent routes with children, check if current route starts with parent
+    // But also check if it's a child route
+    if (currentRoute.startsWith(route)) {
+      // For employer routes, check if it's actually an employer route
+      if (route.startsWith('/employer')) {
+        return currentRoute.startsWith('/employer');
+      }
+      // For other routes, check if it's a direct child
+      const routeParts = route.split('/').filter(p => p);
+      const currentParts = currentRoute.split('/').filter(p => p);
+      
+      // If route is a parent (e.g., /admin), check if current is a child
+      if (routeParts.length === 1 && currentParts.length > 1) {
+        return currentParts[0] === routeParts[0];
+      }
+      
+      return true;
+    }
+    
+    return false;
   }
 
-  toggleMenu(menuLabel: string): void {
+  toggleMenu(menuLabel: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    
     const expanded = new Set(this.expandedMenus());
     if (expanded.has(menuLabel)) {
+      // Close this menu
       expanded.delete(menuLabel);
     } else {
+      // Close all other menus first, then open this one
+      expanded.clear();
       expanded.add(menuLabel);
     }
     this.expandedMenus.set(expanded);
+  }
+
+  navigateAndClose(menuLabel: string, route: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Close the menu
+    const expanded = new Set(this.expandedMenus());
+    expanded.delete(menuLabel);
+    this.expandedMenus.set(expanded);
+    
+    // Navigate - split route and query params if needed
+    const [path, query] = route.split('?');
+    const navigationExtras = query ? { queryParams: Object.fromEntries(new URLSearchParams(query)) } : {};
+    
+    this.router.navigate([path], navigationExtras).catch(err => {
+      console.error('Navigation error:', err);
+    });
   }
 
   isMenuExpanded(menuLabel: string): boolean {

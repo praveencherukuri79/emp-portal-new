@@ -1,69 +1,43 @@
-@import '../../../styles/mixins/components.scss';
+/**
+ * Settings Component - Refactored
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ */
+
+@import '../../../styles/mixins/components';
+@import '../../../styles/mixins/layout';
 
 .settings-page {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-tertiary) 100%);
+  @include container;
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
+  @include rich-background;
 }
 
 .settings-header {
-  margin-bottom: var(--spacing-8);
-
-  h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-2) 0;
-  }
-
-  .subtitle {
-    color: var(--text-secondary);
-    font-size: var(--font-size-lg);
-    margin: 0;
-  }
+  @include page-header;
 }
 
-.settings-content {
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-6);
+.content-medium {
+  @include flex-column;
+  gap: var(--spacing-section-gap);
 }
 
 .settings-card {
   @include card;
-  padding: var(--spacing-6) !important;
 
   mat-card-header {
-    padding: 0 0 var(--spacing-5) 0;
-    margin-bottom: var(--spacing-5);
     border-bottom: var(--border-width-thin) solid var(--border-primary);
+    margin-bottom: 0;
 
     .card-header-content {
-      display: flex;
-      align-items: center;
+      @include flex-center;
+      justify-content: flex-start;
       gap: var(--spacing-4);
       width: 100%;
 
       .card-header-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        border-radius: var(--radius-lg);
-        background: linear-gradient(135deg, var(--action-primary), var(--color-primary-600));
-        color: var(--text-inverse);
-        flex-shrink: 0;
-
-        mat-icon {
-          font-size: var(--font-size-2xl);
-          width: var(--font-size-2xl);
-          height: var(--font-size-2xl);
-        }
+        @include icon-container(var(--spacing-12)); /* 48px equivalent */
+        @include icon-container-gradient(var(--action-primary));
       }
 
       mat-card-title {
@@ -82,19 +56,23 @@
   }
 
   mat-card-content {
-    padding: 0 !important;
+    // Component-level: Add spacing between header border and content
+    padding-top: var(--spacing-6);
   }
 }
 
 .setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-between;
   padding: var(--spacing-4) 0;
   border-bottom: var(--border-width-thin) solid var(--border-secondary);
 
   &:last-child {
     border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  &:first-child {
+    padding-top: 0;
   }
 
   .setting-info {
@@ -119,9 +97,11 @@
 }
 
 .settings-actions {
-  display: flex;
+  @include flex-center;
+  justify-content: flex-end;
   gap: var(--spacing-4);
-  margin-top: var(--spacing-4);
+  // Component-level: Add spacing from last settings card
+  margin-top: var(--spacing-8);
 
   button {
     mat-icon {
@@ -136,11 +116,10 @@
 
 @media (max-width: 768px) {
   .settings-page {
-    padding: var(--spacing-4);
+    padding: var(--spacing-page-padding);
   }
 
   .settings-header h1 {
     font-size: var(--font-size-2xl);
   }
 }
-

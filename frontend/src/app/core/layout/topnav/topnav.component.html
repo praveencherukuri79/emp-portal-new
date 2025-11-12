@@ -18,11 +18,11 @@
             <span>{{ item.label }}</span>
           </a>
         } @else {
-          <div class="nav-dropdown">
+          <div class="nav-dropdown" #dropdownRef>
             <button 
               class="nav-link dropdown-trigger"
               [class.active]="isActive(item.route)"
-              (click)="toggleMenu(item.label)"
+              (click)="toggleMenu(item.label, $event)"
               [attr.aria-expanded]="isMenuExpanded(item.label)">
               <mat-icon>{{ item.icon }}</mat-icon>
               <span>{{ item.label }}</span>
@@ -31,14 +31,14 @@
               </mat-icon>
             </button>
             @if (isMenuExpanded(item.label)) {
-              <div class="dropdown-menu">
+              <div class="dropdown-menu" (click)="$event.stopPropagation()">
                 @for (child of item.children; track child.route) {
                   @if (hasAccess(child.roles)) {
                     <a 
                       [routerLink]="child.route" 
                       [class.active]="isActive(child.route)"
                       class="dropdown-item"
-                      (click)="toggleMenu(item.label)">
+                      (click)="navigateAndClose(item.label, child.route, $event)">
                       <mat-icon>{{ child.icon }}</mat-icon>
                       <span>{{ child.label }}</span>
                     </a>

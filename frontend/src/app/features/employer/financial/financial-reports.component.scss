@@ -1,34 +1,26 @@
-@import '../../../../styles/mixins/components.scss';
+/**
+ * Financial Reports Component - Refactored
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ */
+
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/mixins/layout';
 
 .financial-reports-page {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
+  @include container;
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
 
   .page-header {
-    display: flex;
-    justify-content: space-between;
+    @include page-header;
+    @include flex-between;
     align-items: flex-start;
-    margin-bottom: var(--spacing-6);
     gap: var(--spacing-4);
 
-    h1 {
-      font-size: var(--font-size-4xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-2) 0;
-    }
-
-    .subtitle {
-      color: var(--text-secondary);
-      font-size: var(--font-size-lg);
-      margin: 0;
-    }
-
     .header-actions {
-      display: flex;
+      @include flex-center;
+      justify-content: flex-end;
       gap: var(--spacing-3);
-      align-items: center;
     }
 
     @media (max-width: 768px) {
@@ -37,24 +29,19 @@
   }
 
   .reports-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--spacing-6);
-    margin-bottom: var(--spacing-6);
+    @include grid-auto-fit(300px);
+    margin-bottom: var(--spacing-section-gap);
   }
 
   .summary-card {
     @include card;
     text-align: center;
-    padding: var(--spacing-6) !important;
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
 
       mat-card-title {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include flex-center;
         gap: var(--spacing-3);
         font-size: var(--font-size-lg);
         font-weight: var(--font-weight-semibold);
@@ -99,8 +86,8 @@
       margin-bottom: var(--spacing-4);
 
       mat-card-title {
-        display: flex;
-        align-items: center;
+        @include flex-center;
+        justify-content: flex-start;
         gap: var(--spacing-3);
         font-size: var(--font-size-xl);
         font-weight: var(--font-weight-semibold);
@@ -124,15 +111,15 @@
     th {
       font-weight: var(--font-weight-semibold);
       color: var(--text-primary);
-      background: var(--background-tertiary);
-      padding: var(--spacing-4);
-      border-bottom: var(--border-width-medium) solid var(--border-primary);
+      background: var(--table-header-background);
+      padding: var(--spacing-card-padding);
+      border-bottom: var(--border-default) solid var(--border-primary);
     }
 
     td {
       color: var(--text-secondary);
-      padding: var(--spacing-4);
-      border-bottom: var(--border-width-thin) solid var(--border-primary);
+      padding: var(--spacing-card-padding);
+      border-bottom: var(--border-default) solid var(--table-border);
     }
 
     .table-row {
@@ -145,20 +132,17 @@
   }
 
   .projects-list {
-    display: flex;
-    flex-direction: column;
+    @include flex-column;
     gap: var(--spacing-3);
 
     .project-item {
-      padding: var(--spacing-4);
+      padding: var(--spacing-card-padding);
       background: var(--background-secondary);
       border-radius: var(--radius-md);
-      border: var(--border-width-thin) solid var(--border-primary);
+      border: var(--border-default) solid var(--border-primary);
 
       .project-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        @include flex-between;
 
         strong {
           font-weight: var(--font-weight-semibold);
@@ -173,45 +157,15 @@
     }
   }
 
-  .loading-container,
-  .error-container,
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-16);
-    gap: var(--spacing-4);
-    text-align: center;
-
-    p {
-      color: var(--text-secondary);
-    }
+  .loading-container {
+    @include loading-state;
   }
 
   .error-container {
-    mat-icon {
-      font-size: var(--font-size-5xl);
-      width: var(--font-size-5xl);
-      height: var(--font-size-5xl);
-      color: var(--status-error);
-      margin-bottom: var(--spacing-4);
-    }
+    @include error-state;
   }
 
   .empty-state {
-    mat-icon {
-      font-size: var(--font-size-5xl);
-      width: var(--font-size-5xl);
-      height: var(--font-size-5xl);
-      color: var(--text-tertiary);
-      opacity: 0.5;
-      margin-bottom: var(--spacing-4);
-    }
-
-    h3 {
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-2) 0;
-    }
+    @include empty-state;
   }
 }

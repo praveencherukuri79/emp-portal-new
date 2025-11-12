@@ -1,44 +1,21 @@
+@import '../../../../styles/mixins/layout.scss';
+
 .history-container {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
+  @include container;
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
   animation: fadeIn 0.3s ease-out;
 }
 
+// Use global .page-header class - only override if needed
 .history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-between;
   margin-bottom: var(--spacing-6);
-  
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    
-    h1 {
-      margin: 0;
-      font-size: var(--font-size-3xl);
-      font-weight: 800;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-3);
-      
-      mat-icon {
-        color: var(--action-primary);
-        font-size: var(--font-size-3xl);
-        width: var(--font-size-3xl);
-        height: var(--font-size-3xl);
-      }
-    }
-  }
 }
 
 .filters-card {
   margin-bottom: var(--spacing-5);
-  padding: var(--spacing-5) !important;
-  border-radius: var(--radius-lg) !important;
+  // Card padding comes from global Material override
 }
 
 .filters-row {
@@ -213,10 +190,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-4);
-    
-    &__title h1 {
-      font-size: var(--font-size-2xl);
-    }
     
     button {
       width: 100%;

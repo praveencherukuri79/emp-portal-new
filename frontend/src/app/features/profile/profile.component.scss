@@ -1,47 +1,34 @@
-@import '../../../styles/mixins/components.scss';
+/**
+ * Profile Component - Refactored
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ */
+
+@import '../../../styles/mixins/components';
+@import '../../../styles/mixins/layout';
 
 .profile-page {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-tertiary) 100%);
+  width: 100%;
+  min-height: calc(100vh - var(--header-height));
+  @include rich-background;
 }
 
 .profile-header {
-  margin-bottom: var(--spacing-8);
-
-  h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-2) 0;
-  }
-
-  .subtitle {
-    color: var(--text-secondary);
-    font-size: var(--font-size-lg);
-    margin: 0;
-  }
-}
-
-.profile-content {
-  max-width: 900px;
-  margin: 0 auto;
+  @include page-header;
 }
 
 .profile-card {
   @include card;
-  padding: var(--spacing-8) !important;
+  // Material override already sets padding: 0 on .mat-mdc-card
+  // We'll add padding to header and content sections
 
   mat-card-header {
-    padding: 0 0 var(--spacing-6) 0;
-    margin-bottom: var(--spacing-6);
     border-bottom: var(--border-width-thin) solid var(--border-primary);
+    // Component-level: Add spacing after header border when content follows
+    margin-bottom: 0;
 
     .card-header-content {
-      display: flex;
-      align-items: center;
+      @include flex-center;
+      justify-content: flex-start;
       gap: var(--spacing-6);
 
       @media (max-width: 768px) {
@@ -50,17 +37,8 @@
       }
 
       .profile-avatar-large {
-        width: 100px;
-        height: 100px;
-        border-radius: var(--radius-full);
-        background: linear-gradient(135deg, var(--action-primary), var(--color-primary-600));
-        color: var(--text-inverse);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: var(--font-size-3xl);
-        font-weight: var(--font-weight-bold);
-        flex-shrink: 0;
+        @include icon-container(calc(var(--spacing-20) * 1.25)); /* 100px equivalent */
+        @include icon-container-gradient(var(--action-primary));
         box-shadow: var(--shadow-md);
       }
 
@@ -81,42 +59,36 @@
         }
 
         .profile-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--spacing-2);
-          padding: var(--spacing-2) var(--spacing-4);
-          background: color-mix(in srgb, var(--action-primary) 10%, transparent);
-          color: var(--action-primary);
-          border-radius: var(--radius-full);
-          font-size: var(--font-size-sm);
-          font-weight: var(--font-weight-semibold);
-
-          mat-icon {
-            font-size: var(--font-size-lg);
-            width: var(--font-size-lg);
-            height: var(--font-size-lg);
-          }
+          @include badge-variant(var(--action-primary));
         }
       }
     }
   }
 
   mat-card-content {
-    padding: 0 !important;
+    // Component-level: Add spacing between header border and form fields
+    padding-top: var(--spacing-6);
   }
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-5);
+  gap: var(--spacing-6); // Consistent gap between all form fields
+  margin-bottom: 0;
+
+  // Remove margin-bottom from form fields since grid gap handles spacing
+  ::ng-deep .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: var(--spacing-4);
   }
 
   .full-width {
-    grid-column: span 1;
+    grid-column: span 2;
 
     @media (max-width: 768px) {
       grid-column: span 1;
@@ -125,33 +97,21 @@
 }
 
 .form-actions {
-  display: flex;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-8);
-  padding-top: var(--spacing-6);
-  border-top: var(--border-width-thin) solid var(--border-primary);
-
-  button {
-    mat-icon {
-      margin-right: var(--spacing-2);
-    }
-
-    mat-spinner {
-      margin-right: var(--spacing-2);
-    }
-  }
+  @include form-actions;
+  // Component-level: Add spacing from form grid above
+  margin-top: var(--spacing-6);
 }
 
 .loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-16);
-  gap: var(--spacing-4);
-
-  p {
-    color: var(--text-secondary);
-  }
+  @include loading-state;
 }
 
+@media (max-width: 768px) {
+  .profile-card {
+    mat-card-header {
+      .card-header-content {
+        gap: var(--spacing-4);
+      }
+    }
+  }
+}

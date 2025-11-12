@@ -55,24 +55,30 @@
 }
 
 .mat-mdc-raised-button.mat-warn {
-  background-color: var(--status-error) !important;
-  color: var(--text-inverse) !important;
+  background: linear-gradient(135deg, var(--status-error), var(--color-error-600)) !important;
+  color: var(--text-on-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--spacing-button-padding) !important;
+  transition: all var(--transition-normal) !important;
   
   &:hover:not([disabled]) {
-    background-color: var(--color-error-600) !important;
+    background: var(--color-error-600) !important;
+    box-shadow: var(--shadow-lg) !important;
+    transform: translateY(-2px);
   }
 }
 
-/* Card Overrides */
+/* Card Overrides - Colors and Visual Enhancements Only */
+/* DO NOT override padding/margin - Material handles spacing */
 .mat-mdc-card {
   background-color: var(--card-background) !important;
   color: var(--text-primary) !important;
-  box-shadow: var(--card-shadow) !important;
-  border: var(--border-width-thin) solid var(--border-secondary) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: var(--border-default) solid var(--border-secondary) !important;
   border-radius: var(--radius-lg) !important;
   transition: all var(--transition-normal) !important;
-  overflow: hidden;
-  position: relative;
   
   &::before {
     content: '';
@@ -81,7 +87,7 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, var(--action-primary), var(--action-primary-hover));
+    background: var(--background-gradient-primary);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform var(--transition-normal);
@@ -89,8 +95,9 @@
   
   &:hover {
     box-shadow: var(--shadow-lg) !important;
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     border-color: var(--border-focus) !important;
+    border-width: var(--border-focus-width) !important;
 
     &::before {
       transform: scaleX(1);
@@ -102,37 +109,154 @@
   }
 }
 
+/* Card Title/Subtitle - Colors Only */
 .mat-mdc-card-title {
   color: var(--text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
 }
 
 .mat-mdc-card-subtitle {
   color: var(--text-secondary) !important;
 }
 
-/* Form Field Overrides */
+/* Card Header/Content - Colors Only, NO padding/margin overrides */
+.mat-mdc-card-header {
+  // Material handles padding - only override colors if needed
+}
+
+.mat-mdc-card-content {
+  // Material handles padding - only override colors if needed
+}
+
+.mat-mdc-card-actions {
+  // Material handles padding - only override colors if needed
+}
+
+/* Form Field Overrides - Colors and Visual Only */
+/* DO NOT override margin-bottom - Material handles spacing */
 .mat-mdc-form-field {
-  font-family: inherit !important;
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--input-background) !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .mat-mdc-form-field-focus-overlay {
+    background-color: transparent !important;
+  }
+  
+  &.mat-focused {
+    .mat-mdc-form-field-focus-overlay {
+      background-color: color-mix(in srgb, var(--border-focus) 5%, transparent) !important;
+    }
+  }
 }
 
-.mat-mdc-text-field-wrapper {
-  background-color: var(--input-background) !important;
+.mat-mdc-form-field-appearance-outline {
+  .mat-mdc-text-field-wrapper {
+    .mat-mdc-form-field-outline {
+      color: var(--border-primary) !important;
+    }
+    
+    .mat-mdc-form-field-outline-thick {
+      color: var(--border-focus) !important;
+      border-width: var(--border-focus-width) !important;
+    }
+  }
+  
+  &.mat-focused {
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-outline-thick {
+        color: var(--border-focus) !important;
+      }
+    }
+  }
 }
 
-.mat-mdc-form-field-focus-overlay {
-  background-color: transparent !important;
+.mat-mdc-form-field-label {
+  color: var(--text-secondary) !important;
+  
+  &.mat-mdc-floating-label.mdc-floating-label--float-above {
+    color: var(--border-focus) !important;
+  }
 }
 
+.mat-mdc-input-element {
+  color: var(--text-primary) !important;
+  font-size: var(--font-size-md) !important;
+  
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 0.7;
+  }
+}
+
+.mat-mdc-form-field-hint {
+  color: var(--text-tertiary) !important;
+  font-size: var(--font-size-xs) !important;
+}
+
+.mat-mdc-form-field-error {
+  color: var(--status-error) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+/* Select Overrides */
+.mat-mdc-select {
+  color: var(--text-primary) !important;
+  
+  .mat-mdc-select-trigger {
+    color: var(--text-primary) !important;
+  }
+  
+  &.mat-focused {
+    .mat-mdc-select-trigger {
+      color: var(--border-focus) !important;
+    }
+  }
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--background-elevated) !important;
+  border: var(--border-default) solid var(--border-secondary) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: var(--spacing-2) !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  margin: var(--spacing-1) 0 !important;
+  padding: var(--spacing-3) var(--spacing-4) !important;
+  min-height: 44px !important;
+  transition: all var(--transition-fast) !important;
+  
+  &:hover:not(.mdc-list-item--disabled) {
+    background: var(--table-row-hover) !important;
+  }
+  
+  &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background: color-mix(in srgb, var(--action-primary) 12%, transparent) !important;
+    color: var(--action-primary) !important;
+    font-weight: var(--font-weight-semibold) !important;
+  }
+}
+
+/* Textarea Overrides - Visual Only */
+.mat-mdc-form-field textarea.mat-mdc-input-element {
+  min-height: 80px;
+  resize: vertical;
+  // Material handles padding - don't override
+}
+
+/* Additional Form Field Styles */
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   background-color: var(--input-background) !important;
   
   .mdc-line-ripple::after {
     border-bottom-color: var(--border-focus) !important;
   }
-}
-
-.mat-mdc-form-field-error {
-  color: var(--status-error) !important;
 }
 
 .mat-mdc-form-field.mat-focused {
@@ -145,21 +269,7 @@
   }
 }
 
-/* Input Overrides */
-.mat-mdc-input-element {
-  color: var(--text-primary) !important;
-  
-  &::placeholder {
-    color: var(--text-tertiary) !important;
-    opacity: 1;
-  }
-  
-  &:disabled {
-    color: var(--text-disabled) !important;
-  }
-}
-
-/* Select Overrides */
+/* Additional Select Overrides */
 .mat-mdc-select {
   color: var(--text-primary) !important;
 }
@@ -335,12 +445,10 @@
 .mat-mdc-menu-item {
   color: var(--text-primary) !important;
   border-radius: var(--radius-md) !important;
-  margin: var(--spacing-1) 0 !important;
-  padding: var(--spacing-4) var(--spacing-5) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  min-height: 52px !important;
   position: relative !important;
   overflow: hidden !important;
+  // Material handles padding/margin/min-height - don't override
   
   &::before {
     content: '';
@@ -395,16 +503,15 @@
   }
 }
 
-/* User Menu Header Styling - Enhanced */
+/* User Menu Header Styling - Colors Only */
 .user-menu-header {
-  padding: var(--spacing-6) var(--spacing-5) !important;
   background: linear-gradient(135deg, 
     color-mix(in srgb, var(--action-primary) 5%, var(--background-elevated)) 0%,
     var(--background-elevated) 100%
   ) !important;
   border-bottom: 1px solid var(--border-secondary) !important;
-  margin: calc(var(--spacing-3) * -1) calc(var(--spacing-3) * -1) var(--spacing-3) calc(var(--spacing-3) * -1) !important;
   position: relative !important;
+  // Material handles padding/margin - don't override
   
   &::after {
     content: '';
@@ -501,10 +608,10 @@
   }
 }
 
-/* Menu Divider */
+/* Menu Divider - Colors Only */
 .mat-mdc-menu-panel .mat-divider {
-  margin: var(--spacing-2) calc(var(--spacing-3) * -1) !important;
   border-color: var(--border-secondary) !important;
+  // Material handles margin - don't override
 }
 
 /* Dialog Overrides */
@@ -589,26 +696,71 @@
   background-color: var(--status-warning) !important;
 }
 
-/* Tabs Overrides */
+/* Tabs Overrides - Colors and Visual Only */
+/* DO NOT override padding/margin - Material handles spacing */
 .mat-mdc-tab-group {
   background-color: var(--card-background) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: var(--border-default) solid var(--border-secondary) !important;
+}
+
+.mat-mdc-tab-header {
+  background-color: var(--table-header-background) !important;
+  border-bottom: var(--border-default) solid var(--border-secondary) !important;
+  // Material handles padding - don't override
 }
 
 .mat-mdc-tab {
   color: var(--text-secondary) !important;
+  font-weight: var(--font-weight-medium) !important;
+  transition: all var(--transition-normal) !important;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--action-primary);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--transition-normal);
+    border-radius: var(--radius-full) var(--radius-full) 0 0;
+  }
+  
+  &:hover:not(.mat-mdc-tab-active) {
+    color: var(--text-primary) !important;
+    background: var(--table-row-hover) !important;
+  }
   
   &.mat-mdc-tab-active {
+    color: var(--action-primary) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.mat-mdc-tab-label {
+  opacity: 0.7 !important;
+  transition: all var(--transition-normal) !important;
+  
+  &.mat-mdc-tab-label-active {
+    opacity: 1 !important;
     color: var(--action-primary) !important;
   }
 }
 
-.mat-mdc-tab-header {
-  border-bottom-color: var(--border-secondary) !important;
+.mat-mdc-tab-body-content {
+  // Material handles padding - don't override
 }
 
-.mat-mdc-tab-label-active {
-  color: var(--action-primary) !important;
-  opacity: 1 !important;
+.mat-mdc-tab-header-pagination {
+  background-color: var(--table-header-background) !important;
 }
 
 .mat-ink-bar {

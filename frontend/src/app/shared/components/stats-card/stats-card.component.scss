@@ -1,20 +1,24 @@
-// Stats card component - uses only CSS variables defined in styles.scss
-// NO hardcoded colors, NO @use/@import needed
+/**
+ * Stats Card Component - Consistent height and spacing
+ * Uses ONLY theme variables - NO hardcoded values
+ */
 
 .stats-card {
   display: flex;
   align-items: center;
   gap: var(--spacing-4);
-  padding: var(--spacing-6);
+  padding: var(--spacing-card-padding);  /* Consistent padding */
   background: var(--card-background);
   border-radius: var(--radius-lg);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--shadow-md);
   transition: all var(--transition-normal);
-  border: var(--border-width-thin) solid var(--border-secondary);
+  border: var(--border-default) solid var(--border-secondary);  /* Consistent border */
   position: relative;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
+  min-height: 140px;  /* Fixed minimum height for consistency */
+  height: 100%;  /* Fill available space */
 
   &::before {
     content: '';
@@ -36,6 +40,7 @@
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
     border-color: var(--border-focus);
+    border-width: var(--border-focus-width);
 
     &::before {
       transform: scaleY(1);
@@ -57,6 +62,8 @@
     justify-content: center;
     width: 64px;
     height: 64px;
+    min-width: 64px;  /* Prevent shrinking */
+    min-height: 64px;
     border-radius: var(--radius-lg);
     flex-shrink: 0;
     transition: all var(--transition-normal);
@@ -74,25 +81,33 @@
 
   &__content {
     flex: 1;
+    min-width: 0;  /* Allow text truncation */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   &__title {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--text-secondary);
-    margin-bottom: 4px;
+    margin: 0 0 var(--spacing-2) 0;
+    line-height: var(--line-height-normal);
   }
 
   &__value {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin: 0 0 var(--spacing-1) 0;
+    line-height: var(--line-height-tight);
   }
 
   &__subtitle {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-tertiary);
+    margin: 0;
+    line-height: var(--line-height-normal);
   }
 
   &__trend {
@@ -124,6 +139,7 @@
     transform: translateX(-10px);
     transition: all var(--transition-normal);
     color: var(--action-primary);
+    flex-shrink: 0;
     
     mat-icon {
       font-size: var(--font-size-xl);

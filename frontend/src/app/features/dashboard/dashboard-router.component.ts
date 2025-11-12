@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UserRole } from '../../core/models/user.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-router',
@@ -15,15 +16,22 @@ export class DashboardRouterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const currentUser = this.authService.currentUser();
-    
-    if (!currentUser) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
+    // Guard should have already loaded user, but ensure it's loaded
+    this.authService.ensureUserLoaded$().pipe(
+      take(1)
+    ).subscribe((user) => {
+      if (user) {
+        this.redirectToRoleDashboard(user.role);
+      } else {
+        // No user found, redirect to login
+        this.router.navigate(['/auth/login']);
+      }
+    });
+  }
 
+  private redirectToRoleDashboard(role: UserRole): void {
     // Redirect based on user role
-    switch (currentUser.role) {
+    switch (role) {
       case UserRole.PROSPECT:
         this.router.navigate(['/prospect/dashboard']);
         break;

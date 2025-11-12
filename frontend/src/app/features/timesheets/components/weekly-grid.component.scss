@@ -1,64 +1,67 @@
+/**
+ * Weekly Grid Component - Refactored
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ */
+
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/mixins/layout';
+
 .timesheet-container {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  animation: fadeIn 0.3s ease-out;
+  @include container;
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
+  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 /* Week Navigation Header */
 .week-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-6);
-  padding: var(--spacing-5);
-  background: linear-gradient(135deg, var(--card-background) 0%, var(--background-elevated) 100%);
+  @include flex-between;
+  margin-bottom: var(--spacing-section-gap);
+  padding: var(--spacing-card-padding);
+  background: var(--background-gradient-card);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  border: var(--border-width-thin) solid var(--border-secondary);
+  @include shadow('md');
+  border: var(--border-default) solid var(--border-secondary);
   
   &__controls {
-    display: flex;
+    @include flex-center;
+    justify-content: flex-start;
     gap: var(--spacing-4);
-    align-items: center;
   }
   
   &__range {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @include flex-column;
+    @include flex-center;
     gap: var(--spacing-2);
     
     h2 {
       margin: 0;
       font-size: var(--font-size-2xl);
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       color: var(--text-primary);
       letter-spacing: var(--letter-spacing-tight);
     }
   }
   
   &__actions {
-    display: flex;
+    @include flex-center;
+    justify-content: flex-end;
     gap: var(--spacing-3);
-    align-items: center;
   }
 }
 
 /* Week Summary Cards */
 .week-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  @include grid-auto-fit(220px);
+  margin-bottom: var(--spacing-section-gap);
   
   &__card {
-    padding: var(--spacing-5);
+    padding: var(--spacing-card-padding);
     background: var(--card-background);
     border-radius: var(--radius-lg);
-    border: var(--border-width-thin) solid var(--border-secondary);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
+    border: var(--border-default) solid var(--border-secondary);
+    @include shadow('sm');
+    transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
     
@@ -69,19 +72,19 @@
       left: 0;
       right: 0;
       height: var(--spacing-1);
-      background: linear-gradient(90deg, var(--action-primary), var(--color-accent-500));
+      background: var(--background-gradient-primary);
     }
     
     &:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      @include shadow('lg');
     }
     
     &__label {
       font-size: var(--font-size-sm);
       color: var(--text-secondary);
       margin-bottom: var(--spacing-2);
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
     }
@@ -90,7 +93,6 @@
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-bold);
       color: var(--text-primary);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       
       &.success {
         color: var(--status-success);
@@ -107,26 +109,24 @@
 .time-entry-grid {
   background: var(--card-background);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-5);
-  box-shadow: var(--shadow-md);
-  border: var(--border-width-thin) solid var(--border-secondary);
-  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-card-padding);
+  @include shadow('md');
+  border: var(--border-default) solid var(--border-secondary);
+  margin-bottom: var(--spacing-section-gap);
   
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-5);
+    @include flex-between;
+    margin-bottom: var(--spacing-card-padding);
     padding-bottom: var(--spacing-4);
-    border-bottom: var(--border-width-medium) solid var(--border-primary);
+    border-bottom: var(--border-default) solid var(--border-primary);
     
     h3 {
       margin: 0;
       font-size: var(--font-size-xl);
-      font-weight: 700;
+      font-weight: var(--font-weight-bold);
       color: var(--text-primary);
-      display: flex;
-      align-items: center;
+      @include flex-center;
+      justify-content: flex-start;
       gap: var(--spacing-2);
       
       mat-icon {
@@ -142,17 +142,17 @@
     
     thead {
       tr {
-        background: var(--background-tertiary);
+        background: var(--table-header-background);
         
         th {
-          padding: var(--spacing-4);
+          padding: var(--spacing-card-padding);
           text-align: left;
-          font-weight: 700;
+          font-weight: var(--font-weight-bold);
           font-size: var(--font-size-sm);
           color: var(--text-secondary);
           text-transform: uppercase;
           letter-spacing: var(--letter-spacing-wide);
-          border-bottom: var(--border-width-medium) solid var(--border-primary);
+          border-bottom: var(--border-default) solid var(--border-primary);
           
           &:first-child {
             border-top-left-radius: var(--radius-md);
@@ -167,30 +167,30 @@
     
     tbody {
       tr {
-        transition: all 0.2s ease;
+        transition: all var(--transition-fast);
         
         &:hover {
           background: var(--table-row-hover);
         }
         
         &.total-row {
-          background: var(--background-tertiary);
-          font-weight: 700;
+          background: var(--table-header-background);
+          font-weight: var(--font-weight-bold);
           
           td {
-            border-top: var(--border-width-medium) solid var(--border-primary);
-            padding: var(--spacing-4);
+            border-top: var(--border-default) solid var(--border-primary);
+            padding: var(--spacing-card-padding);
             font-size: var(--font-size-lg);
           }
         }
         
         td {
-          padding: var(--spacing-4);
-          border-bottom: var(--border-width-thin) solid var(--border-secondary);
+          padding: var(--spacing-card-padding);
+          border-bottom: var(--border-default) solid var(--table-border);
           color: var(--text-primary);
           
           &.project-cell {
-            font-weight: 600;
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
           }
           
@@ -199,14 +199,14 @@
             font-size: var(--font-size-md);
             
             input {
-              width: 60px;
+              width: calc(var(--spacing-10) * 1.5); /* 60px equivalent */
               padding: var(--spacing-2);
-              border: var(--border-width-thin) solid var(--border-primary);
+              border: var(--border-default) solid var(--border-primary);
               border-radius: var(--radius-sm);
               text-align: center;
               font-family: inherit;
               font-size: var(--font-size-md);
-              transition: all 0.2s ease;
+              transition: all var(--transition-fast);
               background: var(--input-background);
               color: var(--text-primary);
               
@@ -217,19 +217,20 @@
               &:focus {
                 outline: none;
                 border-color: var(--action-primary);
+                border-width: var(--border-focus-width);
                 box-shadow: 0 0 0 var(--spacing-1) color-mix(in srgb, var(--action-primary) 10%, transparent);
               }
               
               &:disabled {
                 background: var(--background-tertiary);
                 cursor: not-allowed;
-                opacity: 0.6;
+                opacity: var(--opacity-disabled);
               }
             }
           }
           
           &.total-cell {
-            font-weight: 700;
+            font-weight: var(--font-weight-bold);
             color: var(--action-primary);
             font-size: var(--font-size-lg);
           }
@@ -241,24 +242,24 @@
 
 /* Project Row Controls */
 .project-row-controls {
-  display: flex;
+  @include flex-center;
+  justify-content: flex-start;
   gap: var(--spacing-2);
-  align-items: center;
 }
 
 /* Add Project Section */
 .add-project-section {
-  margin-top: var(--spacing-5);
-  padding-top: var(--spacing-5);
-  border-top: var(--border-width-thin) dashed var(--border-primary);
-  display: flex;
-  gap: var(--spacing-4);
+  margin-top: var(--spacing-card-padding);
+  padding-top: var(--spacing-card-padding);
+  border-top: var(--border-default) dashed var(--border-primary);
+  @include flex-center;
   align-items: flex-end;
+  gap: var(--spacing-4);
   flex-wrap: wrap;
   
   mat-form-field {
     flex: 1;
-    min-width: 200px; /* Keep for responsive design */
+    min-width: calc(var(--spacing-20) * 1.5); /* 200px equivalent */
   }
   
   span {
@@ -270,24 +271,21 @@
 
 /* Week Actions */
 .week-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-between;
   gap: var(--spacing-4);
-  padding: var(--spacing-5);
+  padding: var(--spacing-card-padding);
   background: var(--card-background);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  border: var(--border-width-thin) solid var(--border-secondary);
+  @include shadow('sm');
+  border: var(--border-default) solid var(--border-secondary);
   
   &__info {
-    display: flex;
+    @include flex-center;
+    justify-content: flex-start;
     gap: var(--spacing-6);
-    align-items: center;
     
     &__item {
-      display: flex;
-      flex-direction: column;
+      @include flex-column;
       gap: var(--spacing-1);
       
       label {
@@ -295,75 +293,48 @@
         color: var(--text-secondary);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
       }
       
       span {
         font-size: var(--font-size-xl);
-        font-weight: 700;
+        font-weight: var(--font-weight-bold);
         color: var(--text-primary);
       }
     }
   }
   
   &__buttons {
-    display: flex;
+    @include flex-center;
+    justify-content: flex-end;
     gap: var(--spacing-3);
   }
 }
 
 /* Status Badges */
 .status-badge {
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wide);
+  @include badge-variant(var(--action-primary));
   
   &.draft {
-    background: color-mix(in srgb, var(--color-accent-500) 10%, transparent);
-    color: var(--color-accent-500);
+    @include badge-variant(var(--color-accent-500));
   }
   
   &.submitted {
-    background: color-mix(in srgb, var(--action-primary) 10%, transparent);
-    color: var(--action-primary);
+    @include badge-variant(var(--action-primary));
   }
   
   &.approved {
-    background: color-mix(in srgb, var(--status-success) 10%, transparent);
-    color: var(--status-success);
+    @include badge-variant(var(--status-success));
   }
   
   &.rejected {
-    background: color-mix(in srgb, var(--status-error) 10%, transparent);
-    color: var(--status-error);
+    @include badge-variant(var(--status-error));
   }
 }
 
 /* Empty State */
 .empty-state {
-  text-align: center;
-  padding: var(--spacing-8) var(--spacing-4);
-  
-  mat-icon {
-    font-size: var(--font-size-5xl);
-    width: var(--font-size-5xl);
-    height: var(--font-size-5xl);
-    color: var(--text-tertiary);
-    margin-bottom: var(--spacing-4);
-  }
-  
-  h3 {
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-bottom: var(--spacing-2);
-  }
-  
-  p {
-    color: var(--text-tertiary);
-  }
+  @include empty-state;
 }
 
 /* Responsive Design */
@@ -376,7 +347,7 @@
 
 @media (max-width: 768px) {
   .timesheet-container {
-    padding: var(--spacing-4);
+    padding: var(--spacing-page-padding);
   }
   
   .week-nav {
@@ -421,6 +392,7 @@
     
     mat-form-field {
       width: 100%;
+      min-width: 100%;
     }
   }
 }

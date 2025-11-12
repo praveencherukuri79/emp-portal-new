@@ -9,6 +9,7 @@
 @import './styles/themes/dark.scss';
 
 /* Import mixins */
+@import './styles/mixins/animations.scss';
 @import './styles/mixins/layout.scss';
 @import './styles/mixins/components.scss';
 
@@ -45,15 +46,45 @@ body {
 /* Theme is applied via data-theme attribute on :root (handled by ThemeService) */
 /* Default theme is light (applied when no data-theme attribute) */
 
-/* Utility classes using tokens */
+/* ============================================
+   GLOBAL UTILITY CLASSES - Use these everywhere
+   ============================================ */
+
+/* Layout Containers */
 .container {
   @include container;
 }
 
+.content-narrow {
+  @include content-container('narrow');
+}
+
+.content-medium {
+  @include content-container('medium');
+}
+
+.content-wide {
+  @include content-container('wide');
+}
+
+/* Page Structure - STANDARDIZED */
+.page-container {
+  width: 100%;
+  min-height: calc(100vh - var(--header-height));
+  @include rich-background;
+}
+
+/* Page Header - STANDARDIZED - Use .page-header everywhere */
+.page-header {
+  @include page-header;
+}
+
+/* Cards */
 .card {
   @include card;
 }
 
+/* Flex Utilities */
 .flex-center {
   @include flex-center;
 }
@@ -65,6 +96,48 @@ body {
 .flex-column {
   @include flex-column;
 }
+
+/* Form Layouts - STANDARDIZED */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-6);
+  margin-bottom: 0;
+
+  ::ng-deep .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .full-width {
+    grid-column: span 2;
+
+    @media (max-width: 768px) {
+      grid-column: span 1;
+    }
+  }
+}
+
+.form-actions {
+  @include form-actions;
+}
+
+/* Tab Content - Material handles padding, only use for custom spacing if needed */
 
 .text-primary {
   color: var(--text-primary);
@@ -126,22 +199,20 @@ a, button, input, select, textarea {
   border-radius: 4px;
 }
 
-/* Animation classes */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { transform: translateX(-100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
+/* Animation utility classes */
 .fade-in {
   animation: fadeIn 0.3s ease-out;
 }
 
 .slide-in {
   animation: slideIn 0.3s ease-out;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out;
 }
 

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, throwError, of, shareReplay, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   User,
@@ -25,16 +25,22 @@ export class AuthService {
   // Current user as a signal (Angular 18 feature)
   currentUser = signal<User | null>(null);
   
-  // Also keep a BehaviorSubject for compatibility
+  // Observable for current user
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  
+  // Cached Observable for user loading - prevents duplicate API calls
+  private userLoad$: Observable<User | null> | null = null;
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    // Try to load user from token on service initialization
-    this.loadUserFromToken();
+    // Start loading user if token exists
+    if (this.isAuthenticated()) {
+      this.userLoad$ = this.createUserLoadObservable();
+      this.userLoad$.subscribe(); // Start the HTTP request
+    }
   }
 
   /**
@@ -110,13 +116,8 @@ export class AuthService {
   /**
    * Get current user profile
    */
-  getMe(): Observable<any> {
+  private getMe(): Observable<any> {
     return this.http.get(`${this.API_URL}/me`).pipe(
-      tap((response: any) => {
-        if (response.status === 'success' && response.data) {
-          this.setCurrentUser(response.data);
-        }
-      }),
       catchError(this.handleError)
     );
   }
@@ -208,20 +209,52 @@ export class AuthService {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.currentUser.set(null);
     this.currentUserSubject.next(null);
+    this.userLoad$ = null;
   }
 
   /**
-   * Try to load user from stored token
+   * Create Observable for loading user from token
+   * Uses shareReplay to cache and prevent duplicate API calls
    */
-  private loadUserFromToken(): void {
-    if (this.isAuthenticated()) {
-      this.getMe().subscribe({
-        error: () => {
-          // Token is invalid, clear data
-          this.clearAuthData();
+  private createUserLoadObservable(): Observable<User | null> {
+    return this.getMe().pipe(
+      map((response: any) => {
+        if (response.status === 'success' && response.data) {
+          this.setCurrentUser(response.data);
+          return this.currentUser();
         }
-      });
+        return null;
+      }),
+      catchError(() => {
+        this.clearAuthData();
+        return of(null);
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+  }
+
+  /**
+   * Ensure user is loaded - returns Observable that emits the user or null
+   * Used by guards to wait for user authentication
+   */
+  ensureUserLoaded$(): Observable<User | null> {
+    // If user already loaded, return immediately
+    if (this.currentUser()) {
+      return of(this.currentUser());
     }
+    
+    // If no token, return null
+    if (!this.isAuthenticated()) {
+      return of(null);
+    }
+    
+    // Return cached Observable if exists, otherwise create new one
+    if (!this.userLoad$) {
+      this.userLoad$ = this.createUserLoadObservable();
+      this.userLoad$.subscribe(); // Start the HTTP request
+    }
+    
+    return this.userLoad$;
   }
 
   /**

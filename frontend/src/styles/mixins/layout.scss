@@ -1,5 +1,5 @@
 /**
- * Layout Mixins
+ * Layout Mixins - Reusable layout patterns
  */
 
 @mixin flex-center {
@@ -27,16 +27,34 @@
 
 @mixin container {
   width: 100%;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding-left: var(--spacing-page-padding);
-  padding-right: var(--spacing-page-padding);
+  padding: 0 var(--spacing-page-padding);
+  
+  @media (max-width: 768px) {
+    padding: 0 var(--spacing-4);
+  }
 }
 
-@mixin card {
-  background-color: var(--card-background);
-  border-radius: var(--radius-md);
-  box-shadow: var(--card-shadow);
-  padding: var(--spacing-card-padding);
+/* Content Container - For form pages, profile, settings, etc. */
+@mixin content-container($size: 'medium') {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-page-padding);
+  
+  @if $size == 'narrow' {
+    max-width: 600px; /* For forms, auth pages */
+  } @else if $size == 'medium' {
+    max-width: 900px; /* For profile, settings, documents */
+  } @else if $size == 'wide' {
+    max-width: 1200px; /* For wider content areas */
+  } @else {
+    max-width: 900px; /* Default to medium */
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0 var(--spacing-4);
+  }
 }
 
 @mixin elevation($level: 1) {
@@ -64,4 +82,15 @@
   -webkit-line-clamp: $lines;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@mixin responsive-grid($columns: 2, $breakpoint: 768px) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: var(--spacing-6);
+
+  @media (max-width: $breakpoint) {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
 }

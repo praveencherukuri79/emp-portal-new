@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -10,7 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
-import { isSuccessResponse } from '../../../core/models/user.model';
+import { isSuccessResponse, UserRole } from '../../../core/models/user.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ import { isSuccessResponse } from '../../../core/models/user.model';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   hidePassword = true;
@@ -50,6 +51,40 @@ export class LoginComponent {
 
     // Get return URL from route parameters or default to '/dashboard'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
+
+  ngOnInit(): void {
+    // If user is already authenticated, redirect to their dashboard
+    if (this.authService.isAuthenticated()) {
+      this.authService.ensureUserLoaded$().pipe(
+        take(1)
+      ).subscribe((user) => {
+        if (user) {
+          // User is authenticated, redirect to their role-based dashboard
+          const dashboardRoute = this.getRoleDashboardRoute(user.role);
+          this.router.navigate([dashboardRoute]);
+        }
+      });
+    }
+  }
+
+  private getRoleDashboardRoute(role: UserRole): string {
+    switch (role) {
+      case UserRole.PROSPECT:
+        return '/prospect/dashboard';
+      case UserRole.EMPLOYEE:
+        return '/employee/dashboard';
+      case UserRole.SUPERVISOR:
+        return '/supervisor/dashboard';
+      case UserRole.HR:
+        return '/hr/dashboard';
+      case UserRole.ADMIN:
+        return '/admin/dashboard';
+      case UserRole.EMPLOYER:
+        return '/employer/dashboard';
+      default:
+        return '/dashboard';
+    }
   }
 
   onSubmit(): void {

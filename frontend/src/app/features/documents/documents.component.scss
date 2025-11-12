@@ -1,112 +1,178 @@
+/**
+ * Documents Component - Enhanced with Rich Design
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ * Rich backgrounds, proper contrast, consistent spacing
+ */
+
 @import '../../../styles/mixins/components.scss';
+@import '../../../styles/mixins/layout.scss';
 
 .documents-container {
-  padding: var(--spacing-6);
+  width: 100%;
   max-width: var(--container-max-width);
   margin: 0 auto;
+  @include rich-background;
+  min-height: calc(100vh - var(--header-height));
 }
 
 .header-card {
-  margin-bottom: var(--spacing-6);
   @include card;
-  padding: var(--spacing-6) !important;
+  margin-bottom: var(--spacing-section-gap);
+  background: var(--background-gradient-primary);
+  border: none;
+  box-shadow: var(--shadow-lg);
+
+  mat-card-header {
+    padding: var(--spacing-card-padding-lg);
+  }
 
   mat-card-title {
-    color: var(--text-primary);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
+    color: var(--text-on-primary);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
   }
 }
 
 .documents-tabs {
   background: var(--card-background);
   border-radius: var(--radius-lg);
-  @include shadow('md');
+  @include shadow('lg');
+  border: var(--border-default) solid var(--border-secondary);
+  overflow: hidden;
+
+  // Enhanced tab styling
+  ::ng-deep .mat-mdc-tab-header {
+    background: var(--background-tertiary);
+    border-bottom: var(--border-default) solid var(--border-primary);
+  }
+
+  ::ng-deep .mat-mdc-tab-label {
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    opacity: 0.8;
+    transition: all var(--transition-fast);
+
+    &.mdc-tab--active {
+      color: var(--action-primary);
+      opacity: 1;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    &:hover:not(.mdc-tab--active) {
+      color: var(--text-primary);
+      opacity: 1;
+    }
+  }
+
+  // Material handles tab body content padding - don't override
 }
 
 .tab-content {
+  // Component-level: Tab group is already styled as card, just add padding
   padding: var(--spacing-6);
-}
-
-.upload-card {
-  max-width: 800px;
-  margin: 0 auto;
-  @include card;
-  padding: var(--spacing-6) !important;
+  
+  h2 {
+    margin: 0 0 var(--spacing-6) 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+  }
 }
 
 .upload-form {
-  padding: var(--spacing-4) 0;
+  // Component-level: Form spacing in tab content
+  margin-top: var(--spacing-4);
 }
 
 .form-row {
+  @include form-row;
   margin-bottom: var(--spacing-4);
+  
+  &:last-of-type {
+    margin-bottom: 0;
+  }
 }
 
 .full-width {
   width: 100%;
 }
 
+// Enhanced Material Form Field Styling
+::ng-deep .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background: var(--input-background);
+    border-radius: var(--radius-md);
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--text-secondary) !important;
+    font-weight: var(--font-weight-medium) !important;
+  }
+
+  .mat-mdc-form-field-label.mdc-floating-label--float-above {
+    color: var(--action-primary) !important;
+    font-weight: var(--font-weight-semibold) !important;
+  }
+
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-regular) !important;
+  }
+
+  .mat-mdc-input-element::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 0.7;
+  }
+
+  .mat-mdc-form-field-outline {
+    color: var(--border-primary) !important;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent;
+  }
+
+  &.mat-focused {
+    .mat-mdc-form-field-outline-thick {
+      color: var(--border-focus) !important;
+      border-width: var(--border-focus-width) !important;
+    }
+  }
+
+  .mat-mdc-form-field-error {
+    color: var(--status-error) !important;
+    font-weight: var(--font-weight-medium) !important;
+  }
+}
+
 .file-upload-section {
-  display: flex;
-  gap: var(--spacing-4);
-  margin: var(--spacing-6) 0;
-  padding: var(--spacing-5);
-  border: var(--border-width-medium) dashed var(--border-primary);
-  border-radius: var(--radius-md);
-  background: var(--background-tertiary);
-  transition: all var(--transition-normal);
-
-  &:hover {
-    border-color: var(--action-primary);
-    background: var(--background-secondary);
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  @include file-upload-area;
+  margin: var(--spacing-section-gap) 0;
+  min-height: calc(var(--spacing-20) * 1.5); /* 120px equivalent */
+  background: var(--background-gradient-secondary);
+  border-color: var(--border-focus);
 }
 
 .select-file-btn,
 button {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
+  @include button-base;
 }
 
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-6);
+  @include form-actions;
+  margin-top: var(--spacing-section-gap);
 }
 
-.loading-container,
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-10);
-  min-height: 200px;
+.loading-container {
+  @include loading-state;
 }
 
 .empty-state {
-  flex-direction: column;
-  color: var(--text-secondary);
-
-  mat-icon {
-    font-size: var(--font-size-5xl);
-    width: var(--font-size-5xl);
-    height: var(--font-size-5xl);
-    margin-bottom: var(--spacing-4);
-    opacity: 0.5;
-  }
-
-  p {
-    margin: 0;
-    font-size: var(--font-size-md);
-  }
+  @include empty-state;
 }
+
+// Removed card styles - tab content is already styled as card via .mat-mdc-tab-group
 
 .documents-table,
 .expiry-table {
@@ -114,57 +180,55 @@ button {
   background: var(--card-background);
   border-radius: var(--radius-md);
   overflow: hidden;
+  border: var(--border-default) solid var(--border-secondary);
+  margin-top: var(--spacing-4);
 
   th {
     background: var(--table-header-background);
     color: var(--text-primary);
     font-weight: var(--font-weight-semibold);
-    padding: var(--spacing-4);
+    padding: var(--spacing-card-padding);
+    text-align: left;
+    border-bottom: var(--border-default) solid var(--border-primary);
   }
 
   td {
-    padding: var(--spacing-4);
+    padding: var(--spacing-card-padding);
     color: var(--text-primary);
-    border-bottom: var(--border-width-thin) solid var(--table-border);
+    border-bottom: var(--border-default) solid var(--table-border);
   }
 
   tr:hover {
     background: var(--table-row-hover);
   }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
 }
 
 .doc-name {
-  display: flex;
-  align-items: center;
+  @include flex-center;
   gap: var(--spacing-2);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  justify-content: flex-start;
+  color: var(--text-primary);
+
+  mat-icon {
+    color: var(--action-primary);
+  }
 }
 
 .status-valid {
-  background-color: var(--status-success);
-  color: var(--text-inverse);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-success));
 }
 
 .status-warning {
-  background-color: var(--status-warning);
-  color: var(--text-inverse);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-warning));
 }
 
 .status-expired {
-  background-color: var(--status-error);
-  color: var(--text-inverse);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-error));
 }
 
 .expired {
@@ -172,8 +236,47 @@ button {
   font-weight: var(--font-weight-semibold);
 }
 
+.file-name {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  margin-left: var(--spacing-3);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .documents-container {
+    padding: var(--spacing-page-padding);
+  }
+
+  .upload-card {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .header-card {
+    mat-card-title {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  .documents-table,
+  .expiry-table {
+    font-size: var(--font-size-sm);
+
+    th, td {
+      padding: var(--spacing-3);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .documents-container {
     padding: var(--spacing-4);
+  }
+
+  // Global material override handles padding automatically
+
+  .form-row {
+    margin-bottom: var(--spacing-4);
   }
 }

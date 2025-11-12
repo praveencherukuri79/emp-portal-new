@@ -1,71 +1,32 @@
 @import '../../../styles/mixins/components.scss';
+@import '../../../styles/mixins/layout.scss';
 
 .leave-management {
-  padding: var(--spacing-6);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
+  @include container;
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
 }
 
-.page-header {
-  margin-bottom: var(--spacing-6);
-
-  h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    margin: 0;
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-
-    mat-icon {
-      color: var(--action-primary);
-      font-size: var(--font-size-2xl);
-      width: var(--font-size-2xl);
-      height: var(--font-size-2xl);
-    }
-  }
-}
-
+// Tab content styling - tab group is already styled as card
 .tab-content {
-  padding: var(--spacing-6) 0;
-}
-
-.request-card,
-.history-card {
-  @include card;
-  padding: var(--spacing-6) !important;
-  margin-bottom: var(--spacing-6);
-
+  padding: var(--spacing-6);
+  
   h2 {
     margin: 0 0 var(--spacing-6) 0;
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
   }
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  
+  // Component-level: Form fields need spacing from h2
+  form {
+    margin-top: var(--spacing-4);
   }
 }
 
 .full-width {
   width: 100%;
   margin-bottom: var(--spacing-6);
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-6);
 }
 
 .balance-grid {
@@ -81,7 +42,6 @@
 
 .balance-card {
   @include card;
-  padding: var(--spacing-5) !important;
 
   .balance-header {
     display: flex;
@@ -168,7 +128,7 @@
   td {
     padding: var(--spacing-4);
     color: var(--text-primary);
-    border-bottom: var(--border-width-thin) solid var(--table-border);
+    border-bottom: var(--border-default) solid var(--table-border);
   }
 
   tr:hover {
@@ -177,51 +137,19 @@
 }
 
 .status-success {
-  background: var(--color-success-50);
-  color: var(--status-success);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-success));
 }
 
 .status-warning {
-  background: var(--color-warning-50);
-  color: var(--status-warning);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-warning));
 }
 
 .status-error {
-  background: var(--color-error-50);
-  color: var(--status-error);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  @include badge-variant(var(--status-error));
 }
 
 .no-data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-16);
-  color: var(--text-tertiary);
-
-  mat-icon {
-    font-size: var(--font-size-5xl);
-    width: var(--font-size-5xl);
-    height: var(--font-size-5xl);
-    margin-bottom: var(--spacing-4);
-    opacity: 0.5;
-  }
-
-  p {
-    margin: 0;
-    font-size: var(--font-size-md);
-  }
+  @include empty-state;
 }
 
 @media (max-width: 768px) {

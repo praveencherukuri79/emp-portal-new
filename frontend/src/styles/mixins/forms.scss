@@ -1,0 +1,64 @@
+/**
+ * Form Mixins - Reusable form patterns
+ * NO duplication - use these mixins everywhere
+ */
+
+/* Form Container */
+@mixin form-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-section-gap);
+}
+
+/* Form Section */
+@mixin form-section {
+  margin-bottom: var(--spacing-section-gap);
+}
+
+/* Form Row */
+@mixin form-row {
+  margin-bottom: var(--spacing-element-gap);
+  width: 100%;
+}
+
+/* Form Actions */
+@mixin form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-section-gap);
+  padding-top: var(--spacing-6);
+  border-top: var(--border-default) solid var(--border-secondary);
+}
+
+/* File Upload Area */
+@mixin file-upload-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-card-padding);
+  border: var(--border-focus-width) dashed var(--border-primary);
+  border-radius: var(--radius-lg);
+  background: var(--background-tertiary);
+  transition: all var(--transition-normal);
+  text-align: center;
+  min-height: 120px;
+  width: 100%;
+
+  &:hover {
+    border-color: var(--border-focus);
+    background: var(--card-background-hover);
+    border-style: solid;
+  }
+
+  &.has-file {
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
+    border-style: solid;
+  }
+}
+

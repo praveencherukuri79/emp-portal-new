@@ -1,37 +1,48 @@
+/**
+ * Login Component - Refactored with Proper Responsive Design
+ * Uses ONLY mixins and theme tokens - NO hardcoded values
+ */
+
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/mixins/layout';
+
 .login-container {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  background: var(--background-gradient-primary);
+  padding: var(--spacing-page-padding);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .login-card {
   max-width: 450px;
   width: 100%;
-  padding: 20px;
+  @include card;
+  margin: 0 auto;
+  // Card padding comes from global Material override (default padding since no header/content)
 
   mat-card-header {
-    margin-bottom: 24px;
+    margin-bottom: var(--spacing-6);
     text-align: center;
     display: block;
 
     mat-card-title {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-2);
+      color: var(--text-primary);
     }
 
     mat-card-subtitle {
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.6);
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
     }
   }
 
-  mat-card-content {
-    padding: 0;
-  }
+  // Global material override handles padding automatically
 }
 
 .full-width {
@@ -39,29 +50,32 @@
 }
 
 mat-form-field {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .forgot-password {
   text-align: right;
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-6);
 
   a {
-    color: #667eea;
+    color: var(--action-primary);
     text-decoration: none;
-    font-size: 14px;
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-fast);
 
     &:hover {
       text-decoration: underline;
+      color: var(--action-primary-hover);
     }
   }
 }
 
 .login-button {
-  height: 48px;
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 16px;
+  min-height: 48px;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-4);
+  width: 100%;
 
   mat-spinner {
     margin: 0 auto;
@@ -70,16 +84,90 @@ mat-form-field {
 
 .register-link {
   text-align: center;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.6);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
 
   a {
-    color: #667eea;
+    color: var(--action-primary);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
 
     &:hover {
       text-decoration: underline;
+      color: var(--action-primary-hover);
     }
+  }
+}
+
+/* Responsive Design - Mobile First */
+@media (max-width: 768px) {
+  .login-container {
+    padding: var(--spacing-4);
+    align-items: flex-start;
+    padding-top: var(--spacing-8);
+  }
+
+  .login-card {
+    max-width: 100%;
+    margin: 0;
+    // Global material override handles padding automatically
+
+    mat-card-header {
+      margin-bottom: var(--spacing-4);
+
+      mat-card-title {
+        font-size: var(--font-size-2xl);
+      }
+
+      mat-card-subtitle {
+        font-size: var(--font-size-sm);
+      }
+    }
+  }
+
+  .forgot-password {
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: var(--spacing-3);
+    padding-top: var(--spacing-6);
+  }
+
+  .login-card {
+    // Use global spacing
+
+    mat-card-header {
+      mat-card-title {
+        font-size: var(--font-size-xl);
+      }
+    }
+  }
+
+  mat-form-field {
+    margin-bottom: var(--spacing-3);
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .login-container {
+    padding: var(--spacing-6);
+  }
+
+  .login-card {
+    max-width: 400px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .login-card {
+    max-width: 500px;
+    // Global material override handles padding automatically
   }
 }

@@ -165,6 +165,11 @@ export const routes: Routes = [
     data: { roles: [UserRole.EMPLOYER] },
     children: [
       {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboards/employer-dashboard/employer-dashboard.component').then(m => m.EmployerDashboardComponent),
         title: 'Employer Dashboard - Employee Portal'
