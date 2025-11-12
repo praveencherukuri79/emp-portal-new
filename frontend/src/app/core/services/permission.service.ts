@@ -144,6 +144,15 @@ export class PermissionService {
     return this.hasPermission(Permission.CAN_VIEW_SYSTEM_HEALTH);
   }
 
+  // UI Display Permissions
+  shouldShowOrgWideSubtitle(): boolean {
+    return this.hasPermission(Permission.SHOW_ORG_WIDE_SUBTITLE);
+  }
+
+  shouldDefaultToLeaveTab(): boolean {
+    return this.hasPermission(Permission.DEFAULT_TO_LEAVE_TAB);
+  }
+
   // ==================== DEBUG HELPER ====================
   
   /**

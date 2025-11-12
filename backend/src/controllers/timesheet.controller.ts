@@ -5,6 +5,9 @@ import { IAuthRequest, TimesheetStatus, ITimesheetEntryDTO, ITimesheetEntry } fr
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import { ITimesheetApprovalActionResponse } from '@shared/types/responses';
 import { toTimesheetEntryResponse, toWeeklyTimesheetResponse, toPendingTimesheetGroupResponse } from '../dto';
+import { PermissionChecker, userHasPermission } from '../utils/permission.util';
+import { UserRole } from '@shared/types';
+import { Permission } from '@shared/types/permissions';
 import { Document } from 'mongoose';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';

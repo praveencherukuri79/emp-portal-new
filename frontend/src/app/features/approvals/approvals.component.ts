@@ -57,6 +57,8 @@ export class ApprovalsComponent implements OnInit {
   // Feature flags (configuration-based)
   canApproveTimesheets = this.permissions.canApproveTimesheets();
   canApproveLeaves = this.permissions.canApproveLeaves();
+  showOrgWideSubtitle = this.permissions.shouldShowOrgWideSubtitle();
+  defaultToLeaveTab = this.permissions.shouldDefaultToLeaveTab();
 
   // Signals for reactive state
   pendingTimesheets = signal<IPendingTimesheetGroupResponse[]>([]);

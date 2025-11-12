@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { Document } from '../models';
 import { ApiResponse } from '@utils/response.util';
+import { PermissionChecker } from '../utils/permission.util';
 import { IAuthRequest, DocumentCategory, UserRole } from '../types';
 import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/requests';
 import { toDocumentResponse, toDocumentResponseArray } from '../dto';
@@ -238,9 +239,9 @@ export class DocumentController {
       const isSharedWithUser = document.sharedWith.some(
         (share: any) => share.userId.toString() === req.user?.userId
       );
-      const isHROrAdmin = [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER].includes(req.user?.role as UserRole);
+      const canViewAllDocuments = PermissionChecker.canViewAllDocuments(req.user?.role as UserRole);
 
-      if (!isOwner && !isSharedWithUser && !isHROrAdmin) {
+      if (!isOwner && !isSharedWithUser && !canViewAllDocuments) {
         return ApiResponse.forbidden(res, 'Access denied');
         return;
       }

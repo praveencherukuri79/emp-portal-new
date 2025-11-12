@@ -4,6 +4,8 @@ import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, LeaveStatus, LeaveType, UserRole, ILeaveRequestDTO } from '../types';
 import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
 import { toLeaveRequestResponse, toLeaveRequestResponseArray } from '../dto';
+import { PermissionChecker, userHasPermission } from '../utils/permission.util';
+import { Permission } from '@shared/types/permissions';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -291,8 +293,11 @@ export class LeaveController {
         status: LeaveStatus.PENDING
       };
 
-      // Supervisors see only their team's requests
-      if (req.user?.role === UserRole.SUPERVISOR) {
+      // Filter by permission: team vs all
+      const canApproveAll = PermissionChecker.canApproveLeaves(req.user?.role as UserRole);
+      const canApproveTeam = !canApproveAll && userHasPermission(req.user?.role as UserRole, Permission.CAN_APPROVE_TEAM_LEAVE);
+      
+      if (canApproveTeam && req.user) {
         const teamMembers = await User.find({
           tenantId: req.user.tenantId,
           reportingTo: req.user.userId

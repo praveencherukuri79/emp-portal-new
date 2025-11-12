@@ -3,7 +3,7 @@
     <div>
       <h1>Approval Queue</h1>
       <p class="subtitle">
-        @if (authService.currentUser()?.role === UserRole.EMPLOYER) {
+        @if (showOrgWideSubtitle) {
           Review and approve all organization requests
         } @else {
           Review and approve pending requests
@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <mat-tab-group class="approvals-tabs" [dynamicHeight]="true" [selectedIndex]="authService.currentUser()?.role === UserRole.HR || authService.currentUser()?.role === UserRole.ADMIN ? 1 : 0">
+  <mat-tab-group class="approvals-tabs" [dynamicHeight]="true" [selectedIndex]="defaultToLeaveTab ? 1 : 0">
     <!-- Timesheet Approvals Tab -->
     <mat-tab label="Timesheet Approvals">
       <div class="tab-content">
