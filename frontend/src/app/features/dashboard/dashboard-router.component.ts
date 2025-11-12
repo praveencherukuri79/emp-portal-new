@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UserRole } from '../../core/models/user.model';
+import { getRoleDashboard } from '@shared/types/role-config';
 import { take } from 'rxjs';
 
 @Component({
@@ -30,28 +31,8 @@ export class DashboardRouterComponent implements OnInit {
   }
 
   private redirectToRoleDashboard(role: UserRole): void {
-    // Redirect based on user role
-    switch (role) {
-      case UserRole.PROSPECT:
-        this.router.navigate(['/prospect/dashboard']);
-        break;
-      case UserRole.EMPLOYEE:
-        this.router.navigate(['/employee/dashboard']);
-        break;
-      case UserRole.SUPERVISOR:
-        this.router.navigate(['/supervisor/dashboard']);
-        break;
-      case UserRole.HR:
-        this.router.navigate(['/hr/dashboard']);
-        break;
-      case UserRole.ADMIN:
-        this.router.navigate(['/admin/dashboard']);
-        break;
-      case UserRole.EMPLOYER:
-        this.router.navigate(['/employer/dashboard']);
-        break;
-      default:
-        this.router.navigate(['/auth/login']);
-    }
+    // Use configuration to get dashboard route
+    const dashboardRoute = getRoleDashboard(role);
+    this.router.navigate([dashboardRoute]);
   }
 }

@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserRole } from '../../../core/models/user.model';
+import { getRoleDashboard } from '@shared/types/role-config';
 import { take } from 'rxjs';
 
 @Component({
@@ -69,22 +70,8 @@ export class LoginComponent implements OnInit {
   }
 
   private getRoleDashboardRoute(role: UserRole): string {
-    switch (role) {
-      case UserRole.PROSPECT:
-        return '/prospect/dashboard';
-      case UserRole.EMPLOYEE:
-        return '/employee/dashboard';
-      case UserRole.SUPERVISOR:
-        return '/supervisor/dashboard';
-      case UserRole.HR:
-        return '/hr/dashboard';
-      case UserRole.ADMIN:
-        return '/admin/dashboard';
-      case UserRole.EMPLOYER:
-        return '/employer/dashboard';
-      default:
-        return '/dashboard';
-    }
+    // Use configuration to get dashboard route
+    return getRoleDashboard(role);
   }
 
   onSubmit(): void {

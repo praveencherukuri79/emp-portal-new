@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserRole, EmploymentType } from '@shared/types';
 import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
+import { requiresEmployeeDetails } from '@shared/types/role-config';
 import { ICreateUserRequest } from '@shared/types/requests';
 import { UserService } from '../../../services/user.service';
 import { IUserResponse } from '@shared/types/responses';
@@ -97,35 +98,28 @@ export class CreateUserDialogComponent implements OnInit {
   }
 
   updateFormFields(role: UserRole): void {
-    // Show/hide fields based on role
+    // Show/hide fields based on configuration
     const employeeFields = ['department', 'designation', 'employeeId', 'joiningDate', 'employmentType', 'reportingTo'];
+    const shouldShowFields = requiresEmployeeDetails(role);
     
-    if (role === UserRole.EMPLOYEE) {
-      // Show employee-specific fields only for Employee role
-      employeeFields.forEach(field => {
-        const control = this.form.get(field);
-        if (control) {
+    employeeFields.forEach(field => {
+      const control = this.form.get(field);
+      if (control) {
+        if (shouldShowFields) {
           control.setValidators([]);
-          control.updateValueAndValidity();
-        }
-      });
-    } else {
-      // Hide employee-specific fields for other roles (Admin, Supervisor, HR, etc.)
-      employeeFields.forEach(field => {
-        const control = this.form.get(field);
-        if (control) {
+        } else {
           control.clearValidators();
           control.setValue('');
-          control.updateValueAndValidity();
         }
-      });
-    }
+        control.updateValueAndValidity();
+      }
+    });
   }
 
   get showEmployeeFields(): boolean {
     const role = this.form.get('role')?.value;
-    // Only show employee-specific fields for Employee role
-    return role === UserRole.EMPLOYEE;
+    // Use configuration to determine if employee fields should be shown
+    return role ? requiresEmployeeDetails(role) : false;
   }
 
   getRoleLabel(role: UserRole): string {

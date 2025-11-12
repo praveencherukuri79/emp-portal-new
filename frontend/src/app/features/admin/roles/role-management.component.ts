@@ -9,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserRole } from '../../../core/models/user.model';
 import { ROLE_LABELS } from '@shared/types/constants';
+import { getAllRoleConfigs, getRoleIcon } from '@shared/types/role-config';
+import { Permission, getRolePermissions } from '@shared/types/permissions';
 
 interface RolePermission {
   role: UserRole;
@@ -45,59 +47,21 @@ export class RoleManagementComponent implements OnInit {
 
   loadRoles(): void {
     this.loading.set(true);
-    // Simulate loading - in production, this would fetch from API
+    // Use configuration to build roles list
     setTimeout(() => {
-      this.roles = [
-        {
-          role: UserRole.PROSPECT,
-          label: ROLE_LABELS.PROSPECT,
-          description: 'Prospective employees with limited access',
-          permissions: ['View profile', 'Edit own profile']
-        },
-        {
-          role: UserRole.EMPLOYEE,
-          label: ROLE_LABELS.EMPLOYEE,
-          description: 'Regular employees with standard access',
-          permissions: ['View own timesheets', 'Submit timesheets', 'Request leaves', 'View own documents']
-        },
-        {
-          role: UserRole.SUPERVISOR,
-          label: ROLE_LABELS.SUPERVISOR,
-          description: 'Team supervisors with approval capabilities',
-          permissions: ['All employee permissions', 'Approve timesheets', 'Approve leaves', 'View team reports']
-        },
-        {
-          role: UserRole.HR,
-          label: ROLE_LABELS.HR,
-          description: 'HR personnel with employee management access',
-          permissions: ['All supervisor permissions', 'Manage employees', 'View all documents', 'Leave management']
-        },
-        {
-          role: UserRole.ADMIN,
-          label: ROLE_LABELS.ADMIN,
-          description: 'System administrators with full access',
-          permissions: ['All HR permissions', 'User management', 'Role assignment', 'System settings']
-        },
-        {
-          role: UserRole.EMPLOYER,
-          label: ROLE_LABELS.EMPLOYER,
-          description: 'Employers with business insights and full control',
-          permissions: ['All admin permissions', 'Financial reports', 'Business analytics', 'Workforce management']
-        }
-      ];
+      const roleConfigs = getAllRoleConfigs();
+      this.roles = roleConfigs.map(config => ({
+        role: config.role,
+        label: config.label,
+        description: config.description,
+        permissions: getRolePermissions(config.role).map((p: Permission) => p.replace(/_/g, ' ').toLowerCase())
+      }));
       this.loading.set(false);
     }, 500);
   }
 
   getRoleIcon(role: UserRole): string {
-    const icons: Record<UserRole, string> = {
-      [UserRole.PROSPECT]: 'person_outline',
-      [UserRole.EMPLOYEE]: 'person',
-      [UserRole.SUPERVISOR]: 'supervisor_account',
-      [UserRole.HR]: 'business_center',
-      [UserRole.ADMIN]: 'admin_panel_settings',
-      [UserRole.EMPLOYER]: 'business'
-    };
-    return icons[role] || 'person';
+    // Use configuration for role icons
+    return getRoleIcon(role);
   }
 }

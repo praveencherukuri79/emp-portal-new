@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, CanActivateFn, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UserRole } from '../models/user.model';
+import { getRoleDashboard } from '@shared/types/role-config';
 import { map, first, catchError, of } from 'rxjs';
 
 export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
@@ -32,20 +33,6 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 };
 
 function getRoleDashboardRoute(role: UserRole): string {
-  switch (role) {
-    case UserRole.PROSPECT:
-      return '/prospect/dashboard';
-    case UserRole.EMPLOYEE:
-      return '/employee/dashboard';
-    case UserRole.SUPERVISOR:
-      return '/supervisor/dashboard';
-    case UserRole.HR:
-      return '/hr/dashboard';
-    case UserRole.ADMIN:
-      return '/admin/dashboard';
-    case UserRole.EMPLOYER:
-      return '/employer/dashboard';
-    default:
-      return '/auth/login';
-  }
+  // Use configuration to get dashboard route
+  return getRoleDashboard(role);
 }
