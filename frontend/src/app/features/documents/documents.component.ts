@@ -15,9 +15,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DocumentService } from '../../core/services/document.service';
 import { UINotificationService } from '../../core/services/notification.service';
+import { PermissionService } from '../../core/services/permission.service';
 import { DocumentCategory } from '../../core/models/document.model';
 import { Document } from '../../core/services/document.service';
 import { DocumentPreviewDialogComponent, DocumentPreviewData } from './document-preview-dialog.component';
+import { Permission } from '@shared/types/permissions';
 
 @Component({
   selector: 'app-documents',
@@ -46,6 +48,11 @@ export class DocumentsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private uiNotification = inject(UINotificationService);
   private dialog = inject(MatDialog);
+  protected permissions = inject(PermissionService);
+
+  // Feature flags (configuration-based)
+  canUploadDocuments = this.permissions.canUploadDocuments();
+  canDeleteOwnDocuments = this.permissions.canDeleteOwnDocuments();
 
   // Signals for reactive state
   documents = signal<Document[]>([]);

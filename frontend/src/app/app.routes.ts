@@ -123,7 +123,7 @@ export const routes: Routes = [
       },
       {
         path: 'documents',
-        loadComponent: () => import('./features/hr/documents/hr-documents.component').then(m => m.HrDocumentsComponent),
+        loadComponent: () => import('./features/hr/documents/hr-documents.component').then((m: any) => m.HrDocumentsComponent),
         title: 'Document Management - Employee Portal'
       }
     ]

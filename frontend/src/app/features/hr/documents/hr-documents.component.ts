@@ -12,11 +12,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DocumentService } from '../../../core/services/document.service';
 import { UINotificationService } from '../../../core/services/notification.service';
+import { PermissionService } from '../../../core/services/permission.service';
 import { UserService } from '../../../services/user.service';
 import { DocumentCategory } from '../../../core/models/document.model';
 import { Document } from '../../../core/services/document.service';
 import { User } from '../../../core/models/user.model';
 import { DocumentPreviewDialogComponent, DocumentPreviewData } from '../../documents/document-preview-dialog.component';
+import { Permission } from '@shared/types/permissions';
 
 @Component({
   selector: 'app-hr-documents',
@@ -42,6 +44,11 @@ export class HrDocumentsComponent implements OnInit {
   private userService = inject(UserService);
   private uiNotification = inject(UINotificationService);
   private dialog = inject(MatDialog);
+  protected permissions = inject(PermissionService);
+
+  // Feature flags (configuration-based)
+  canViewAllDocuments = this.permissions.canViewAllDocuments();
+  canViewAllEmployees = this.permissions.canViewAllEmployees();
 
   // Signals for reactive state
   documents = signal<Document[]>([]);

@@ -159,9 +159,11 @@
                   <button mat-icon-button (click)="downloadDocument(doc)" matTooltip="Download">
                     <mat-icon>download</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="deleteDocument(doc._id)" matTooltip="Delete">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  @if (canDeleteOwnDocuments) {
+                    <button mat-icon-button color="warn" (click)="deleteDocument(doc._id)" matTooltip="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
                 </td>
               </ng-container>
 

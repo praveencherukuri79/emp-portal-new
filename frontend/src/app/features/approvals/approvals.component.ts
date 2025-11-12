@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TimesheetService } from '../../core/services/timesheet.service';
 import { LeaveService } from '../../core/services/leave.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PermissionService } from '../../core/services/permission.service';
 import { TimesheetEntry, WeeklyTimesheet } from '../../core/models/timesheet.model';
 import { LeaveRequest, LeaveStatus } from '../../core/models/leave.model';
 import { UserRole } from '../../core/models/user.model';
@@ -21,6 +22,7 @@ import { UINotificationService } from '../../core/services/notification.service'
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { getStatusColor, getStatusLabel } from '../../shared/utils/formatters';
 import { LeaveStatus as SharedLeaveStatus } from '@shared/types';
+import { Permission } from '@shared/types/permissions';
 
 @Component({
   selector: 'app-approvals',
@@ -46,10 +48,15 @@ export class ApprovalsComponent implements OnInit {
   private leaveService = inject(LeaveService);
   private dialog = inject(MatDialog);
   private notification = inject(UINotificationService);
+  protected permissions = inject(PermissionService);
   
   // Make services public for template access
   authService = inject(AuthService);
   UserRole = UserRole; // Expose enum to template
+  
+  // Feature flags (configuration-based)
+  canApproveTimesheets = this.permissions.canApproveTimesheets();
+  canApproveLeaves = this.permissions.canApproveLeaves();
 
   // Signals for reactive state
   pendingTimesheets = signal<IPendingTimesheetGroupResponse[]>([]);
