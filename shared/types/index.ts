@@ -4,6 +4,9 @@
  * 
  * IMPORTANT: Both frontend and backend should import from this file
  * to avoid type mismatches and ensure API compatibility
+ * 
+ * Response interfaces are exported separately from @shared/types/responses
+ * Import directly: import { ILoginResponse, IUserResponse } from '@shared/types/responses'
  */
 
 // ==================== ENUMS ====================

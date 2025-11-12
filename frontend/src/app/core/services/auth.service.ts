@@ -7,14 +7,14 @@ import {
   User,
   LoginRequest,
   RegisterRequest,
-  AuthResponse,
   ChangePasswordRequest,
   ForgotPasswordRequest,
-  ResetPasswordRequest,
-  isSuccessResponse
+  ResetPasswordRequest
 } from '../models/user.model';
 import { IChangePasswordRequest, IRefreshTokenRequest, ILogoutRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
+import { IApiResponse } from '@shared/types';
+import { ILoginResponse, IRegisterResponse, IRefreshTokenResponse, IUserResponse } from '@shared/types/responses';
 
 @Injectable({
   providedIn: 'root'
@@ -48,10 +48,10 @@ export class AuthService {
   /**
    * Register a new user
    */
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REGISTER}`, data).pipe(
+  register(data: RegisterRequest): Observable<IApiResponse<IRegisterResponse>> {
+    return this.http.post<IApiResponse<IRegisterResponse>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REGISTER}`, data).pipe(
       tap(response => {
-        if (isSuccessResponse(response) && response.data) {
+        if (response.status === 'success' && response.data) {
           this.handleAuthSuccess(response.data);
         }
       }),
@@ -63,10 +63,10 @@ export class AuthService {
    * Login user
    * Single-tenant deployment - automatically uses the single tenant
    */
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGIN}`, credentials).pipe(
+  login(credentials: LoginRequest): Observable<IApiResponse<ILoginResponse>> {
+    return this.http.post<IApiResponse<ILoginResponse>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGIN}`, credentials).pipe(
       tap(response => {
-        if (isSuccessResponse(response) && response.data) {
+        if (response.status === 'success' && response.data) {
           this.handleAuthSuccess(response.data);
         }
       }),
@@ -77,11 +77,11 @@ export class AuthService {
   /**
    * Logout user
    */
-  logout(): Observable<any> {
+  logout(): Observable<IApiResponse<null>> {
     const refreshToken = this.getRefreshToken();
     const body: ILogoutRequest = { refreshToken: refreshToken! };
     
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGOUT}`, body).pipe(
+    return this.http.post<IApiResponse<null>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGOUT}`, body).pipe(
       tap(() => {
         this.clearAuthData();
         this.router.navigate(['/auth/login']);
@@ -98,13 +98,13 @@ export class AuthService {
   /**
    * Refresh access token
    */
-  refreshToken(): Observable<AuthResponse> {
+  refreshToken(): Observable<IApiResponse<IRefreshTokenResponse>> {
     const refreshToken = this.getRefreshToken();
     const body: IRefreshTokenRequest = { refreshToken: refreshToken! };
     
-    return this.http.post<AuthResponse>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, body).pipe(
+    return this.http.post<IApiResponse<IRefreshTokenResponse>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, body).pipe(
       tap(response => {
-        if (isSuccessResponse(response) && response.data) {
+        if (response.status === 'success' && response.data) {
           this.setAccessToken(response.data.accessToken);
           this.setRefreshToken(response.data.refreshToken);
         }
@@ -120,8 +120,8 @@ export class AuthService {
   /**
    * Get current user profile
    */
-  private getMe(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.AUTH.ME}`).pipe(
+  private getMe(): Observable<IApiResponse<IUserResponse>> {
+    return this.http.get<IApiResponse<IUserResponse>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.ME}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -129,8 +129,8 @@ export class AuthService {
   /**
    * Change password
    */
-  changePassword(data: IChangePasswordRequest): Observable<any> {
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.CHANGE_PASSWORD}`, data).pipe(
+  changePassword(data: IChangePasswordRequest): Observable<IApiResponse<null>> {
+    return this.http.post<IApiResponse<null>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.CHANGE_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }
@@ -138,8 +138,8 @@ export class AuthService {
   /**
    * Forgot password
    */
-  forgotPassword(data: ForgotPasswordRequest): Observable<any> {
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.FORGOT_PASSWORD}`, data).pipe(
+  forgotPassword(data: ForgotPasswordRequest): Observable<IApiResponse<null>> {
+    return this.http.post<IApiResponse<null>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.FORGOT_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }
@@ -147,8 +147,8 @@ export class AuthService {
   /**
    * Reset password
    */
-  resetPassword(data: ResetPasswordRequest): Observable<any> {
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.AUTH.RESET_PASSWORD}`, data).pipe(
+  resetPassword(data: ResetPasswordRequest): Observable<IApiResponse<null>> {
+    return this.http.post<IApiResponse<null>>(`${environment.apiUrl}${API_ENDPOINTS.AUTH.RESET_PASSWORD}`, data).pipe(
       catchError(this.handleError)
     );
   }
@@ -199,10 +199,25 @@ export class AuthService {
   /**
    * Handle successful authentication
    */
-  private handleAuthSuccess(data: { user: User; accessToken: string; refreshToken: string }): void {
+  private handleAuthSuccess(data: ILoginResponse | IRegisterResponse): void {
     this.setAccessToken(data.accessToken);
     this.setRefreshToken(data.refreshToken);
-    this.setCurrentUser(data.user);
+    // Convert IAuthUser to User model
+    const user: User = {
+      _id: data.user._id,
+      tenantId: data.user.tenantId,
+      email: data.user.email,
+      firstName: data.user.firstName,
+      lastName: data.user.lastName,
+      role: data.user.role,
+      employeeId: data.user.employeeId,
+      department: data.user.department,
+      designation: data.user.designation,
+      isActive: data.user.isActive,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.setCurrentUser(user);
   }
 
   /**
@@ -222,9 +237,27 @@ export class AuthService {
    */
   private createUserLoadObservable(): Observable<User | null> {
     return this.getMe().pipe(
-      map((response: any) => {
+      map((response: IApiResponse<IUserResponse>) => {
         if (response.status === 'success' && response.data) {
-          this.setCurrentUser(response.data);
+          // Convert IUserResponse to User model
+          const user: User = {
+            _id: response.data._id,
+            tenantId: response.data.tenantId,
+            email: response.data.email,
+            firstName: response.data.firstName,
+            lastName: response.data.lastName,
+            role: response.data.role,
+            employeeId: response.data.employeeId,
+            department: response.data.department,
+            designation: response.data.designation,
+            phoneNumber: response.data.phoneNumber,
+            dateOfJoining: response.data.dateOfJoining,
+            employmentType: response.data.employmentType,
+            isActive: response.data.isActive,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt
+          };
+          this.setCurrentUser(user);
           return this.currentUser();
         }
         return null;

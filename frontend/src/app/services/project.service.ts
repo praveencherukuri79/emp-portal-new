@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { API_ENDPOINTS } from '@shared/types/constants';
+import { IApiResponse } from '@shared/types';
+import { IProjectResponse } from '@shared/types/responses';
 
 export interface Project {
   _id: string;
@@ -21,8 +23,8 @@ export class ProjectService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`;
 
-  getAllProjects(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getAllProjects(): Observable<IApiResponse<IProjectResponse[]>> {
+    return this.http.get<IApiResponse<IProjectResponse[]>>(this.apiUrl);
   }
 }
 

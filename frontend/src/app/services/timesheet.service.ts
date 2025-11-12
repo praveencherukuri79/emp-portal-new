@@ -6,6 +6,7 @@ import { TimesheetStatus, ITimesheetEntryDTO } from '@shared/types';
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
+import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse } from '@shared/types/responses';
 
 export interface TimesheetEntry {
   _id?: string;
@@ -37,7 +38,7 @@ export class TimesheetService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`;
 
-  createEntry(entry: TimesheetEntry): Observable<IApiResponse<TimesheetEntry>> {
+  createEntry(entry: TimesheetEntry): Observable<IApiResponse<ITimesheetEntryResponse>> {
     const dto: ITimesheetEntryDTO = {
       date: entry.date,
       project: entry.projectId || entry.project || '',
@@ -46,10 +47,10 @@ export class TimesheetService {
       hours: entry.hours || entry.hoursWorked || 0,
       isBillable: entry.isBillable !== undefined ? entry.isBillable : (entry.billable !== undefined ? entry.billable : true)
     };
-    return this.http.post<IApiResponse<TimesheetEntry>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`, dto);
+    return this.http.post<IApiResponse<ITimesheetEntryResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`, dto);
   }
 
-  batchCreateEntries(entries: TimesheetEntry[]): Observable<IApiResponse<TimesheetEntry[]>> {
+  batchCreateEntries(entries: TimesheetEntry[]): Observable<IApiResponse<ITimesheetEntryResponse[]>> {
     const dtos = entries.map(entry => ({
       date: entry.date,
       project: entry.projectId || entry.project || '',
@@ -59,14 +60,14 @@ export class TimesheetService {
       isBillable: entry.isBillable !== undefined ? entry.isBillable : (entry.billable !== undefined ? entry.billable : true)
     }));
     const body: IBatchTimesheetEntriesRequest = { entries: dtos };
-    return this.http.post<IApiResponse<TimesheetEntry[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.BATCH_ENTRIES}`, body);
+    return this.http.post<IApiResponse<ITimesheetEntryResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.BATCH_ENTRIES}`, body);
   }
 
-  getWeekEntries(weekStartDate: string): Observable<IApiResponse<WeeklyTimesheet>> {
-    return this.http.get<IApiResponse<WeeklyTimesheet>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.WEEK(weekStartDate)}`);
+  getWeekEntries(weekStartDate: string): Observable<IApiResponse<IWeeklyTimesheetResponse>> {
+    return this.http.get<IApiResponse<IWeeklyTimesheetResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.WEEK(weekStartDate)}`);
   }
 
-  updateEntry(entryId: string, updates: Partial<TimesheetEntry>): Observable<IApiResponse<TimesheetEntry>> {
+  updateEntry(entryId: string, updates: Partial<TimesheetEntry>): Observable<IApiResponse<ITimesheetEntryResponse>> {
     const body: IUpdateTimesheetEntryRequest = {};
     if (updates.projectId || updates.project) body.project = updates.projectId || updates.project || '';
     if (updates.task !== undefined) body.task = updates.task;
@@ -77,37 +78,37 @@ export class TimesheetService {
     if (updates.isBillable !== undefined || updates.billable !== undefined) {
       body.isBillable = updates.isBillable !== undefined ? updates.isBillable : (updates.billable || false);
     }
-    return this.http.put<IApiResponse<TimesheetEntry>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`, body);
+    return this.http.put<IApiResponse<ITimesheetEntryResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`, body);
   }
 
-  deleteEntry(entryId: string): Observable<IApiResponse<void>> {
-    return this.http.delete<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`);
+  deleteEntry(entryId: string): Observable<IApiResponse<null>> {
+    return this.http.delete<IApiResponse<null>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRY(entryId)}`);
   }
 
-  submitWeek(weekStartDate: string): Observable<IApiResponse<void>> {
+  submitWeek(weekStartDate: string): Observable<IApiResponse<ITimesheetApprovalActionResponse>> {
     const body: ISubmitWeekRequest = { weekStartDate };
-    return this.http.post<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.SUBMIT}`, body);
+    return this.http.post<IApiResponse<ITimesheetApprovalActionResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.SUBMIT}`, body);
   }
 
-  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<IApiResponse<WeeklyTimesheet[]>> {
+  getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<IApiResponse<ITimesheetHistoryResponse[]>> {
     let httpParams = new HttpParams();
     if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
     if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
     if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
-    return this.http.get<IApiResponse<WeeklyTimesheet[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.HISTORY}`, { params: httpParams });
+    return this.http.get<IApiResponse<ITimesheetHistoryResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.HISTORY}`, { params: httpParams });
   }
 
-  getPendingApprovals(): Observable<IApiResponse<WeeklyTimesheet[]>> {
-    return this.http.get<IApiResponse<WeeklyTimesheet[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.PENDING_APPROVALS}`);
+  getPendingApprovals(): Observable<IApiResponse<IPendingTimesheetGroupResponse[]>> {
+    return this.http.get<IApiResponse<IPendingTimesheetGroupResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.PENDING_APPROVALS}`);
   }
 
-  approveEntries(entryIds: string[], comments?: string): Observable<IApiResponse<void>> {
+  approveEntries(entryIds: string[], comments?: string): Observable<IApiResponse<ITimesheetApprovalActionResponse>> {
     const body: IApproveTimesheetEntriesRequest = { entryIds, comments };
-    return this.http.post<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.APPROVE}`, body);
+    return this.http.post<IApiResponse<ITimesheetApprovalActionResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.APPROVE}`, body);
   }
 
-  rejectEntries(entryIds: string[], reason: string): Observable<IApiResponse<void>> {
+  rejectEntries(entryIds: string[], reason: string): Observable<IApiResponse<ITimesheetApprovalActionResponse>> {
     const body: IRejectTimesheetEntriesRequest = { entryIds, comments: reason };
-    return this.http.post<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.REJECT}`, body);
+    return this.http.post<IApiResponse<ITimesheetApprovalActionResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.REJECT}`, body);
   }
 }

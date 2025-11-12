@@ -4,6 +4,7 @@ import Tenant from '../models/tenant.model';
 import { ApiResponse, TokenUtil, PasswordUtil, EmailUtil } from '../utils';
 import { IRegisterDTO, ILoginDTO, IPasswordResetRequestDTO, IPasswordResetDTO, IAuthRequest } from '../types';
 import { IChangePasswordRequest, IRefreshTokenRequest } from '@shared/types/requests';
+import { toRegisterResponse, toLoginResponse, toRefreshTokenResponse } from '../dto';
 
 /**
  * Authentication Controller
@@ -67,11 +68,8 @@ export class AuthController {
       // Send welcome email (optional)
       // await EmailUtil.sendWelcomeEmail(user.email, user.fullName, 'Please login');
 
-      return ApiResponse.created(res, {
-        user: user.toJSON(),
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      }, 'Registration successful');
+      const responseData = toRegisterResponse(user, tokens.accessToken, tokens.refreshToken);
+      return ApiResponse.created(res, responseData, 'Registration successful');
 
     } catch (error: any) {
       console.error('Register error:', error);
@@ -124,11 +122,8 @@ export class AuthController {
       user.lastLogin = new Date();
       await user.save();
 
-      return ApiResponse.success(res, {
-        user: user.toJSON(),
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      }, 'Login successful');
+      const responseData = toLoginResponse(user, tokens.accessToken, tokens.refreshToken);
+      return ApiResponse.success(res, responseData, 'Login successful');
 
     } catch (error: any) {
       console.error('Login error:', error);
@@ -169,10 +164,8 @@ export class AuthController {
       user.refreshToken = tokens.refreshToken;
       await user.save();
 
-      return ApiResponse.success(res, {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      }, 'Token refreshed successfully');
+      const responseData = toRefreshTokenResponse(tokens.accessToken, tokens.refreshToken);
+      return ApiResponse.success(res, responseData, 'Token refreshed successfully');
 
     } catch (error: any) {
       console.error('Refresh token error:', error);

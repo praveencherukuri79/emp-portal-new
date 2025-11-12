@@ -1,8 +1,11 @@
 import { Response } from 'express';
 import { TimesheetEntry, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
-import { IAuthRequest, TimesheetStatus, ITimesheetEntryDTO } from '../types';
+import { IAuthRequest, TimesheetStatus, ITimesheetEntryDTO, ITimesheetEntry } from '../types';
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
+import { ITimesheetApprovalActionResponse } from '@shared/types/responses';
+import { toTimesheetEntryResponse, toWeeklyTimesheetResponse, toPendingTimesheetGroupResponse } from '../dto';
+import { Document } from 'mongoose';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -52,7 +55,8 @@ export class TimesheetController {
 
       await entry.save();
 
-      return ApiResponse.created(res, entry, 'Timesheet entry created successfully');
+      const responseData = toTimesheetEntryResponse(entry);
+      return ApiResponse.created(res, responseData, 'Timesheet entry created successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to create timesheet entry');
     }
@@ -154,15 +158,16 @@ export class TimesheetController {
       const billableHours = entries.reduce((sum, entry) => entry.isBillable ? sum + entry.hours : sum, 0);
       const nonBillableHours = totalHours - billableHours;
 
-      return ApiResponse.success(res, {
-        weekStart: startDate,
-        weekEnd: endDate,
-        status: weekStatus,
+      const responseData = toWeeklyTimesheetResponse(
         entries,
+        startDate,
+        endDate,
+        weekStatus,
         totalHours,
         billableHours,
         nonBillableHours
-      }, 'Week entries retrieved successfully');
+      );
+      return ApiResponse.success(res, responseData, 'Week entries retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve timesheet entries');
     }
@@ -201,7 +206,8 @@ export class TimesheetController {
 
       await entry.save();
 
-      return ApiResponse.success(res, entry, 'Timesheet entry updated successfully');
+      const responseData = toTimesheetEntryResponse(entry);
+      return ApiResponse.success(res, responseData, 'Timesheet entry updated successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to update timesheet entry');
     }
@@ -310,8 +316,16 @@ export class TimesheetController {
         .sort({ weekStartDate: -1, date: 1 });
 
       // Group by user and week
-      const groupedEntries = entries.reduce((acc: any, entry) => {
-        const userId = typeof entry.userId === 'object' ? (entry.userId as any)._id : entry.userId;
+      interface GroupedEntry {
+        userId: string | { _id: string };
+        weekStartDate: Date;
+        weekEndDate: Date;
+        entries: (Document & ITimesheetEntry)[];
+        totalHours: number;
+      }
+
+      const groupedEntries = entries.reduce((acc: Record<string, GroupedEntry>, entry) => {
+        const userId = typeof entry.userId === 'object' ? String((entry.userId as { _id: string })._id) : entry.userId;
         const key = `${userId}-${entry.weekStartDate}`;
         if (!acc[key]) {
           acc[key] = {
@@ -327,7 +341,8 @@ export class TimesheetController {
         return acc;
       }, {});
 
-      return ApiResponse.success(res, Object.values(groupedEntries), 'Pending approvals retrieved successfully');
+      const responseData = toPendingTimesheetGroupResponse(groupedEntries);
+      return ApiResponse.success(res, responseData, 'Pending approvals retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve pending approvals');
     }
@@ -362,7 +377,11 @@ export class TimesheetController {
 
       await Promise.all(updatePromises);
 
-      return ApiResponse.success(res, { count: entries.length }, `${entries.length} entries approved`);
+      const responseData: ITimesheetApprovalActionResponse = {
+        count: entries.length
+      };
+
+      return ApiResponse.success<ITimesheetApprovalActionResponse>(res, responseData, `${entries.length} entries approved`);
     } catch (error) {
       return ApiResponse.error(res, 'Failed to approve entries');
     }
@@ -402,7 +421,11 @@ export class TimesheetController {
 
       await Promise.all(updatePromises);
 
-      return ApiResponse.success(res, { count: entries.length }, `${entries.length} entries rejected`);
+      const responseData: ITimesheetApprovalActionResponse = {
+        count: entries.length
+      };
+
+      return ApiResponse.success<ITimesheetApprovalActionResponse>(res, responseData, `${entries.length} entries rejected`);
     } catch (error) {
       return ApiResponse.error(res, 'Failed to reject entries');
     }

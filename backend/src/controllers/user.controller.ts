@@ -3,6 +3,7 @@ import { User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, Gender, EmploymentType } from '../types';
 import { IUpdateProfileRequest, IUpdateEmployeeInfoRequest, ICreateUserRequest, IUpdateUserRoleRequest } from '@shared/types/requests';
+import { toUserResponse, toUsersListResponse } from '../dto';
 
 export class UserController {
   /**
@@ -19,7 +20,8 @@ export class UserController {
         return;
       }
 
-      return ApiResponse.success(res, user, 'Profile retrieved successfully');
+      const responseData = toUserResponse(user);
+      return ApiResponse.success(res, responseData, 'Profile retrieved successfully');
     } catch (error) {
       console.error('Get profile error:', error);
       return ApiResponse.error(res, 'Failed to retrieve profile');
@@ -108,10 +110,8 @@ export class UserController {
 
       await user.save();
 
-      const userObj = user.toObject();
-      const { password, refreshToken, ...updatedUser } = userObj;
-
-      return ApiResponse.success(res, updatedUser, 'Employee information updated successfully');
+      const responseData = toUserResponse(user);
+      return ApiResponse.success(res, responseData, 'Employee information updated successfully');
     } catch (error) {
       console.error('Update employee info error:', error);
       return ApiResponse.error(res, 'Failed to update employee information');
@@ -157,15 +157,14 @@ export class UserController {
 
       const total = await User.countDocuments(query);
 
-      return ApiResponse.success(res, {
-        users,
-        pagination: {
-          currentPage: Number(page),
-          totalPages: Math.ceil(total / Number(limit)),
-          totalItems: total,
-          itemsPerPage: Number(limit)
-        }
+      const responseData = toUsersListResponse(users, {
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / Number(limit)),
+        totalItems: total,
+        itemsPerPage: Number(limit)
       });
+
+      return ApiResponse.success(res, responseData);
     } catch (error) {
       console.error('Get all users error:', error);
       return ApiResponse.error(res, 'Failed to retrieve users');
@@ -221,10 +220,8 @@ export class UserController {
       const user = new User(userData);
       await user.save();
 
-      const userObj = user.toObject();
-      const { password, refreshToken, ...userObject } = userObj;
-
-      return ApiResponse.created(res, userObject, 'User created successfully');
+      const responseData = toUserResponse(user);
+      return ApiResponse.created(res, responseData, 'User created successfully');
     } catch (error) {
       console.error('Create user error:', error);
       return ApiResponse.error(res, 'Failed to create user');
@@ -252,10 +249,8 @@ export class UserController {
       user.role = role;
       await user.save();
 
-      const userObj = user.toObject();
-      const { password, refreshToken, ...updatedUser } = userObj;
-
-      return ApiResponse.success(res, updatedUser, 'User role updated successfully');
+      const responseData = toUserResponse(user);
+      return ApiResponse.success(res, responseData, 'User role updated successfully');
     } catch (error) {
       console.error('Update user role error:', error);
       return ApiResponse.error(res, 'Failed to update user role');
@@ -329,7 +324,8 @@ export class UserController {
         .select('-password -refreshToken -passwordResetToken -emailVerificationToken')
         .sort({ firstName: 1 });
 
-      return ApiResponse.success(res, teamMembers);
+      const responseData = teamMembers.map(toUserResponse);
+      return ApiResponse.success(res, responseData);
     } catch (error) {
       console.error('Get team members error:', error);
       return ApiResponse.error(res, 'Failed to retrieve team members');

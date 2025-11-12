@@ -3,6 +3,7 @@ import Notification from '../models/notification.model';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest, NotificationPriority } from '../types';
 import { ICreateNotificationRequest } from '@shared/types/requests';
+import { toNotificationResponse, toNotificationsListResponse, toUnreadCountResponse } from '../dto';
 
 export class NotificationController {
   /**
@@ -42,7 +43,8 @@ export class NotificationController {
         await notification.save();
       }
 
-      return ApiResponse.created(res, notification, 'Notification created successfully');
+      const responseData = toNotificationResponse(notification);
+      return ApiResponse.created(res, responseData, 'Notification created successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to create notification');
     }
@@ -73,9 +75,8 @@ export class NotificationController {
         isRead: false
       });
 
-      return ApiResponse.success(res, {
-        notifications, unreadCount
-      }, 'Notifications retrieved successfully');
+      const responseData = toNotificationsListResponse(notifications, unreadCount);
+      return ApiResponse.success(res, responseData, 'Notifications retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve notifications');
     }
@@ -167,7 +168,8 @@ export class NotificationController {
         isRead: false
       });
 
-      return ApiResponse.success(res, { count }, 'Unread count retrieved successfully');
+      const responseData = toUnreadCountResponse(count);
+      return ApiResponse.success(res, responseData, 'Unread count retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve unread count');
     }

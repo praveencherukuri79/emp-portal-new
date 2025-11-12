@@ -3,6 +3,7 @@ import { LeaveRequest, User } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, LeaveStatus, LeaveType, UserRole, ILeaveRequestDTO } from '../types';
 import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
+import { toLeaveRequestResponse, toLeaveRequestResponseArray } from '../dto';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -65,7 +66,8 @@ export class LeaveController {
 
       await leaveRequest.save();
 
-      return ApiResponse.created(res, leaveRequest, 'Leave request submitted successfully');
+      const responseData = toLeaveRequestResponse(leaveRequest);
+      return ApiResponse.created(res, responseData, 'Leave request submitted successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to create leave request', 500);
     }
@@ -93,7 +95,8 @@ export class LeaveController {
         .populate('rejectedBy', 'firstName lastName')
         .sort({ createdAt: -1 });
 
-      return ApiResponse.success(res, leaveRequests, 'Leave requests retrieved successfully');
+      const responseData = toLeaveRequestResponseArray(leaveRequests);
+      return ApiResponse.success(res, responseData, 'Leave requests retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve leave requests', 500);
     }

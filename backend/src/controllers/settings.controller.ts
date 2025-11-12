@@ -3,6 +3,7 @@ import { Tenant } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IUpdateTenantRequest } from '@shared/types/requests';
 import { IAuthRequest } from '../types';
+import { toTenantResponse } from '../dto';
 
 /**
  * Settings Controller
@@ -27,7 +28,8 @@ export class SettingsController {
         return ApiResponse.error(res, 'Tenant not found', 404);
       }
 
-      return ApiResponse.success(res, tenant, 'Tenant settings retrieved successfully');
+      const responseData = toTenantResponse(tenant);
+      return ApiResponse.success(res, responseData, 'Tenant settings retrieved successfully');
 
     } catch (error: any) {
       console.error('Error getting tenant settings:', error);
@@ -66,7 +68,8 @@ export class SettingsController {
 
       await tenant.save();
 
-      return ApiResponse.success(res, tenant, 'Tenant settings updated successfully');
+      const responseData = toTenantResponse(tenant);
+      return ApiResponse.success(res, responseData, 'Tenant settings updated successfully');
 
     } catch (error: any) {
       console.error('Error updating tenant settings:', error);

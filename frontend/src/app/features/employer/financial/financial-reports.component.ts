@@ -94,9 +94,14 @@ export class FinancialReportsComponent implements OnInit {
       startDate: this.getStartDate(),
       endDate: this.getEndDate()
     }).subscribe({
-      next: (blob) => {
-        this.reportService.downloadFile(blob, `financial-report-${Date.now()}.${format === 'pdf' ? 'pdf' : 'xlsx'}`);
-        this.uiNotification.showSuccess(`Report exported as ${format.toUpperCase()}`);
+      next: (response) => {
+        if (response instanceof Blob) {
+          this.reportService.downloadFile(response, `financial-report-${Date.now()}.${format === 'pdf' ? 'pdf' : 'xlsx'}`);
+          this.uiNotification.showSuccess(`Report exported as ${format.toUpperCase()}`);
+        } else {
+          // JSON response - shouldn't happen when format is pdf/excel
+          console.warn('Unexpected JSON response for export');
+        }
       },
       error: (error) => {
         console.error('Error exporting report:', error);

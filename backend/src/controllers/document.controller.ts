@@ -6,6 +6,7 @@ import { Document } from '../models';
 import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, DocumentCategory, UserRole } from '../types';
 import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/requests';
+import { toDocumentResponse, toDocumentResponseArray } from '../dto';
 import dayjs from 'dayjs';
 
 // Configure multer for file upload
@@ -78,7 +79,8 @@ export class DocumentController {
 
       await document.save();
 
-      return ApiResponse.created(res, document, 'Document uploaded successfully');
+      const responseData = toDocumentResponse(document);
+      return ApiResponse.created(res, responseData, 'Document uploaded successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to upload document', 500);
     }
@@ -109,7 +111,8 @@ export class DocumentController {
 
       const documents = await Document.find(query).sort({ createdAt: -1 });
 
-      return ApiResponse.success(res, documents, 'Documents retrieved successfully');
+      const responseData = toDocumentResponseArray(documents);
+      return ApiResponse.success(res, responseData, 'Documents retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve documents', 500);
     }

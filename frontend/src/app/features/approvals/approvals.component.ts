@@ -16,6 +16,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { TimesheetEntry, WeeklyTimesheet } from '../../core/models/timesheet.model';
 import { LeaveRequest, LeaveStatus } from '../../core/models/leave.model';
 import { UserRole } from '../../core/models/user.model';
+import { IPendingTimesheetGroupResponse, ILeaveRequestResponse } from '@shared/types/responses';
 import { UINotificationService } from '../../core/services/notification.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { getStatusColor, getStatusLabel } from '../../shared/utils/formatters';
@@ -51,8 +52,8 @@ export class ApprovalsComponent implements OnInit {
   UserRole = UserRole; // Expose enum to template
 
   // Signals for reactive state
-  pendingTimesheets = signal<WeeklyTimesheet[]>([]);
-  pendingLeaves = signal<LeaveRequest[]>([]);
+  pendingTimesheets = signal<IPendingTimesheetGroupResponse[]>([]);
+  pendingLeaves = signal<ILeaveRequestResponse[]>([]);
   loadingTimesheets = signal(false);
   loadingLeaves = signal(false);
   errorTimesheets = signal<string | null>(null);

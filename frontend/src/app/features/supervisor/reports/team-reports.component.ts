@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ReportService } from '../../../services/report.service';
 import { UINotificationService } from '../../../core/services/notification.service';
+import { ITeamReportResponse } from '@shared/types/responses';
 
 @Component({
   selector: 'app-team-reports',
@@ -35,7 +36,7 @@ export class TeamReportsComponent implements OnInit {
   private notification = inject(UINotificationService);
 
   loading = signal(false);
-  reports = signal<any[]>([]);
+  reports = signal<ITeamReportResponse | null>(null);
 
   ngOnInit(): void {
     this.loadTeamReports();
@@ -45,8 +46,13 @@ export class TeamReportsComponent implements OnInit {
     this.loading.set(true);
     this.reportService.getTeamReport().subscribe({
       next: (response) => {
+        if (response instanceof Blob) {
+          // Handle blob response (shouldn't happen for JSON format)
+          this.loading.set(false);
+          return;
+        }
         if (response.status === 'success' && response.data) {
-          this.reports.set(response.data);
+          this.reports.set(response.data as ITeamReportResponse);
         }
         this.loading.set(false);
       },

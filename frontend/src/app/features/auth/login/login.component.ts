@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
-import { isSuccessResponse, UserRole } from '../../../core/models/user.model';
+import { UserRole } from '../../../core/models/user.model';
 import { take } from 'rxjs';
 
 @Component({
@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.loading = false;
-        if (isSuccessResponse(response)) {
+        if (response.status === 'success') {
           this.snackBar.open('Login successful!', 'Close', {
             duration: 3000,
             horizontalPosition: 'end',

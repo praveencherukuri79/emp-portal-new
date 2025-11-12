@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { TimesheetEntry } from '../models';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest } from '../types';
+import { toProjectResponseArray } from '../dto';
 
 export class ProjectController {
   /**
@@ -86,7 +87,8 @@ export class ProjectController {
       return defaultProj!;
     });
 
-    ApiResponse.success(res, projectList);
+    const responseData = toProjectResponseArray(projectList);
+    ApiResponse.success(res, responseData);
   };
 }
 

@@ -2,6 +2,15 @@ import { Response } from 'express';
 import { User, TimesheetEntry, LeaveRequest, Document } from '../models';
 import { ApiResponse } from '../utils/response.util';
 import { IAuthRequest, UserRole } from '../types';
+import { 
+  IProspectDashboardResponse, 
+  IAdminDashboardResponse, 
+  IEmployerDashboardResponse,
+  ISupervisorDashboardResponse,
+  IHRDashboardResponse
+} from '@shared/types/responses';
+import { ILeaveBalance } from '@shared/types';
+import { toEmployeeDashboardResponse, toSupervisorDashboardResponse, toHRDashboardResponse } from '../dto';
 import dayjs from 'dayjs';
 
 export class DashboardController {
@@ -34,7 +43,7 @@ export class DashboardController {
         ]
       };
 
-      return ApiResponse.success(res, dashboardData, 'Prospect dashboard data retrieved successfully');
+      return ApiResponse.success<IProspectDashboardResponse>(res, dashboardData, 'Prospect dashboard data retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve prospect dashboard');
     }
@@ -102,27 +111,26 @@ export class DashboardController {
         isActive: true
       }).sort({ expiryDate: 1 });
 
-      const dashboardData = {
-        timesheet: {
+      const leaveBalance = (user?.leaveBalance || {
+        annual: { total: 0, used: 0, remaining: 0 },
+        sick: { total: 0, used: 0, remaining: 0 },
+        personal: { total: 0, used: 0, remaining: 0 },
+        unpaid: { total: 0, used: 0, remaining: 0 },
+        maternity: { total: 0, used: 0, remaining: 0 },
+        paternity: { total: 0, used: 0, remaining: 0 }
+      }) as ILeaveBalance;
+
+      const dashboardData = toEmployeeDashboardResponse(
+        {
           monthHours: timesheetStats[0]?.totalHours || 0,
           monthBillable: timesheetStats[0]?.billableHours || 0,
-          weekStatus: 'Not Submitted' // Will be calculated based on entries
+          weekStatus: 'Not Submitted'
         },
-        leave: {
-          balance: user?.leaveBalance || {},
-          upcoming: upcomingLeaves
-        },
-        documents: {
-          expiring: expiringDocuments.length,
-          expiringList: expiringDocuments
-        },
-        quickActions: [
-          { label: 'Submit Timesheet', route: '/timesheet' },
-          { label: 'Request Leave', route: '/leave/request' },
-          { label: 'Upload Document', route: '/documents/upload' }
-        ],
+        leaveBalance,
+        upcomingLeaves,
+        expiringDocuments,
         pendingApprovals
-      };
+      );
 
       return ApiResponse.success(res, dashboardData, 'Employee dashboard data retrieved successfully');
     } catch (error) {
@@ -184,7 +192,25 @@ export class DashboardController {
         approvals: {
           timesheets: pendingTimesheets,
           leaves: pendingLeaves.length,
-          leaveRequests: pendingLeaves
+          leaveRequests: pendingLeaves.map(leave => ({
+            _id: String(leave._id),
+            userId: String(leave.userId),
+            leaveType: leave.leaveType,
+            startDate: leave.startDate,
+            endDate: leave.endDate,
+            totalDays: leave.totalDays,
+            isHalfDay: leave.isHalfDay,
+            halfDayPeriod: leave.halfDayPeriod,
+            reason: leave.reason,
+            status: leave.status,
+            approvedBy: leave.approvedBy ? String(leave.approvedBy) : undefined,
+            rejectedBy: leave.rejectedBy ? String(leave.rejectedBy) : undefined,
+            approvedAt: leave.approvedAt,
+            rejectedAt: leave.rejectedAt,
+            rejectionReason: leave.approvalComments,
+            createdAt: leave.createdAt,
+            updatedAt: leave.updatedAt
+          }))
         },
         teamPerformance: teamTimesheetStats,
         quickActions: [
@@ -194,7 +220,7 @@ export class DashboardController {
         ]
       };
 
-      return ApiResponse.success(res, dashboardData, 'Supervisor dashboard data retrieved successfully');
+      return ApiResponse.success<ISupervisorDashboardResponse>(res, dashboardData, 'Supervisor dashboard data retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve supervisor dashboard');
     }
@@ -278,7 +304,22 @@ export class DashboardController {
         },
         documents: {
           expiring: expiringDocuments.length,
-          expiringList: expiringDocuments.slice(0, 10)
+          expiringList: expiringDocuments.slice(0, 10).map(doc => ({
+            _id: String(doc._id),
+            userId: String(doc.userId),
+            fileName: doc.fileName,
+            originalName: doc.originalName,
+            category: doc.category,
+            description: doc.description,
+            documentNumber: doc.documentNumber,
+            issueDate: doc.issueDate,
+            expiryDate: doc.expiryDate,
+            fileSize: doc.fileSize,
+            mimeType: doc.mimeType,
+            isActive: doc.isActive,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt
+          }))
         },
         quickActions: [
           { label: 'Manage Employees', route: '/users' },
@@ -288,7 +329,7 @@ export class DashboardController {
         ]
       };
 
-      return ApiResponse.success(res, dashboardData, 'HR dashboard data retrieved successfully');
+      return ApiResponse.success<IHRDashboardResponse>(res, dashboardData, 'HR dashboard data retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve HR dashboard');
     }
@@ -348,7 +389,7 @@ export class DashboardController {
         ]
       };
 
-      return ApiResponse.success(res, dashboardData, 'Admin dashboard data retrieved successfully');
+      return ApiResponse.success<IAdminDashboardResponse>(res, dashboardData, 'Admin dashboard data retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve admin dashboard');
     }
@@ -453,7 +494,7 @@ export class DashboardController {
         ]
       };
 
-      return ApiResponse.success(res, dashboardData, 'Employer dashboard data retrieved successfully');
+      return ApiResponse.success<IEmployerDashboardResponse>(res, dashboardData, 'Employer dashboard data retrieved successfully');
     } catch (error) {
       return ApiResponse.error(res, 'Failed to retrieve employer dashboard');
     }
