@@ -18,6 +18,8 @@ import notificationRoutes from './routes/notification.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import adminRoutes from './routes/admin.routes';
 import projectRoutes from './routes/project.routes';
+import employerRoutes from './routes/employer.routes';
+import settingsRoutes from './routes/settings.routes';
 
 const app: Application = express();
 
@@ -88,6 +90,8 @@ app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/notifications`, notificationRoutes);
 app.use(`${apiPrefix}/dashboard`, dashboardRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes); // Secure admin routes
+app.use(`${apiPrefix}/employer`, employerRoutes);
+app.use(`${apiPrefix}/settings`, settingsRoutes);
 
 // ==================== ERROR HANDLING ====================
 

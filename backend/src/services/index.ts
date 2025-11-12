@@ -4,3 +4,4 @@ export { LeaveService } from './leave.service';
 export { DocumentService } from './document.service';
 export { NotificationService } from './notification.service';
 export { UserService } from './user.service';
+export { default as EmployerService } from './employer.service';

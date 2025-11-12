@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { User } from '../core/models/user.model';
 import { IUpdateProfileRequest, IUpdateEmployeeInfoRequest, ICreateUserRequest, IUpdateUserRoleRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
+import { IApiResponse } from '@shared/types';
 
 @Injectable({
   providedIn: 'root'
@@ -13,47 +14,47 @@ export class UserService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.USERS.ALL}`;
 
-  getProfile(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.USERS.PROFILE}`);
+  getProfile(): Observable<IApiResponse<User>> {
+    return this.http.get<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.PROFILE}`);
   }
 
-  updateProfile(data: IUpdateProfileRequest): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.USERS.PROFILE}`, data);
+  updateProfile(data: IUpdateProfileRequest): Observable<IApiResponse<User>> {
+    return this.http.put<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.PROFILE}`, data);
   }
 
-  getAllUsers(params?: { role?: string; isActive?: boolean }): Observable<{ status: string; data: User[]; message?: string }> {
+  getAllUsers(params?: { role?: string; isActive?: boolean }): Observable<IApiResponse<{ users: User[]; pagination: any }>> {
     let httpParams = new HttpParams();
     if (params?.role) httpParams = httpParams.set('role', params.role);
     if (params?.isActive !== undefined) httpParams = httpParams.set('isActive', params.isActive.toString());
-    return this.http.get<{ status: string; data: User[]; message?: string }>(this.baseUrl, { params: httpParams });
+    return this.http.get<IApiResponse<{ users: User[]; pagination: any }>>(this.baseUrl, { params: httpParams });
   }
 
-  getUserById(userId: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.USERS.BY_ID(userId)}`);
+  getUserById(userId: string): Observable<IApiResponse<User>> {
+    return this.http.get<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.BY_ID(userId)}`);
   }
 
-  createUser(userData: ICreateUserRequest): Observable<any> {
-    return this.http.post(this.baseUrl, userData);
+  createUser(userData: ICreateUserRequest): Observable<IApiResponse<User>> {
+    return this.http.post<IApiResponse<User>>(this.baseUrl, userData);
   }
 
-  updateUserRole(userId: string, role: string): Observable<any> {
+  updateUserRole(userId: string, role: string): Observable<IApiResponse<User>> {
     const body: IUpdateUserRoleRequest = { role: role as any };
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.USERS.ROLE(userId)}`, body);
+    return this.http.put<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.ROLE(userId)}`, body);
   }
 
-  updateEmployeeInfo(userId: string, employeeInfo: IUpdateEmployeeInfoRequest): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.USERS.EMPLOYEE_INFO(userId)}`, employeeInfo);
+  updateEmployeeInfo(userId: string, employeeInfo: IUpdateEmployeeInfoRequest): Observable<IApiResponse<User>> {
+    return this.http.put<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.EMPLOYEE_INFO(userId)}`, employeeInfo);
   }
 
-  activateUser(userId: string): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.USERS.ACTIVATE(userId)}`, {});
+  activateUser(userId: string): Observable<IApiResponse<User>> {
+    return this.http.put<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.ACTIVATE(userId)}`, {});
   }
 
-  deactivateUser(userId: string): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.USERS.DEACTIVATE(userId)}`, {});
+  deactivateUser(userId: string): Observable<IApiResponse<User>> {
+    return this.http.put<IApiResponse<User>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.DEACTIVATE(userId)}`, {});
   }
 
-  getTeamMembers(): Observable<{ status: string; data: User[]; message?: string }> {
-    return this.http.get<{ status: string; data: User[]; message?: string }>(`${environment.apiUrl}${API_ENDPOINTS.USERS.TEAM}`);
+  getTeamMembers(): Observable<IApiResponse<User[]>> {
+    return this.http.get<IApiResponse<User[]>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.TEAM}`);
   }
 }

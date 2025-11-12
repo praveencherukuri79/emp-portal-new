@@ -1,5 +1,6 @@
-@import '../../../../styles/mixins/components.scss';
-@import '../../../../styles/mixins/layout.scss';
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/mixins/layout';
+@import '../../../../styles/tokens/breakpoints';
 
 .role-management {
   @include container;
@@ -22,5 +23,77 @@
       margin: 0;
     }
   }
-}
 
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-4);
+
+    @include breakpoint-down(md) {
+      grid-template-columns: 1fr;
+    }
+
+    .role-card {
+      mat-card-header {
+        margin-bottom: var(--spacing-4);
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-2);
+        }
+
+        mat-card-subtitle {
+          margin-top: var(--spacing-2);
+          color: var(--text-secondary);
+        }
+      }
+
+      .permissions-list {
+        h4 {
+          font-size: var(--font-size-sm);
+          font-weight: var(--font-weight-semibold);
+          color: var(--text-secondary);
+          margin: 0 0 var(--spacing-2) 0;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-2);
+
+          li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+
+            .permission-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: var(--color-success);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    gap: var(--spacing-4);
+    text-align: center;
+    color: var(--text-secondary);
+  }
+}

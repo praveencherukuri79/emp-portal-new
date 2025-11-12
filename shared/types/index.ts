@@ -245,6 +245,117 @@ export interface IBulkApprovalRequest {
   comments?: string;
 }
 
+// ==================== EMPLOYER ANALYTICS INTERFACES ====================
+
+export interface IEmployerWorkforceSummary {
+  totalEmployees: number;
+  activeEmployees: number;
+  inactiveEmployees: number;
+  newHiresLast30Days: number;
+  averageTenureMonths: number;
+}
+
+export interface IEmployerDistributionMetric {
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface IEmployerTopPerformer {
+  userId: string;
+  fullName: string;
+  department?: string;
+  billableHours: number;
+}
+
+export interface IEmployerRecentHire {
+  userId: string;
+  fullName: string;
+  department?: string;
+  joiningDate?: string;
+  employmentType?: EmploymentType;
+}
+
+export interface IEmployerWorkforceEmployee extends IEmployerRecentHire {
+  email: string;
+  role: UserRole;
+  isActive: boolean;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface IEmployerWorkforceOverview {
+  summary: IEmployerWorkforceSummary;
+  departmentDistribution: IEmployerDistributionMetric[];
+  employmentTypeDistribution: IEmployerDistributionMetric[];
+  tenureDistribution: IEmployerDistributionMetric[];
+  topPerformers: IEmployerTopPerformer[];
+  recentHires: IEmployerRecentHire[];
+  employees: IEmployerWorkforceEmployee[];
+}
+
+export interface IEmployerFinancialSummary {
+  totalRevenue: number;
+  monthlyPayroll: number;
+  billableHours: number;
+  revenuePerEmployee: number;
+  grossMargin: number;
+}
+
+export interface IEmployerFinancialOverview {
+  summary: IEmployerFinancialSummary;
+  revenueByDepartment: Array<{ department: string; revenue: number; percentage: number }>;
+  revenueByMonth: Array<{ period: string; revenue: number; billableHours: number }>;
+  topProjects: Array<{ project: string; revenue: number; billableHours: number }>;
+  expensesByCategory: Array<{ category: string; amount: number; percentage: number }>;
+}
+
+export interface IEmployerProductivityMetrics {
+  utilizationRate: number;
+  averageBillableHours: number;
+  billableHours: number;
+  nonBillableHours: number;
+  overtimeHours: number;
+}
+
+export interface IEmployerDepartmentUtilization {
+  department: string;
+  utilization: number;
+}
+
+export interface IEmployerProjectAllocation {
+  project: string;
+  allocation: number;
+}
+
+export interface IEmployerResourceUtilization {
+  departmentUtilization: IEmployerDepartmentUtilization[];
+  projectAllocation: IEmployerProjectAllocation[];
+}
+
+export interface IEmployerTimesheetTrend {
+  period: string;
+  totalHours: number;
+  billableHours: number;
+}
+
+export interface IEmployerCountTrend {
+  period: string;
+  count: number;
+}
+
+export interface IEmployerPerformanceTrends {
+  timesheetHours: IEmployerTimesheetTrend[];
+  leaveTrend: IEmployerCountTrend[];
+  hiringTrend: IEmployerCountTrend[];
+}
+
+export interface IEmployerAnalyticsOverview {
+  productivity: IEmployerProductivityMetrics;
+  resourceUtilization: IEmployerResourceUtilization;
+  performanceTrends: IEmployerPerformanceTrends;
+}
+
 // ==================== UTILITY TYPES ====================
 
 export type Nullable<T> = T | null;

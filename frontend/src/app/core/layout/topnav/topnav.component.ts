@@ -78,33 +78,13 @@ export class TopnavComponent implements OnInit, OnDestroy {
       label: 'Approvals',
       icon: 'approval',
       route: '/supervisor/approvals',
-      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER],
-      children: [
-        {
-          label: 'Timesheet Approvals',
-          icon: 'schedule',
-          route: '/employer/approvals',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Leave Approvals',
-          icon: 'event_available',
-          route: '/employer/approvals',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Timesheet Approvals',
-          icon: 'schedule',
-          route: '/supervisor/approvals',
-          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
-        },
-        {
-          label: 'Leave Approvals',
-          icon: 'event_available',
-          route: '/supervisor/approvals',
-          roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
-        }
-      ]
+      roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
+    },
+    {
+      label: 'Approvals',
+      icon: 'approval',
+      route: '/employer/approvals',
+      roles: [UserRole.EMPLOYER]
     },
     {
       label: 'Team',
@@ -165,27 +145,15 @@ export class TopnavComponent implements OnInit, OnDestroy {
       ]
     },
     {
-      label: 'Business',
-      icon: 'insights',
-      route: '/employer/dashboard',
+      label: 'Employer',
+      icon: 'business',
+      route: '/employer',
       roles: [UserRole.EMPLOYER],
       children: [
         {
-          label: 'Approvals',
-          icon: 'approval',
-          route: '/employer/approvals',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Users',
-          icon: 'manage_accounts',
-          route: '/employer/users',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          route: '/employer/settings',
+          label: 'Workforce',
+          icon: 'work',
+          route: '/employer/workforce',
           roles: [UserRole.EMPLOYER]
         },
         {
@@ -201,9 +169,15 @@ export class TopnavComponent implements OnInit, OnDestroy {
           roles: [UserRole.EMPLOYER]
         },
         {
-          label: 'Workforce',
-          icon: 'work',
-          route: '/employer/workforce',
+          label: 'Users',
+          icon: 'manage_accounts',
+          route: '/employer/users',
+          roles: [UserRole.EMPLOYER]
+        },
+        {
+          label: 'Settings',
+          icon: 'settings',
+          route: '/employer/settings',
           roles: [UserRole.EMPLOYER]
         }
       ]

@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { DocumentCategory } from '@shared/types';
 import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
+import { IApiResponse } from '@shared/types';
 
 export interface Document {
   _id?: string;
@@ -24,7 +25,7 @@ export class DocumentService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.ALL}`;
 
-  uploadDocument(file: File, metadata: Partial<Document>): Observable<any> {
+  uploadDocument(file: File, metadata: Partial<Document>): Observable<IApiResponse<Document>> {
     const formData = new FormData();
     formData.append('file', file);
     Object.entries(metadata).forEach(([key, value]) => {
@@ -36,49 +37,49 @@ export class DocumentService {
         }
       }
     });
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.UPLOAD}`, formData);
+    return this.http.post<IApiResponse<Document>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.UPLOAD}`, formData);
   }
 
-  getMyDocuments(params?: { category?: DocumentCategory; expiringSoon?: boolean }): Observable<any> {
+  getMyDocuments(params?: { category?: DocumentCategory; expiringSoon?: boolean }): Observable<IApiResponse<Document[]>> {
     let httpParams = new HttpParams();
     if (params?.category) httpParams = httpParams.set('category', params.category.toLowerCase());
     if (params?.expiringSoon !== undefined) httpParams = httpParams.set('expiringSoon', params.expiringSoon.toString());
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.MY_DOCUMENTS}`, { params: httpParams });
+    return this.http.get<IApiResponse<Document[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.MY_DOCUMENTS}`, { params: httpParams });
   }
 
-  getAllDocuments(params?: { userId?: string; category?: DocumentCategory; expiringSoon?: boolean }): Observable<any> {
+  getAllDocuments(params?: { userId?: string; category?: DocumentCategory; expiringSoon?: boolean }): Observable<IApiResponse<Document[]>> {
     let httpParams = new HttpParams();
     if (params?.userId) httpParams = httpParams.set('userId', params.userId);
     if (params?.category) httpParams = httpParams.set('category', params.category.toLowerCase());
     if (params?.expiringSoon !== undefined) httpParams = httpParams.set('expiringSoon', params.expiringSoon.toString());
-    return this.http.get(this.baseUrl, { params: httpParams });
+    return this.http.get<IApiResponse<Document[]>>(this.baseUrl, { params: httpParams });
   }
 
-  getExpiringDocuments(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.EXPIRING}`);
+  getExpiringDocuments(): Observable<IApiResponse<Document[]>> {
+    return this.http.get<IApiResponse<Document[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.EXPIRING}`);
   }
 
-  getSharedDocuments(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.SHARED}`);
+  getSharedDocuments(): Observable<IApiResponse<Document[]>> {
+    return this.http.get<IApiResponse<Document[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.SHARED}`);
   }
 
-  updateDocument(documentId: string, updates: Partial<Document>): Observable<any> {
+  updateDocument(documentId: string, updates: Partial<Document>): Observable<IApiResponse<Document>> {
     const body: IUpdateDocumentRequest = {};
     if (updates.category) body.category = updates.category;
     if (updates.description) body.description = updates.description;
     if (updates.documentNumber) body.documentNumber = updates.documentNumber;
     if (updates.issueDate) body.issueDate = updates.issueDate;
     if (updates.expiryDate) body.expiryDate = updates.expiryDate;
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.BY_ID(documentId)}`, body);
+    return this.http.put<IApiResponse<Document>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.BY_ID(documentId)}`, body);
   }
 
-  deleteDocument(documentId: string): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.BY_ID(documentId)}`);
+  deleteDocument(documentId: string): Observable<IApiResponse<void>> {
+    return this.http.delete<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.BY_ID(documentId)}`);
   }
 
-  shareDocument(documentId: string, userIds: string[], canDownload: boolean = true): Observable<any> {
+  shareDocument(documentId: string, userIds: string[], canDownload: boolean = true): Observable<IApiResponse<void>> {
     const body: IShareDocumentRequest = { userIds, canDownload };
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.SHARE(documentId)}`, body);
+    return this.http.post<IApiResponse<void>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.SHARE(documentId)}`, body);
   }
 
   downloadDocument(documentId: string): Observable<Blob> {

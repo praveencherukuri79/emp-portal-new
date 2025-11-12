@@ -50,6 +50,217 @@
     overflow-x: auto;
   }
 
+  .tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-4);
+
+    .summary-card {
+      position: relative;
+      overflow: hidden;
+
+      .summary-title {
+        @include flex-center;
+        justify-content: flex-start;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+
+        mat-icon {
+          font-size: var(--font-size-xl);
+          color: inherit;
+        }
+      }
+
+      .summary-value {
+        margin-top: var(--spacing-3);
+        font-size: var(--font-size-4xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+      }
+
+      .summary-meta {
+        margin-top: var(--spacing-2);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+      }
+
+      &.primary {
+        background: linear-gradient(135deg, rgba(0, 123, 255, 0.12), transparent);
+      }
+
+      &.accent {
+        background: linear-gradient(135deg, rgba(123, 31, 162, 0.12), transparent);
+      }
+
+      &.warning {
+        background: linear-gradient(135deg, rgba(255, 111, 0, 0.12), transparent);
+      }
+    }
+  }
+
+  .distribution-grid,
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .distribution-card,
+  .insight-card,
+  .capacity-card,
+  .composition-card,
+  .table-card {
+    mat-icon {
+      color: var(--action-primary);
+    }
+  }
+
+  .card-header {
+    @include flex-between;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .distribution-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    mat-progress-bar {
+      height: var(--spacing-2);
+      border-radius: var(--radius-full);
+    }
+  }
+
+  .distribution-label {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .distribution-meta {
+    @include flex-between;
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+  }
+
+  .chip-list,
+  .composition-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+
+    mat-chip {
+      @include hover-interactive(var(--background-tertiary), var(--text-primary));
+      font-weight: var(--font-weight-medium);
+      .chip-meta {
+        margin-left: var(--spacing-2);
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+      }
+    }
+  }
+
+  .insight-card {
+    mat-nav-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+  }
+
+  .performance-grid {
+    display: grid;
+    gap: var(--spacing-3);
+  }
+
+  .performance-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    .performance-name {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .performance-meta {
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+    }
+
+    .performance-hours {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-1);
+
+      span {
+        font-size: var(--font-size-xs);
+        color: var(--text-secondary);
+      }
+    }
+  }
+
+  .capacity-grid {
+    display: grid;
+    gap: var(--spacing-3);
+  }
+
+  .capacity-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    mat-progress-bar {
+      height: var(--spacing-2);
+      border-radius: var(--radius-full);
+    }
+  }
+
+  .capacity-header {
+    @include flex-between;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .capacity-meta {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+  }
+
+  .tenure-highlight {
+    margin-bottom: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+
+    .tenure-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .tenure-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+  }
+
   .workforce-table {
     width: 100%;
     background: transparent;
@@ -99,6 +310,12 @@
     }
   }
 
+  .action-cell {
+    @include flex-center;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+  }
+
   .metrics-placeholder {
     @include empty-state;
   }
@@ -113,5 +330,11 @@
 
   .empty-state {
     @include empty-state;
+
+    &.compact {
+      padding: var(--spacing-8);
+      border-radius: var(--radius-lg);
+      border: var(--border-default) dashed var(--border-secondary);
+    }
   }
 }

@@ -19,22 +19,80 @@
         Retry
       </button>
     </div>
-  } @else {
+  } @else if (analyticsData()) {
     <mat-tab-group [dynamicHeight]="true">
       <mat-tab label="Productivity Metrics">
         <div class="tab-content">
-          <mat-card>
+          <div class="summary-grid" *ngIf="productivity(); else emptyState">
+            <mat-card class="summary-card primary">
+              <div class="summary-title">
+                <mat-icon>speed</mat-icon>
+                Utilization Rate
+              </div>
+              <div class="summary-value">{{ productivity()!.utilizationRate | number:'1.0-1' }}%</div>
+              <mat-progress-bar mode="determinate" [value]="productivity()!.utilizationRate"></mat-progress-bar>
+              <div class="summary-meta">Billable vs total hours (last 60 days)</div>
+            </mat-card>
+
+            <mat-card class="summary-card accent">
+              <div class="summary-title">
+                <mat-icon>timer</mat-icon>
+                Avg. Billable Hours
+              </div>
+              <div class="summary-value">{{ productivity()!.averageBillableHours | number:'1.0-1' }}h</div>
+              <div class="summary-meta">Per active employee</div>
+            </mat-card>
+
+            <mat-card class="summary-card warning">
+              <div class="summary-title">
+                <mat-icon>pending_actions</mat-icon>
+                Non-Billable Hours
+              </div>
+              <div class="summary-value">{{ productivity()!.nonBillableHours | number:'1.0-1' }}h</div>
+              <div class="summary-meta">Includes internal and admin tasks</div>
+            </mat-card>
+
+            <mat-card class="summary-card danger">
+              <div class="summary-title">
+                <mat-icon>local_fire_department</mat-icon>
+                Overtime Hours
+              </div>
+              <div class="summary-value">{{ productivity()!.overtimeHours | number:'1.0-1' }}h</div>
+              <div class="summary-meta">Hours logged above 8h/day</div>
+            </mat-card>
+          </div>
+
+          <mat-card class="detail-card" *ngIf="productivity()">
             <mat-card-header>
               <mat-card-title>
-                <mat-icon>trending_up</mat-icon>
-                Productivity Metrics
+                <mat-icon>leaderboard</mat-icon>
+                Billable vs Non-Billable Breakdown
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <p>Track team productivity and efficiency metrics</p>
-              <div class="metrics-placeholder">
-                <mat-icon>bar_chart</mat-icon>
-                <p>Productivity charts and metrics will be displayed here</p>
+              <div class="breakdown-grid">
+                <div class="breakdown-item">
+                  <div class="breakdown-label">
+                    <span>Billable Hours</span>
+                    <span>{{ productivity()!.billableHours | number:'1.0-1' }}h</span>
+                  </div>
+                  <mat-progress-bar
+                    color="primary"
+                    mode="determinate"
+                    [value]="productivity()!.utilizationRate">
+                  </mat-progress-bar>
+                </div>
+                <div class="breakdown-item">
+                  <div class="breakdown-label">
+                    <span>Non-Billable Hours</span>
+                    <span>{{ productivity()!.nonBillableHours | number:'1.0-1' }}h</span>
+                  </div>
+                  <mat-progress-bar
+                    color="accent"
+                    mode="determinate"
+                    [value]="100 - productivity()!.utilizationRate">
+                  </mat-progress-bar>
+                </div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -43,43 +101,143 @@
 
       <mat-tab label="Resource Utilization">
         <div class="tab-content">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>pie_chart</mat-icon>
-                Resource Utilization
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p>Monitor resource allocation and utilization across projects</p>
-              <div class="metrics-placeholder">
-                <mat-icon>pie_chart</mat-icon>
-                <p>Resource utilization charts will be displayed here</p>
-              </div>
-            </mat-card-content>
-          </mat-card>
+          <div class="resource-grid" *ngIf="resourceUtilization(); else emptyState">
+            <mat-card class="detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>apartment</mat-icon>
+                  Department Utilization
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <mat-nav-list>
+                  @for (dept of resourceUtilization()!.departmentUtilization; track dept.department) {
+                    <a mat-list-item>
+                      <span matListItemTitle>{{ dept.department }}</span>
+                      <span matListItemMeta>{{ dept.utilization | number:'1.0-1' }}%</span>
+                      <mat-progress-bar mode="determinate" [value]="dept.utilization" color="primary"></mat-progress-bar>
+                    </a>
+                  }
+                </mat-nav-list>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>folder_shared</mat-icon>
+                  Project Allocation
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="allocation-list">
+                  @for (project of resourceUtilization()!.projectAllocation; track project.project) {
+                    <div class="allocation-item">
+                      <div class="allocation-header">
+                        <span>{{ project.project }}</span>
+                        <span>{{ project.allocation | number:'1.0-1' }}%</span>
+                      </div>
+                      <mat-progress-bar mode="determinate" [value]="project.allocation" color="accent"></mat-progress-bar>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </mat-tab>
 
       <mat-tab label="Performance Trends">
         <div class="tab-content">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>show_chart</mat-icon>
-                Performance Trends
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p>Analyze performance trends over time</p>
-              <div class="metrics-placeholder">
-                <mat-icon>show_chart</mat-icon>
-                <p>Performance trend charts will be displayed here</p>
-              </div>
-            </mat-card-content>
-          </mat-card>
+          <div class="trend-grid" *ngIf="performanceTrends(); else emptyState">
+            <mat-card class="detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>stacked_line_chart</mat-icon>
+                  Timesheet Hours (6 months)
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <ul class="trend-list">
+                  @for (item of performanceTrends()!.timesheetHours; track item.period) {
+                    <li class="trend-item">
+                      <div class="trend-period">{{ item.period }}</div>
+                      <div class="trend-values">
+                        <span>{{ item.totalHours | number:'1.0-1' }}h total</span>
+                        <span class="trend-hours">{{ item.billableHours | number:'1.0-1' }}h billable</span>
+                      </div>
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="item.totalHours > 0 ? (item.billableHours / item.totalHours) * 100 : 0"
+                        color="primary">
+                      </mat-progress-bar>
+                    </li>
+                  }
+                </ul>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>event_available</mat-icon>
+                  Leave Trend
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="trend-list">
+                  @for (leave of performanceTrends()!.leaveTrend; track leave.period) {
+                    <div class="trend-item">
+                      <div class="trend-period">{{ leave.period }}</div>
+                      <div class="trend-values">
+                        <span>{{ leave.count }} approved requests</span>
+                      </div>
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="Math.min(leave.count * 10, 100)"
+                        color="accent">
+                      </mat-progress-bar>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>emoji_people</mat-icon>
+                  Hiring Trend
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="trend-list">
+                  @for (hire of performanceTrends()!.hiringTrend; track hire.period) {
+                    <div class="trend-item">
+                      <div class="trend-period">{{ hire.period }}</div>
+                      <div class="trend-values">
+                        <span>{{ hire.count }} new hire(s)</span>
+                      </div>
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="Math.min(hire.count * 20, 100)"
+                        color="warn">
+                      </mat-progress-bar>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </mat-tab>
     </mat-tab-group>
   }
+
+  <ng-template #emptyState>
+    <div class="empty-state compact">
+      <mat-icon>analytics</mat-icon>
+      <p>No analytics data available yet</p>
+    </div>
+  </ng-template>
 </div>

@@ -73,10 +73,19 @@ export const API_ENDPOINTS = {
     LEAVE: '/reports/leave',
     TEAM: '/reports/team'
   },
+  EMPLOYER: {
+    WORKFORCE: '/employer/workforce',
+    FINANCIAL: '/employer/financial',
+    ANALYTICS: '/employer/analytics'
+  },
   ADMIN: {
     CREATE_USER: '/admin/create-user',
     BULK_CREATE_USERS: '/admin/bulk-create-users',
     TENANT: '/admin/tenant'
+  },
+  SETTINGS: {
+    GET_TENANT: '/settings/tenant',
+    UPDATE_TENANT: '/settings/tenant'
   },
   PROJECTS: {
     ALL: '/projects'

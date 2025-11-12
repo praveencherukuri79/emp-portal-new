@@ -1,5 +1,6 @@
-@import '../../../../styles/mixins/components.scss';
-@import '../../../../styles/mixins/layout.scss';
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/mixins/layout';
+@import '../../../../styles/tokens/breakpoints';
 
 .system-settings {
   @include container;
@@ -22,5 +23,60 @@
       margin: 0;
     }
   }
-}
 
+  .settings-card {
+    margin-bottom: var(--spacing-6);
+
+    mat-card-header {
+      margin-bottom: var(--spacing-4);
+
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+      }
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-4);
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      @include breakpoint-down(sm) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--spacing-4);
+    justify-content: flex-end;
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--border-color);
+
+    @include breakpoint-down(sm) {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    gap: var(--spacing-4);
+    text-align: center;
+    color: var(--text-secondary);
+  }
+}

@@ -9,10 +9,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { UINotificationService } from '../../../core/services/notification.service';
-import { User } from '../../../core/models/user.model';
+import { User, UserRole } from '../../../core/models/user.model';
+import { ROLE_LABELS } from '@shared/types/constants';
+import { ICreateUserRequest } from '@shared/types/requests';
 
 @Component({
   selector: 'app-user-management',
@@ -28,6 +33,9 @@ import { User } from '../../../core/models/user.model';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
+    MatMenuModule,
+    MatTooltipModule,
     FormsModule
   ],
   templateUrl: './user-management.component.html',
@@ -36,12 +44,17 @@ import { User } from '../../../core/models/user.model';
 export class UserManagementComponent implements OnInit {
   private userService = inject(UserService);
   private notification = inject(UINotificationService);
+  private dialog = inject(MatDialog);
 
   loading = signal(false);
   users = signal<User[]>([]);
   searchQuery = signal('');
+  roleFilter = signal<string>('');
 
-  displayedColumns = ['name', 'email', 'role', 'status', 'actions'];
+  displayedColumns = ['name', 'email', 'role', 'department', 'status', 'actions'];
+  roles = Object.values(UserRole);
+  roleLabels = ROLE_LABELS;
+  UserRole = UserRole; // Expose to template
 
   ngOnInit(): void {
     this.loadUsers();
@@ -49,10 +62,19 @@ export class UserManagementComponent implements OnInit {
 
   loadUsers(): void {
     this.loading.set(true);
-    this.userService.getAllUsers().subscribe({
+    const params: any = {};
+    if (this.roleFilter()) {
+      params.role = this.roleFilter();
+    }
+    this.userService.getAllUsers(params).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
-          this.users.set(response.data);
+          // Backend returns { users: User[], pagination: {...} }
+          const data = response.data as { users: User[]; pagination: any };
+          const usersArray = (data.users && Array.isArray(data.users)) ? data.users : [];
+          this.users.set(usersArray);
+        } else {
+          this.users.set([]);
         }
         this.loading.set(false);
       },
@@ -65,13 +87,127 @@ export class UserManagementComponent implements OnInit {
   }
 
   get filteredUsers(): User[] {
-    if (!this.searchQuery()) return this.users();
+    const allUsers = this.users();
+    if (!Array.isArray(allUsers)) {
+      return [];
+    }
+    let filtered = [...allUsers];
     
-    const query = this.searchQuery().toLowerCase();
-    return this.users().filter(u => 
-      `${u.firstName} ${u.lastName}`.toLowerCase().includes(query) ||
-      u.email?.toLowerCase().includes(query)
-    );
+    if (this.searchQuery()) {
+      const query = this.searchQuery().toLowerCase();
+      filtered = filtered.filter(u => 
+        `${u.firstName} ${u.lastName}`.toLowerCase().includes(query) ||
+        u.email?.toLowerCase().includes(query) ||
+        u.employeeId?.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  }
+
+  getRoleLabel(role: UserRole): string {
+    return this.roleLabels[role.toUpperCase() as keyof typeof ROLE_LABELS] || role;
+  }
+
+  openCreateUserDialog(): void {
+    // For now, use a simple prompt-based approach
+    // In production, create a proper dialog component
+    const email = prompt('Enter email:');
+    if (!email) return;
+    
+    const password = prompt('Enter password (min 6 characters):');
+    if (!password || password.length < 6) {
+      this.notification.showError('Password must be at least 6 characters');
+      return;
+    }
+    
+    const firstName = prompt('Enter first name:');
+    if (!firstName) return;
+    
+    const lastName = prompt('Enter last name:');
+    if (!lastName) return;
+    
+    const roleStr = prompt(`Enter role (${this.roles.join(', ')}):`);
+    if (!roleStr || !this.roles.includes(roleStr as UserRole)) {
+      this.notification.showError('Invalid role');
+      return;
+    }
+
+    this.loading.set(true);
+    const userData: ICreateUserRequest = {
+      email,
+      password,
+      firstName,
+      lastName,
+      role: roleStr as UserRole
+    };
+
+    this.userService.createUser(userData).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.notification.showSuccess('User created successfully');
+          this.loadUsers();
+        } else {
+          this.notification.showError(response.message || 'Failed to create user');
+          this.loading.set(false);
+        }
+      },
+      error: (error) => {
+        console.error('Error creating user:', error);
+        this.notification.showError(error.error?.message || 'Failed to create user');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  updateUserRole(user: User, newRole: UserRole): void {
+    this.loading.set(true);
+    this.userService.updateUserRole(user._id, newRole).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.notification.showSuccess('User role updated successfully');
+          this.loadUsers();
+        } else {
+          this.notification.showError(response.message || 'Failed to update user role');
+          this.loading.set(false);
+        }
+      },
+      error: (error) => {
+        console.error('Error updating user role:', error);
+        this.notification.showError('Failed to update user role');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  toggleUserStatus(user: User): void {
+    this.loading.set(true);
+    const action = user.isActive 
+      ? this.userService.deactivateUser(user._id)
+      : this.userService.activateUser(user._id);
+
+    action.subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.notification.showSuccess(
+            user.isActive ? 'User deactivated successfully' : 'User activated successfully'
+          );
+          this.loadUsers();
+        } else {
+          this.notification.showError(response.message || 'Failed to update user status');
+          this.loading.set(false);
+        }
+      },
+      error: (error) => {
+        console.error('Error updating user status:', error);
+        this.notification.showError('Failed to update user status');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  onRoleFilterChange(role: string): void {
+    this.roleFilter.set(role);
+    this.loadUsers();
   }
 }
-

@@ -46,7 +46,7 @@ export class NotificationDropdownComponent implements OnInit {
     this.loading.set(true);
     this.notificationService.getNotifications({ isRead: false }).subscribe({
       next: (response: any) => {
-        if ((response.status === 'success' || response.success) && response.data) {
+        if (response.status === 'success' && response.data) {
           const notifications = Array.isArray(response.data) 
             ? response.data 
             : response.data.notifications || [];
@@ -64,7 +64,7 @@ export class NotificationDropdownComponent implements OnInit {
   loadUnreadCount(): void {
     this.notificationService.getUnreadCount().subscribe({
       next: (response: any) => {
-        if ((response.status === 'success' || response.success) && response.data) {
+        if (response.status === 'success' && response.data) {
           this.unreadCount.set(response.data.count || 0);
         }
       },

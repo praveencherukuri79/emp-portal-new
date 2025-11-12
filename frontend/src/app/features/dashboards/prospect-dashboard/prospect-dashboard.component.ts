@@ -38,7 +38,7 @@ export class ProspectDashboardComponent implements OnInit {
 
     this.dashboardService.getDashboard().subscribe({
       next: (response: any) => {
-        if ((response.status === 'success' || response.success) && response.data) {
+        if (response.status === 'success' && response.data) {
           const data = response.data;
           this.profileCompletion.set(data.profileCompletion || 0);
         }

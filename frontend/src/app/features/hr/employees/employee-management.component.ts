@@ -56,7 +56,12 @@ export class EmployeeManagementComponent implements OnInit {
     this.userService.getAllUsers({ role: 'employee' }).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
-          this.employees.set(response.data);
+          // Backend returns { users: User[], pagination: {...} }
+          const data = response.data as { users: User[]; pagination: any };
+          const usersArray = (data.users && Array.isArray(data.users)) ? data.users : [];
+          this.employees.set(usersArray);
+        } else {
+          this.employees.set([]);
         }
         this.loading.set(false);
       },
@@ -69,7 +74,11 @@ export class EmployeeManagementComponent implements OnInit {
   }
 
   get filteredEmployees(): User[] {
-    let employees = this.employees();
+    const allEmployees = this.employees();
+    if (!Array.isArray(allEmployees)) {
+      return [];
+    }
+    let employees = [...allEmployees];
     
     if (this.searchQuery()) {
       const query = this.searchQuery().toLowerCase();

@@ -2,9 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { LeaveType, LeaveStatus, ILeaveRequestDTO } from '@shared/types';
+import { LeaveType, LeaveStatus, ILeaveRequestDTO, ILeaveBalance } from '@shared/types';
 import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
+import { IApiResponse } from '@shared/types';
 
 export interface LeaveRequest extends ILeaveRequestDTO {
   _id?: string;
@@ -19,7 +20,7 @@ export class LeaveService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`;
 
-  createLeaveRequest(request: LeaveRequest): Observable<any> {
+  createLeaveRequest(request: LeaveRequest): Observable<IApiResponse<LeaveRequest>> {
     const dto: ILeaveRequestDTO = {
       leaveType: request.leaveType,
       startDate: request.startDate,
@@ -28,28 +29,28 @@ export class LeaveService {
       halfDayPeriod: request.halfDayPeriod?.toLowerCase() as 'morning' | 'afternoon' | undefined,
       reason: request.reason
     };
-    return this.http.post(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto);
+    return this.http.post<IApiResponse<LeaveRequest>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto);
   }
 
-  getMyLeaveRequests(params?: { status?: LeaveStatus; leaveType?: LeaveType }): Observable<any> {
+  getMyLeaveRequests(params?: { status?: LeaveStatus; leaveType?: LeaveType }): Observable<IApiResponse<LeaveRequest[]>> {
     let httpParams = new HttpParams();
     if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
     if (params?.leaveType) httpParams = httpParams.set('leaveType', params.leaveType.toLowerCase());
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_REQUESTS}`, { params: httpParams });
+    return this.http.get<IApiResponse<LeaveRequest[]>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_REQUESTS}`, { params: httpParams });
   }
 
-  getMyLeaveBalance(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_BALANCE}`);
+  getMyLeaveBalance(): Observable<IApiResponse<ILeaveBalance>> {
+    return this.http.get<IApiResponse<ILeaveBalance>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_BALANCE}`);
   }
 
-  getLeaveCalendar(params?: { startDate?: string; endDate?: string }): Observable<any> {
+  getLeaveCalendar(params?: { startDate?: string; endDate?: string }): Observable<IApiResponse<any>> {
     let httpParams = new HttpParams();
     if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
     if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CALENDAR}`, { params: httpParams });
+    return this.http.get<IApiResponse<any>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CALENDAR}`, { params: httpParams });
   }
 
-  updateLeaveRequest(leaveId: string, updates: Partial<LeaveRequest>): Observable<any> {
+  updateLeaveRequest(leaveId: string, updates: Partial<LeaveRequest>): Observable<IApiResponse<LeaveRequest>> {
     const body: IUpdateLeaveRequestRequest = {};
     if (updates.leaveType) body.leaveType = updates.leaveType;
     if (updates.startDate) body.startDate = updates.startDate;
@@ -57,32 +58,32 @@ export class LeaveService {
     if (updates.isHalfDay !== undefined) body.isHalfDay = updates.isHalfDay;
     if (updates.halfDayPeriod) body.halfDayPeriod = updates.halfDayPeriod.toLowerCase() as 'morning' | 'afternoon';
     if (updates.reason) body.reason = updates.reason;
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.BY_ID(leaveId)}`, body);
+    return this.http.put<IApiResponse<LeaveRequest>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.BY_ID(leaveId)}`, body);
   }
 
-  cancelLeaveRequest(leaveId: string, cancellationReason?: string): Observable<any> {
+  cancelLeaveRequest(leaveId: string, cancellationReason?: string): Observable<IApiResponse<LeaveRequest>> {
     const body: ICancelLeaveRequest = { cancellationReason };
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CANCEL(leaveId)}`, body);
+    return this.http.put<IApiResponse<LeaveRequest>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CANCEL(leaveId)}`, body);
   }
 
-  getPendingApprovals(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.PENDING_APPROVALS}`);
+  getPendingApprovals(): Observable<IApiResponse<LeaveRequest[]>> {
+    return this.http.get<IApiResponse<LeaveRequest[]>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.PENDING_APPROVALS}`);
   }
 
-  approveLeaveRequest(leaveId: string, comments?: string): Observable<any> {
+  approveLeaveRequest(leaveId: string, comments?: string): Observable<IApiResponse<LeaveRequest>> {
     const body: IApproveLeaveRequest = { comments };
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.APPROVE(leaveId)}`, body);
+    return this.http.put<IApiResponse<LeaveRequest>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.APPROVE(leaveId)}`, body);
   }
 
-  rejectLeaveRequest(leaveId: string, reason: string): Observable<any> {
+  rejectLeaveRequest(leaveId: string, reason: string): Observable<IApiResponse<LeaveRequest>> {
     const body: IRejectLeaveRequest = { comments: reason };
-    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.REJECT(leaveId)}`, body);
+    return this.http.put<IApiResponse<LeaveRequest>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.REJECT(leaveId)}`, body);
   }
 
-  getLeaveStatistics(params?: { userId?: string; year?: number }): Observable<any> {
+  getLeaveStatistics(params?: { userId?: string; year?: number }): Observable<IApiResponse<any>> {
     let httpParams = new HttpParams();
     if (params?.userId) httpParams = httpParams.set('userId', params.userId);
     if (params?.year) httpParams = httpParams.set('year', params.year.toString());
-    return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.STATISTICS}`, { params: httpParams });
+    return this.http.get<IApiResponse<any>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.STATISTICS}`, { params: httpParams });
   }
 }

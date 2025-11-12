@@ -1,13 +1,133 @@
 <div class="system-settings">
   <div class="page-header">
-    <h1>System Settings</h1>
-    <p class="subtitle">Configure system preferences</p>
+    <div>
+      <h1>System Settings</h1>
+      <p class="subtitle">Configure organization and system preferences</p>
+    </div>
   </div>
 
-  <mat-card>
-    <mat-card-content>
-      <p>System settings functionality coming soon</p>
-    </mat-card-content>
-  </mat-card>
-</div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading settings...</p>
+    </div>
+  } @else {
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+      <!-- Organization Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>business</mat-icon>
+            Organization Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Organization Name</mat-label>
+              <input matInput formControlName="name" required>
+              <mat-error *ngIf="settingsForm.get('name')?.hasError('required')">
+                Organization name is required
+              </mat-error>
+            </mat-form-field>
 
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Domain</mat-label>
+              <input matInput formControlName="domain" required>
+              <mat-error *ngIf="settingsForm.get('domain')?.hasError('required')">
+                Domain is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Work Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>schedule</mat-icon>
+            Work Settings
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Work Days Per Week</mat-label>
+              <input matInput type="number" formControlName="workDaysPerWeek" required min="1" max="7">
+              <mat-error *ngIf="settingsForm.get('workDaysPerWeek')?.hasError('required')">
+                Required
+              </mat-error>
+              <mat-error *ngIf="settingsForm.get('workDaysPerWeek')?.hasError('min') || settingsForm.get('workDaysPerWeek')?.hasError('max')">
+                Must be between 1 and 7
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Work Hours Per Day</mat-label>
+              <input matInput type="number" formControlName="workHoursPerDay" required min="1" max="24">
+              <mat-error *ngIf="settingsForm.get('workHoursPerDay')?.hasError('required')">
+                Required
+              </mat-error>
+              <mat-error *ngIf="settingsForm.get('workHoursPerDay')?.hasError('min') || settingsForm.get('workHoursPerDay')?.hasError('max')">
+                Must be between 1 and 24
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Regional Settings -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>language</mat-icon>
+            Regional Settings
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Currency</mat-label>
+              <mat-select formControlName="currency" required>
+                <mat-option *ngFor="let currency of currencies" [value]="currency">
+                  {{ currency }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Date Format</mat-label>
+              <mat-select formControlName="dateFormat" required>
+                <mat-option *ngFor="let format of dateFormats" [value]="format">
+                  {{ format }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Time Zone</mat-label>
+              <mat-select formControlName="timeZone" required>
+                <mat-option *ngFor="let tz of timezones" [value]="tz">
+                  {{ tz }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!settingsForm.valid || saving()">
+          <mat-icon>save</mat-icon>
+          {{ saving() ? 'Saving...' : 'Save Settings' }}
+        </button>
+        <button mat-button type="button" (click)="loadSettings()" [disabled]="loading()">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+      </div>
+    </form>
+  }
+</div>

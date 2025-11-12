@@ -1,8 +1,3 @@
-/**
- * User Management Component - Refactored
- * Uses ONLY mixins and theme tokens - NO hardcoded values
- */
-
 @import '../../../../styles/mixins/components';
 @import '../../../../styles/mixins/layout';
 @import '../../../../styles/tokens/breakpoints';
@@ -12,25 +7,80 @@
   padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
 
-  // Use global .page-header class with flex-between override
   .page-header {
     @include flex-between;
     align-items: flex-start;
     gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
 
     @include breakpoint-down(sm) {
       flex-direction: column;
+    }
+
+    h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: var(--font-size-lg);
+      margin: 0;
     }
   }
 
   .filters-section {
     margin-bottom: var(--spacing-section-gap);
 
-    .search-field {
-      width: 100%;
+    .filters-row {
+      display: flex;
+      gap: var(--spacing-4);
+      flex-wrap: wrap;
+
+      .search-field {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .role-filter {
+        min-width: 200px;
+      }
     }
   }
 
-  // Use global .table-container class
-  // Use global .table-base class for .users-table
+  .user-name {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+
+    .employee-id {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .loading-container,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    gap: var(--spacing-4);
+    text-align: center;
+    color: var(--text-secondary);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.5;
+    }
+  }
 }

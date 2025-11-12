@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,20 +7,16 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ReportService } from '../../../services/report.service';
-import { DashboardService } from '../../../services/dashboard.service';
 import { UINotificationService } from '../../../core/services/notification.service';
-
-interface FinancialData {
-  totalRevenue: number;
-  billableHours: number;
-  revenueByDepartment: Array<{ department: string; revenue: number }>;
-  revenueByMonth: Array<{ month: string; revenue: number }>;
-  topProjects: Array<{ project: string; revenue: number }>;
-}
+import { EmployerService } from '../../../services/employer.service';
+import {
+  IEmployerFinancialOverview,
+  IEmployerFinancialSummary
+} from '@shared/types';
 
 @Component({
   selector: 'app-financial-reports',
@@ -34,22 +30,28 @@ interface FinancialData {
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatTabsModule,
-    FormsModule
+    FormsModule,
+    MatTooltipModule,
+    MatProgressBarModule
   ],
   templateUrl: './financial-reports.component.html',
   styleUrls: ['./financial-reports.component.scss']
 })
 export class FinancialReportsComponent implements OnInit {
   private reportService = inject(ReportService);
-  private dashboardService = inject(DashboardService);
+  private employerService = inject(EmployerService);
   private uiNotification = inject(UINotificationService);
 
   loading = signal(false);
   error = signal<string | null>(null);
-  financialData = signal<FinancialData | null>(null);
+  financialData = signal<IEmployerFinancialOverview | null>(null);
   selectedPeriod = signal<'month' | 'quarter' | 'year'>('month');
+
+  summary = computed<IEmployerFinancialSummary | null>(() => this.financialData()?.summary ?? null);
+  revenueByDepartment = computed(() => this.financialData()?.revenueByDepartment ?? []);
+  revenueByMonth = computed(() => this.financialData()?.revenueByMonth ?? []);
+  topProjects = computed(() => this.financialData()?.topProjects ?? []);
+  expensesByCategory = computed(() => this.financialData()?.expensesByCategory ?? []);
 
   displayedColumns = ['department', 'revenue', 'percentage'];
 
@@ -61,19 +63,12 @@ export class FinancialReportsComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     
-    // Get financial data from dashboard API
-    this.dashboardService.getDashboard().subscribe({
+    this.employerService.getFinancialOverview(this.selectedPeriod()).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.data) {
-          const data = response.data;
-          // Map dashboard data to financial data structure
-          this.financialData.set({
-            totalRevenue: data.totalRevenue || 0,
-            billableHours: data.billableHours || 0,
-            revenueByDepartment: data.revenueByDepartment || [],
-            revenueByMonth: data.revenueByMonth || [],
-            topProjects: data.topProjects || []
-          });
+          this.financialData.set(response.data);
+        } else {
+          this.error.set(response.message ?? 'Failed to load financial reports');
         }
         this.loading.set(false);
       },
@@ -83,6 +78,14 @@ export class FinancialReportsComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onPeriodChange(period: 'month' | 'quarter' | 'year'): void {
+    if (this.selectedPeriod() === period) {
+      return;
+    }
+    this.selectedPeriod.set(period);
+    this.loadFinancialReports();
   }
 
   exportReport(format: 'pdf' | 'excel'): void {
@@ -114,15 +117,27 @@ export class FinancialReportsComponent implements OnInit {
     }
   }
 
+  getPeriodLabel(period: 'month' | 'quarter' | 'year'): string {
+    switch (period) {
+      case 'year':
+        return 'This Year';
+      case 'quarter':
+        return 'This Quarter';
+      default:
+        return 'This Month';
+    }
+  }
+
   private getEndDate(): string {
     return new Date().toISOString().split('T')[0];
   }
 
-  formatCurrency(value: number): string {
+  formatCurrency(value: number | undefined | null): string {
+    const amount = value ?? 0;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(value);
+    }).format(amount);
   }
 }
 

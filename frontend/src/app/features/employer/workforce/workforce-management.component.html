@@ -27,75 +27,216 @@
     <mat-tab-group [dynamicHeight]="true">
       <mat-tab label="Team Overview">
         <div class="tab-content">
-          <mat-card>
+          <div class="summary-grid" *ngIf="summary(); else emptyState">
+            <mat-card class="summary-card primary">
+              <div class="summary-title">
+                <mat-icon>group</mat-icon>
+                Total Employees
+              </div>
+              <div class="summary-value">{{ summary()!.totalEmployees }}</div>
+              <div class="summary-meta">Active: {{ summary()!.activeEmployees }}</div>
+            </mat-card>
+            <mat-card class="summary-card accent">
+              <div class="summary-title">
+                <mat-icon>person_add_alt</mat-icon>
+                New Hires (30d)
+              </div>
+              <div class="summary-value">{{ summary()!.newHiresLast30Days }}</div>
+              <div class="summary-meta">Average tenure: {{ summary()!.averageTenureMonths }} mo</div>
+            </mat-card>
+            <mat-card class="summary-card warning">
+              <div class="summary-title">
+                <mat-icon>person_off</mat-icon>
+                Inactive Employees
+              </div>
+              <div class="summary-value">{{ summary()!.inactiveEmployees }}</div>
+              <div class="summary-meta">
+                Engagement Rate: {{ utilizationRate() }}%
+              </div>
+            </mat-card>
+          </div>
+
+          <div class="distribution-grid" *ngIf="workforceData()">
+            <mat-card class="distribution-card">
+              <div class="card-header">
+                <mat-icon>apartment</mat-icon>
+                Department Distribution
+              </div>
+              <div class="distribution-list">
+                @for (dept of departmentDistribution(); track dept.label) {
+                  <div class="distribution-item">
+                    <div class="distribution-label">{{ dept.label }}</div>
+                    <mat-progress-bar [value]="dept.percentage" mode="determinate"></mat-progress-bar>
+                    <div class="distribution-meta">
+                      <span>{{ dept.count }} team member(s)</span>
+                      <span>{{ dept.percentage }}%</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card>
+
+            <mat-card class="distribution-card">
+              <div class="card-header">
+                <mat-icon>badge</mat-icon>
+                Employment Types
+              </div>
+              <div class="chip-list">
+                @for (type of employmentTypeDistribution(); track type.label) {
+                  <mat-chip>
+                    {{ getEmploymentTypeLabel(type.label) }}
+                    <span class="chip-meta">{{ type.count }} · {{ type.percentage }}%</span>
+                  </mat-chip>
+                }
+              </div>
+            </mat-card>
+
+            <mat-card class="distribution-card">
+              <div class="card-header">
+                <mat-icon>timeline</mat-icon>
+                Tenure Distribution
+              </div>
+              <div class="distribution-list">
+                @for (tenure of tenureDistribution(); track tenure.label) {
+                  <div class="distribution-item">
+                    <div class="distribution-label">{{ tenure.label }}</div>
+                    <mat-progress-bar [value]="tenure.percentage" mode="determinate" color="accent"></mat-progress-bar>
+                    <div class="distribution-meta">
+                      <span>{{ tenure.count }} team member(s)</span>
+                      <span>{{ tenure.percentage }}%</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card>
+          </div>
+
+          <div class="insights-grid" *ngIf="workforceData()">
+            <mat-card class="insight-card">
+              <div class="card-header">
+                <mat-icon>workspace_premium</mat-icon>
+                Top Performers (30 days)
+              </div>
+              @if (topPerformers().length > 0) {
+                <mat-nav-list>
+                  @for (performer of topPerformers(); track performer.userId) {
+                    <a mat-list-item>
+                      <span matListItemTitle>{{ performer.fullName }}</span>
+                      <span matListItemLine>{{ performer.department }}</span>
+                      <span matListItemMeta>{{ performer.billableHours }}h billable</span>
+                    </a>
+                  }
+                </mat-nav-list>
+              } @else {
+                <div class="empty-state compact">
+                  <mat-icon>insights</mat-icon>
+                  <p>No performance data yet</p>
+                </div>
+              }
+            </mat-card>
+
+            <mat-card class="insight-card">
+              <div class="card-header">
+                <mat-icon>celebration</mat-icon>
+                Recent Hires
+              </div>
+              @if (recentHires().length > 0) {
+                <mat-nav-list>
+                  @for (hire of recentHires(); track hire.userId) {
+                    <a mat-list-item>
+                      <span matListItemTitle>{{ hire.fullName }}</span>
+                      <span matListItemLine>{{ hire.department }}</span>
+                      <span matListItemMeta>
+                        {{ hire.joiningDate || 'New Starter' }}
+                      </span>
+                    </a>
+                  }
+                </mat-nav-list>
+              } @else {
+                <div class="empty-state compact">
+                  <mat-icon>person_search</mat-icon>
+                  <p>No recent hires</p>
+                </div>
+              }
+            </mat-card>
+          </div>
+
+          <mat-card class="table-card" *ngIf="employees().length > 0; else emptyState">
             <mat-card-header>
               <mat-card-title>
                 <mat-icon>groups</mat-icon>
-                Team Overview
+                Team Directory
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              @if (employees().length === 0) {
-                <div class="empty-state">
-                  <mat-icon>people_outline</mat-icon>
-                  <p>No employees found</p>
-                </div>
-              } @else {
-                <div class="table-container">
-                  <table mat-table [dataSource]="employees()" class="workforce-table mat-elevation-z0">
-                    <ng-container matColumnDef="name">
-                      <th mat-header-cell *matHeaderCellDef>Name</th>
-                      <td mat-cell *matCellDef="let emp">
-                        <div class="employee-info">
-                          <div class="employee-avatar">{{ emp.firstName?.[0] }}{{ emp.lastName?.[0] }}</div>
-                          <div>
-                            <div class="employee-name">{{ emp.firstName }} {{ emp.lastName }}</div>
-                            <div class="employee-email">{{ emp.email }}</div>
-                          </div>
+              <div class="table-container">
+                <table mat-table [dataSource]="employees()" class="workforce-table mat-elevation-z0">
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let emp">
+                      <div class="employee-info">
+                        <div class="employee-avatar">{{ getInitials(emp) }}</div>
+                        <div>
+                          <div class="employee-name">{{ emp.fullName }}</div>
+                          <div class="employee-email">{{ emp.email }}</div>
                         </div>
-                      </td>
-                    </ng-container>
+                      </div>
+                    </td>
+                  </ng-container>
 
-                    <ng-container matColumnDef="department">
-                      <th mat-header-cell *matHeaderCellDef>Department</th>
-                      <td mat-cell *matCellDef="let emp">
-                        <mat-chip>{{ emp.department || 'N/A' }}</mat-chip>
-                      </td>
-                    </ng-container>
+                  <ng-container matColumnDef="department">
+                    <th mat-header-cell *matHeaderCellDef>Department</th>
+                    <td mat-cell *matCellDef="let emp">
+                      <mat-chip>{{ emp.department || 'N/A' }}</mat-chip>
+                    </td>
+                  </ng-container>
 
-                    <ng-container matColumnDef="role">
-                      <th mat-header-cell *matHeaderCellDef>Role</th>
-                      <td mat-cell *matCellDef="let emp">
-                        <mat-chip>{{ emp.role }}</mat-chip>
-                      </td>
-                    </ng-container>
+                  <ng-container matColumnDef="role">
+                    <th mat-header-cell *matHeaderCellDef>Role</th>
+                    <td mat-cell *matCellDef="let emp">
+                      <mat-chip color="accent">{{ emp.role }}</mat-chip>
+                    </td>
+                  </ng-container>
 
-                    <ng-container matColumnDef="status">
-                      <th mat-header-cell *matHeaderCellDef>Status</th>
-                      <td mat-cell *matCellDef="let emp">
-                        <mat-chip [color]="emp.isActive ? 'primary' : 'default'">
-                          {{ emp.isActive ? 'Active' : 'Inactive' }}
-                        </mat-chip>
-                      </td>
-                    </ng-container>
+                  <ng-container matColumnDef="employmentType">
+                    <th mat-header-cell *matHeaderCellDef>Employment Type</th>
+                    <td mat-cell *matCellDef="let emp">
+                      <mat-chip>{{ getEmploymentTypeLabel(emp.employmentType) }}</mat-chip>
+                    </td>
+                  </ng-container>
 
-                    <ng-container matColumnDef="actions">
-                      <th mat-header-cell *matHeaderCellDef>Actions</th>
-                      <td mat-cell *matCellDef="let emp">
-                        <button mat-icon-button>
-                          <mat-icon>visibility</mat-icon>
-                        </button>
-                        <button mat-icon-button>
-                          <mat-icon>edit</mat-icon>
-                        </button>
-                      </td>
-                    </ng-container>
+                  <ng-container matColumnDef="tenure">
+                    <th mat-header-cell *matHeaderCellDef>Tenure</th>
+                    <td mat-cell *matCellDef="let emp">
+                      {{ getTenureLabel(emp.joiningDate) }}
+                    </td>
+                  </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
-                  </table>
-                </div>
-              }
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let emp">
+                      <mat-chip [color]="emp.isActive ? 'primary' : undefined">
+                        {{ emp.isActive ? 'Active' : 'Inactive' }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let emp" class="action-cell">
+                      <button mat-icon-button color="primary" matTooltip="View profile">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button mat-icon-button matTooltip="Manage employee">
+                        <mat-icon>edit_square</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+                </table>
+              </div>
             </mat-card-content>
           </mat-card>
         </div>
@@ -103,43 +244,123 @@
 
       <mat-tab label="Capacity Planning">
         <div class="tab-content">
-          <mat-card>
+          <mat-card class="capacity-card" *ngIf="departmentDistribution().length > 0; else emptyState">
             <mat-card-header>
               <mat-card-title>
-                <mat-icon>event_note</mat-icon>
-                Capacity Planning
+                <mat-icon>event_available</mat-icon>
+                Department Capacity Insights
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <p>Plan and optimize workforce capacity</p>
-              <div class="metrics-placeholder">
-                <mat-icon>event_note</mat-icon>
-                <p>Capacity planning tools will be displayed here</p>
+              <div class="capacity-grid">
+                @for (dept of departmentDistribution(); track dept.label) {
+                  <div class="capacity-item">
+                    <div class="capacity-header">
+                      <strong>{{ dept.label }}</strong>
+                      <span>{{ dept.count }} team member(s)</span>
+                    </div>
+                    <mat-progress-bar [value]="dept.percentage" mode="determinate" color="primary"></mat-progress-bar>
+                    <div class="capacity-meta">
+                      {{ dept.percentage }}% of workforce
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="capacity-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>hourglass_bottom</mat-icon>
+                Tenure & Engagement
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="tenure-highlight" *ngIf="summary()">
+                <div class="tenure-value">{{ summary()!.averageTenureMonths }} months</div>
+                <div class="tenure-label">Average tenure</div>
+              </div>
+              <div class="distribution-list">
+                @for (tenure of tenureDistribution(); track tenure.label) {
+                  <div class="distribution-item">
+                    <div class="distribution-label">{{ tenure.label }}</div>
+                    <mat-progress-bar [value]="tenure.percentage" mode="determinate" color="accent"></mat-progress-bar>
+                    <div class="distribution-meta">
+                      {{ tenure.count }} · {{ tenure.percentage }}%
+                    </div>
+                  </div>
+                }
               </div>
             </mat-card-content>
           </mat-card>
         </div>
       </mat-tab>
 
-      <mat-tab label="Skills Matrix">
+      <mat-tab label="Workforce Composition">
         <div class="tab-content">
-          <mat-card>
+          <mat-card class="composition-card">
             <mat-card-header>
               <mat-card-title>
-                <mat-icon>assessment</mat-icon>
-                Skills Matrix
+                <mat-icon>donut_large</mat-icon>
+                Employment Mix
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <p>Track skills and competencies across the organization</p>
-              <div class="metrics-placeholder">
-                <mat-icon>assessment</mat-icon>
-                <p>Skills matrix will be displayed here</p>
+              <div class="composition-chips">
+                @for (type of employmentTypeDistribution(); track type.label) {
+                  <mat-chip>
+                    {{ getEmploymentTypeLabel(type.label) }}
+                    <span class="chip-meta">{{ type.count }} team member(s)</span>
+                  </mat-chip>
+                }
               </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="composition-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>leaderboard</mat-icon>
+                Performance Snapshot
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (topPerformers().length > 0) {
+                <div class="performance-grid">
+                  @for (performer of topPerformers(); track performer.userId) {
+                    <div class="performance-item">
+                      <div class="performance-name">{{ performer.fullName }}</div>
+                      <div class="performance-meta">{{ performer.department }}</div>
+                      <div class="performance-hours">
+                        <mat-progress-bar
+                          [value]="Math.min((performer.billableHours / 40) * 100, 100)"
+                          mode="determinate"
+                          color="primary">
+                        </mat-progress-bar>
+                        <span>{{ performer.billableHours }}h billable</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state compact">
+                  <mat-icon>auto_awesome</mat-icon>
+                  <p>Performance metrics will appear as timesheets are submitted</p>
+                </div>
+              }
             </mat-card-content>
           </mat-card>
         </div>
       </mat-tab>
     </mat-tab-group>
   }
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>No workforce data available</h3>
+      <p>Once employees are onboarded, their information will appear here.</p>
+    </div>
+  </ng-template>
 </div>
