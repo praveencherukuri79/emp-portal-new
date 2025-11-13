@@ -11,3 +11,4 @@ export { default as Document } from './document.model';
 export { default as Notification } from './notification.model';
 export { default as Project } from './project.model';
 export { default as OrganizationSettings } from './settings.model';
+export { default as LeaveAccrualHistory } from './leave-accrual-history.model';

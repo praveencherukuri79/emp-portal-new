@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import config from './config';
 import connectDatabase from './config/database';
 import { EmailUtil } from './utils';
+import { startLeaveAccrualJobs } from './jobs/leave-accrual.job';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -65,6 +66,12 @@ connectDatabase();
 
 // Initialize email utility
 EmailUtil.initialize();
+
+// Start scheduled jobs (leave accrual)
+if (config.env === 'production') {
+  startLeaveAccrualJobs();
+  console.log('✅ Scheduled jobs started (leave accrual)');
+}
 
 // ==================== ROUTES ====================
 
