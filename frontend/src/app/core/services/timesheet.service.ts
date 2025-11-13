@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TimesheetStatus, ITimesheetEntryDTO } from '@shared/types';
@@ -9,6 +9,7 @@ import { IApiResponse } from '@shared/types';
 import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse, IProjectResponse, IProjectsListResponse } from '@shared/types/responses';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import { buildHttpParams } from '../../shared/utils/http.util';
 
 dayjs.extend(isoWeek);
 
@@ -106,10 +107,11 @@ export class TimesheetService {
   }
 
   getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<IApiResponse<ITimesheetHistoryResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
-    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
-    if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
+    const httpParams = buildHttpParams({
+      startDate: params?.startDate,
+      endDate: params?.endDate,
+      status: params?.status?.toLowerCase()
+    });
     return this.http.get<IApiResponse<ITimesheetHistoryResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.HISTORY}`, { params: httpParams });
   }
 

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ILeaveRequestResponse, ILeaveBalanceResponse, ILeaveCalendarResponse, ILeaveStatisticsResponse } from '@shared/types/responses';
 import { ResponseHandler } from '../shared/utils';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export interface LeaveRequest extends ILeaveRequestDTO {
   _id?: string;
@@ -32,14 +33,14 @@ export class LeaveService {
       halfDayPeriod: request.halfDayPeriod?.toLowerCase() as 'morning' | 'afternoon' | undefined,
       reason: request.reason
     };
-    return this.http.post<IApiResponse<ILeaveRequestResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto)
-      .pipe(catchError(ResponseHandler.handleError()));
+    return this.http.post<IApiResponse<ILeaveRequestResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto);
   }
 
   getMyLeaveRequests(params?: { status?: LeaveStatus; leaveType?: LeaveType }): Observable<IApiResponse<ILeaveRequestResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
-    if (params?.leaveType) httpParams = httpParams.set('leaveType', params.leaveType.toLowerCase());
+    const httpParams = buildHttpParams({
+      status: params?.status?.toLowerCase(),
+      leaveType: params?.leaveType?.toLowerCase()
+    });
     return this.http.get<IApiResponse<ILeaveRequestResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.MY_REQUESTS}`, { params: httpParams });
   }
 
@@ -48,9 +49,7 @@ export class LeaveService {
   }
 
   getLeaveCalendar(params?: { startDate?: string; endDate?: string }): Observable<IApiResponse<ILeaveCalendarResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
-    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    const httpParams = buildHttpParams(params || {});
     return this.http.get<IApiResponse<ILeaveCalendarResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CALENDAR}`, { params: httpParams });
   }
 
@@ -85,9 +84,7 @@ export class LeaveService {
   }
 
   getLeaveStatistics(params?: { userId?: string; year?: number }): Observable<IApiResponse<ILeaveStatisticsResponse>> {
-    let httpParams = new HttpParams();
-    if (params?.userId) httpParams = httpParams.set('userId', params.userId);
-    if (params?.year) httpParams = httpParams.set('year', params.year.toString());
+    const httpParams = buildHttpParams(params || {});
     return this.http.get<IApiResponse<ILeaveStatisticsResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.STATISTICS}`, { params: httpParams });
   }
 }

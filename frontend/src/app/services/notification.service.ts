@@ -1,11 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { NotificationType, NotificationPriority } from '@shared/types';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { INotificationResponse, INotificationsListResponse, IUnreadCountResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export interface Notification {
   _id: string;
@@ -28,9 +29,10 @@ export class NotificationService {
   unreadCount = signal<number>(0);
 
   getNotifications(params?: { isRead?: boolean; type?: NotificationType }): Observable<IApiResponse<INotificationsListResponse>> {
-    let httpParams = new HttpParams();
-    if (params?.isRead !== undefined) httpParams = httpParams.set('isRead', params.isRead.toString());
-    if (params?.type) httpParams = httpParams.set('type', params.type);
+    const httpParams = buildHttpParams({
+      isRead: params?.isRead,
+      type: params?.type
+    });
     
     return this.http.get<IApiResponse<INotificationsListResponse>>(this.baseUrl, { params: httpParams }).pipe(
       tap((response) => {

@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ITimesheetReportResponse, ILeaveReportResponse, ITeamReportResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export type ReportFormat = 'json' | 'pdf' | 'excel';
 
@@ -21,12 +22,7 @@ export class ReportService {
     userId?: string;
     format?: ReportFormat;
   }): Observable<IApiResponse<ITimesheetReportResponse> | Blob> {
-    let httpParams = new HttpParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        httpParams = httpParams.set(key, value.toString());
-      }
-    });
+    const httpParams = buildHttpParams(params);
 
     if (params.format === 'pdf' || params.format === 'excel') {
       return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TIMESHEET}`, {
@@ -45,12 +41,7 @@ export class ReportService {
     leaveType?: string;
     format?: ReportFormat;
   }): Observable<IApiResponse<ILeaveReportResponse> | Blob> {
-    let httpParams = new HttpParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        httpParams = httpParams.set(key, value.toString());
-      }
-    });
+    const httpParams = buildHttpParams(params);
 
     if (params.format === 'pdf' || params.format === 'excel') {
       return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.LEAVE}`, {
@@ -66,14 +57,7 @@ export class ReportService {
     departmentId?: string;
     format?: ReportFormat;
   }): Observable<IApiResponse<ITeamReportResponse> | Blob> {
-    let httpParams = new HttpParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined) {
-          httpParams = httpParams.set(key, value.toString());
-        }
-      });
-    }
+    const httpParams = buildHttpParams(params || {});
 
     if (params?.format === 'pdf' || params?.format === 'excel') {
       return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.REPORTS.TEAM}`, {

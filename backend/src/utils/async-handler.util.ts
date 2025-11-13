@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthRequest } from '../types';
-import { ApiResponse, HttpStatus } from './response-handler.util';
+import { ApiResponse } from './response.util';
 
 /**
  * Async Handler Utility
@@ -47,7 +47,7 @@ export const asyncHandler = (fn: AsyncFunction) => {
       return ApiResponse.error(
         res,
         error.message || 'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        500
       );
     });
   };

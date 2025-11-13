@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApprovalType, ApprovalStatus, IApprovalRequest, IBulkApprovalRequest } from '@shared/types';
 import { IApiResponse } from '@shared/types';
 import { IPendingApprovalsResponse, IApprovalHistoryResponse, IApprovalResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../../shared/utils/http.util';
 
 export interface ApprovalRequest extends IApprovalRequest {}
 export interface BulkApprovalRequest extends IBulkApprovalRequest {}
@@ -19,14 +20,12 @@ export class ApprovalService {
   private baseUrl = `${environment.apiUrl}/approvals`;
 
   getPendingApprovals(type?: ApprovalType): Observable<IApiResponse<IPendingApprovalsResponse>> {
-    let params = new HttpParams();
-    if (type) params = params.set('type', type);
+    const params = buildHttpParams({ type });
     return this.http.get<IApiResponse<IPendingApprovalsResponse>>(`${this.baseUrl}/pending`, { params });
   }
 
   getMyApprovalHistory(status?: ApprovalStatus): Observable<IApiResponse<IApprovalHistoryResponse>> {
-    let params = new HttpParams();
-    if (status) params = params.set('status', status.toLowerCase());
+    const params = buildHttpParams({ status: status?.toLowerCase() });
     return this.http.get<IApiResponse<IApprovalHistoryResponse>>(`${this.baseUrl}/history`, { params });
   }
 

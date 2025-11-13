@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DocumentCategory } from '@shared/types';
@@ -7,6 +7,7 @@ import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/req
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { IDocumentResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export interface Document {
   _id?: string;
@@ -42,17 +43,19 @@ export class DocumentService {
   }
 
   getMyDocuments(params?: { category?: DocumentCategory; expiringSoon?: boolean }): Observable<IApiResponse<IDocumentResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.category) httpParams = httpParams.set('category', params.category.toLowerCase());
-    if (params?.expiringSoon !== undefined) httpParams = httpParams.set('expiringSoon', params.expiringSoon.toString());
+    const httpParams = buildHttpParams({
+      category: params?.category?.toLowerCase(),
+      expiringSoon: params?.expiringSoon
+    });
     return this.http.get<IApiResponse<IDocumentResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.MY_DOCUMENTS}`, { params: httpParams });
   }
 
   getAllDocuments(params?: { userId?: string; category?: DocumentCategory; expiringSoon?: boolean }): Observable<IApiResponse<IDocumentResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.userId) httpParams = httpParams.set('userId', params.userId);
-    if (params?.category) httpParams = httpParams.set('category', params.category.toLowerCase());
-    if (params?.expiringSoon !== undefined) httpParams = httpParams.set('expiringSoon', params.expiringSoon.toString());
+    const httpParams = buildHttpParams({
+      userId: params?.userId,
+      category: params?.category?.toLowerCase(),
+      expiringSoon: params?.expiringSoon
+    });
     return this.http.get<IApiResponse<IDocumentResponse[]>>(this.baseUrl, { params: httpParams });
   }
 

@@ -112,6 +112,26 @@ export class ApiResponse {
   }
 
   /**
+   * Send bad request response
+   */
+  static badRequest(
+    res: Response,
+    message: string = 'Bad request'
+  ): Response {
+    return ApiResponse.error(res, message, 400);
+  }
+
+  /**
+   * Send conflict response
+   */
+  static conflict(
+    res: Response,
+    message: string = 'Resource already exists'
+  ): Response {
+    return ApiResponse.error(res, message, 409);
+  }
+
+  /**
    * Send created response
    */
   static created<T>(

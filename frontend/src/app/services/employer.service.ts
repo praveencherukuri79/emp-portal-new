@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   IApiResponse,
@@ -9,6 +9,7 @@ import {
 } from '@shared/types';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { environment } from '../../environments/environment';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 type FinancialPeriod = 'month' | 'quarter' | 'year';
 
@@ -26,7 +27,7 @@ export class EmployerService {
   }
 
   getFinancialOverview(period: FinancialPeriod): Observable<IApiResponse<IEmployerFinancialOverview>> {
-    const params = new HttpParams().set('period', period);
+    const params = buildHttpParams({ period });
 
     return this.http.get<IApiResponse<IEmployerFinancialOverview>>(
       `${this.apiUrl}${API_ENDPOINTS.EMPLOYER.FINANCIAL}`,

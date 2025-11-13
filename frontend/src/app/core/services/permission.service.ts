@@ -165,13 +165,16 @@ export class PermissionService {
   }
 
   /**
-   * Log current user's permissions (dev only)
+   * Log current user's permissions (dev/debug only)
+   * Note: Only use in development mode
    */
   logPermissions(): void {
-    const role = this.authService.currentUser()?.role;
-    console.log('Current Role:', role);
-    console.log('Permissions:', this.userPermissions());
-    console.log('Role Config:', this.authService.roleConfig());
+    if (typeof window !== 'undefined' && (window as any)['DEBUG_MODE']) {
+      const role = this.authService.currentUser()?.role;
+      console.log('Current Role:', role);
+      console.log('Permissions:', this.userPermissions());
+      console.log('Role Config:', this.authService.roleConfig());
+    }
   }
 }
 

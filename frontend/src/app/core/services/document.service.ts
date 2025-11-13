@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { DocumentCategory } from '@shared/types';
@@ -7,6 +7,7 @@ import { IUpdateDocumentRequest, IShareDocumentRequest } from '@shared/types/req
 import { API_ENDPOINTS, DOCUMENT_CATEGORY_LABELS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { IDocumentResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../../shared/utils/http.util';
 
 export interface Document {
   _id?: string;
@@ -43,19 +44,21 @@ export class DocumentService {
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.ALL}`;
 
   getMyDocuments(filters?: DocumentFilters): Observable<IApiResponse<IDocumentResponse[]>> {
-    let params = new HttpParams();
-    if (filters?.category) params = params.set('category', filters.category.toLowerCase());
-    if (filters?.status) params = params.set('status', filters.status.toLowerCase());
-    if (filters?.search) params = params.set('search', filters.search);
+    const params = buildHttpParams({
+      category: filters?.category?.toLowerCase(),
+      status: filters?.status?.toLowerCase(),
+      search: filters?.search
+    });
     return this.http.get<IApiResponse<IDocumentResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.MY_DOCUMENTS}`, { params });
   }
 
   getAllDocuments(filters?: DocumentFilters & { userId?: string; expiringSoon?: boolean }): Observable<IApiResponse<IDocumentResponse[]>> {
-    let params = new HttpParams();
-    if (filters?.category) params = params.set('category', filters.category.toLowerCase());
-    if (filters?.userId) params = params.set('userId', filters.userId);
-    if (filters?.expiringSoon) params = params.set('expiringSoon', 'true');
-    if (filters?.search) params = params.set('search', filters.search);
+    const params = buildHttpParams({
+      category: filters?.category?.toLowerCase(),
+      userId: filters?.userId,
+      expiringSoon: filters?.expiringSoon,
+      search: filters?.search
+    });
     return this.http.get<IApiResponse<IDocumentResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.ALL}`, { params });
   }
 

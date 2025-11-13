@@ -218,8 +218,6 @@ export class AuthService {
     // Get role metadata from shared config
     const config = getRoleConfig(role);
     this.roleConfig.set(config);
-    
-    console.log(`[AuthService] Loaded ${permissions.length} permissions for role: ${role}`);
   }
 
   /**

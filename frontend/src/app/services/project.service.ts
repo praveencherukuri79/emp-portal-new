@@ -4,14 +4,13 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { IProjectResponse, IProjectsListResponse } from '@shared/types/responses';
-import { ResponseHandler } from '../shared/utils';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export interface ProjectCreateRequest {
   name: string;
@@ -49,13 +48,7 @@ export class ProjectService {
    * Get all projects
    */
   getAllProjects(params?: { isActive?: boolean; search?: string }): Observable<IApiResponse<IProjectsListResponse>> {
-    let httpParams = new HttpParams();
-    if (params?.isActive !== undefined) {
-      httpParams = httpParams.set('isActive', params.isActive.toString());
-    }
-    if (params?.search) {
-      httpParams = httpParams.set('search', params.search);
-    }
+    const httpParams = buildHttpParams(params || {});
     return this.http.get<IApiResponse<IProjectsListResponse>>(this.baseUrl, { params: httpParams });
   }
 

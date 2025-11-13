@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../core/models/user.model';
@@ -7,6 +7,7 @@ import { IUpdateProfileRequest, IUpdateEmployeeInfoRequest, ICreateUserRequest, 
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { IUserResponse, IUsersListResponse } from '@shared/types/responses';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +29,7 @@ export class UserService {
   }
 
   getAllUsers(params?: { role?: string; isActive?: boolean }): Observable<IApiResponse<IUsersListResponse>> {
-    let httpParams = new HttpParams();
-    if (params?.role) httpParams = httpParams.set('role', params.role);
-    if (params?.isActive !== undefined) httpParams = httpParams.set('isActive', params.isActive.toString());
+    const httpParams = buildHttpParams(params || {});
     return this.http.get<IApiResponse<IUsersListResponse>>(this.baseUrl, { params: httpParams });
   }
 

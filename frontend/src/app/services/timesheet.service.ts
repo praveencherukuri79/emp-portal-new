@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse } from '@shared/types/responses';
 import { ResponseHandler } from '../shared/utils';
+import { buildHttpParams } from '../shared/utils/http.util';
 
 export interface TimesheetEntry {
   _id?: string;
@@ -94,10 +95,10 @@ export class TimesheetService {
   }
 
   getHistory(params?: { startDate?: string; endDate?: string; status?: string }): Observable<IApiResponse<ITimesheetHistoryResponse[]>> {
-    let httpParams = new HttpParams();
-    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
-    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
-    if (params?.status) httpParams = httpParams.set('status', params.status.toLowerCase());
+    const httpParams = buildHttpParams({
+      ...params,
+      status: params?.status?.toLowerCase()
+    });
     return this.http.get<IApiResponse<ITimesheetHistoryResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.HISTORY}`, { params: httpParams });
   }
 
