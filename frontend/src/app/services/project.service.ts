@@ -43,6 +43,7 @@ export interface ProjectUpdateRequest {
 export class ProjectService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`;
+  private apiUrl = this.baseUrl; // Alias for consistency
 
   /**
    * Get all projects

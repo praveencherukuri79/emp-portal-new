@@ -11,6 +11,8 @@ import { IProjectResponse, IProjectsListResponse } from '@shared/types/responses
 import { toProjectResponse, toProjectsListResponse } from '../dto';
 import ProjectService from '../services/project.service';
 
+import { User } from '../models';
+
 export class ProjectController {
   /**
    * Get all projects

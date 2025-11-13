@@ -5,6 +5,7 @@
 
 import { Router } from 'express';
 import { ProjectController } from '../controllers/project.controller';
+import { ProjectAssignmentController } from '../controllers/project.controller.assignment';
 import { authenticate } from '../middleware/auth.middleware';
 import { requirePermission } from '../middleware/permission.middleware';
 import { Permission } from '@shared/types/permissions';
@@ -20,8 +21,14 @@ router.get('/', ProjectController.getAllProjects);
 // Get active projects (for dropdowns)
 router.get('/active', ProjectController.getActiveProjects);
 
+// Get current user's assigned projects
+router.get('/my-projects/list', ProjectAssignmentController.getMyProjects);
+
 // Get project by ID
 router.get('/:projectId', ProjectController.getProjectById);
+
+// Get project team members
+router.get('/:id/team', ProjectAssignmentController.getProjectTeam);
 
 // Create project (Admin/HR only)
 router.post(
@@ -42,6 +49,20 @@ router.delete(
   '/:projectId',
   requirePermission(Permission.CAN_MANAGE_SYSTEM_SETTINGS),
   ProjectController.deleteProject
+);
+
+// Assign users to project (Admin/HR only)
+router.post(
+  '/:id/assign',
+  requirePermission(Permission.CAN_MANAGE_SYSTEM_SETTINGS),
+  ProjectAssignmentController.assignUsers
+);
+
+// Remove user from project (Admin/HR only)
+router.delete(
+  '/:id/unassign/:userId',
+  requirePermission(Permission.CAN_MANAGE_SYSTEM_SETTINGS),
+  ProjectAssignmentController.unassignUser
 );
 
 export default router;

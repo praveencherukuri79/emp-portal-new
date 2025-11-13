@@ -12,6 +12,7 @@ export interface IProject extends Document {
   currency?: string;
   status: 'active' | 'completed' | 'on-hold' | 'cancelled';
   isActive: boolean;
+  assignedUsers: string[]; // Array of user IDs assigned to this project
   createdAt: Date;
   updatedAt: Date;
 }
@@ -74,7 +75,13 @@ const projectSchema = new Schema<IProject>({
   isActive: {
     type: Boolean,
     default: true
-  }
+  },
+
+  // Team assignment
+  assignedUsers: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 
 }, {
   timestamps: true
@@ -84,6 +91,7 @@ const projectSchema = new Schema<IProject>({
 projectSchema.index({ tenantId: 1, code: 1 }, { unique: true });
 projectSchema.index({ tenantId: 1, isActive: 1 });
 projectSchema.index({ tenantId: 1, status: 1 });
+projectSchema.index({ assignedUsers: 1 }); // For quick lookup of user's projects
 
 export const Project = model<IProject>('Project', projectSchema);
 export default Project;
