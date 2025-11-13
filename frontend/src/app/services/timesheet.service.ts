@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { TimesheetStatus, ITimesheetEntryDTO } from '@shared/types';
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse } from '@shared/types/responses';
+import { ResponseHandler } from '../shared/utils';
 
 export interface TimesheetEntry {
   _id?: string;
@@ -47,7 +49,8 @@ export class TimesheetService {
       hours: entry.hours || entry.hoursWorked || 0,
       isBillable: entry.isBillable !== undefined ? entry.isBillable : (entry.billable !== undefined ? entry.billable : true)
     };
-    return this.http.post<IApiResponse<ITimesheetEntryResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`, dto);
+    return this.http.post<IApiResponse<ITimesheetEntryResponse>>(`${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`, dto)
+      .pipe(catchError(ResponseHandler.handleError()));
   }
 
   batchCreateEntries(entries: TimesheetEntry[]): Observable<IApiResponse<ITimesheetEntryResponse[]>> {

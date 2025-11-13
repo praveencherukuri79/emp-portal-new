@@ -154,6 +154,11 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () => import('./features/admin/settings/system-settings.component').then((m: any) => m.SystemSettingsComponent),
         title: 'System Settings - Employee Portal'
+      },
+      {
+        path: 'projects',
+        loadComponent: () => import('./features/admin/projects/project-management.component').then(m => m.ProjectManagementComponent),
+        title: 'Project Management - Employee Portal'
       }
     ]
   },
@@ -203,6 +208,11 @@ export const routes: Routes = [
         path: 'workforce',
         loadComponent: () => import('./features/employer/workforce/workforce-management.component').then(m => m.WorkforceManagementComponent),
         title: 'Workforce Management - Employee Portal'
+      },
+      {
+        path: 'employees',
+        loadComponent: () => import('./features/hr/employees/employee-management.component').then((m: any) => m.EmployeeManagementComponent),
+        title: 'Employees - Employee Portal'
       }
     ]
   },

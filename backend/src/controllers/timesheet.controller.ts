@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { TimesheetEntry, User } from '../models';
-import { ApiResponse } from '@utils/response.util';
+import { ApiResponse, RequestValidator, BusinessLogic, DateUtil } from '../utils';
 import { IAuthRequest, TimesheetStatus, ITimesheetEntryDTO, ITimesheetEntry } from '../types';
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import { ITimesheetApprovalActionResponse } from '@shared/types/responses';
@@ -9,10 +9,8 @@ import { PermissionChecker, userHasPermission } from '../utils/permission.util';
 import { UserRole } from '@shared/types';
 import { Permission } from '@shared/types/permissions';
 import { Document } from 'mongoose';
+import NotificationService from '../services/notification.service';
 import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
-
-dayjs.extend(isoWeek);
 
 export class TimesheetController {
   /**
@@ -22,10 +20,18 @@ export class TimesheetController {
     try {
       const { date, project, task, description, hours, isBillable }: ITimesheetEntryDTO = req.body;
 
-      // Calculate week information
-      const entryDate = dayjs(date);
-      const weekStart = entryDate.startOf('isoWeek');
-      const weekEnd = entryDate.endOf('isoWeek');
+      // Validate tenant and user context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
+      // Validate hours
+      const hoursValidation = BusinessLogic.validateTimesheetHours(hours);
+      if (!hoursValidation.valid) {
+        return ApiResponse.validationError(res, [hoursValidation.error!]);
+      }
+
+      // Calculate week information using utility
+      const { weekStart, weekEnd, year, weekNumber } = BusinessLogic.getWeekDates(date);
 
       // Check if entry already exists for this date and project
       const existingEntry = await TimesheetEntry.findOne({
@@ -36,18 +42,17 @@ export class TimesheetController {
       });
 
       if (existingEntry) {
-        return ApiResponse.error(res, 'Entry already exists for this date and project');
-        return;
+        return ApiResponse.error(res, 'Entry already exists for this date and project', 400);
       }
 
       const entry = new TimesheetEntry({
         tenantId: req.user?.tenantId,
         userId: req.user?.userId,
         date,
-        weekStartDate: weekStart.toDate(),
-        weekEndDate: weekEnd.toDate(),
-        year: entryDate.year(),
-        weekNumber: entryDate.isoWeek(),
+        weekStartDate: weekStart,
+        weekEndDate: weekEnd,
+        year,
+        weekNumber,
         project,
         task,
         description,
@@ -61,7 +66,8 @@ export class TimesheetController {
       const responseData = toTimesheetEntryResponse(entry);
       return ApiResponse.created(res, responseData, 'Timesheet entry created successfully');
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to create timesheet entry');
+      console.error('Create timesheet entry error:', error);
+      return ApiResponse.error(res, 'Failed to create timesheet entry', 500);
     }
   }
 
@@ -72,18 +78,27 @@ export class TimesheetController {
     try {
       const { entries }: IBatchTimesheetEntriesRequest = req.body;
 
+      // Validate tenant and user context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
       if (!Array.isArray(entries) || entries.length === 0) {
-        return ApiResponse.error(res, 'Entries array is required');
-        return;
+        return ApiResponse.validationError(res, ['Entries array is required and must not be empty']);
       }
 
       const createdEntries = [];
+      const errors: string[] = [];
       
       for (const entryData of entries) {
-        // Calculate week information for each entry
-        const entryDate = dayjs(entryData.date);
-        const weekStart = entryDate.startOf('isoWeek');
-        const weekEnd = entryDate.endOf('isoWeek');
+        // Validate hours
+        const hoursValidation = BusinessLogic.validateTimesheetHours(entryData.hours);
+        if (!hoursValidation.valid) {
+          errors.push(`Entry for ${entryData.date}: ${hoursValidation.error}`);
+          continue;
+        }
+
+        // Calculate week information using utility
+        const { weekStart, weekEnd, year, weekNumber } = BusinessLogic.getWeekDates(entryData.date);
 
         // Map frontend fields to backend fields
         const project = entryData.project;
@@ -102,26 +117,30 @@ export class TimesheetController {
             tenantId: req.user?.tenantId,
             userId: req.user?.userId,
             date: entryData.date,
-            weekStartDate: weekStart.toDate(),
-            weekEndDate: weekEnd.toDate(),
-            year: entryDate.year(),
-            weekNumber: entryDate.isoWeek(),
+            weekStartDate: weekStart,
+            weekEndDate: weekEnd,
+            year,
+            weekNumber,
             project,
-            task: entryData.description || '',
+            task: entryData.task || entryData.description || '',
             description: entryData.description || '',
             hours: entryData.hours,
             isBillable,
-            status: TimesheetStatus.DRAFT // Always create as DRAFT
+            status: TimesheetStatus.DRAFT
           });
           await entry.save();
           createdEntries.push(entry);
         }
       }
 
+      if (errors.length > 0 && createdEntries.length === 0) {
+        return ApiResponse.validationError(res, errors);
+      }
+
       return ApiResponse.created(res, createdEntries, `${createdEntries.length} entries created successfully`);
     } catch (error) {
       console.error('Batch create error:', error);
-      return ApiResponse.error(res, 'Failed to create timesheet entries');
+      return ApiResponse.error(res, 'Failed to create timesheet entries', 500);
     }
   }
 
@@ -132,14 +151,16 @@ export class TimesheetController {
     try {
       const { weekStartDate } = req.params;
 
-      // Use isoWeek to treat Monday as start of week (not Sunday)
-      const startDate = dayjs(weekStartDate).startOf('isoWeek').toDate();
-      const endDate = dayjs(weekStartDate).endOf('isoWeek').toDate();
+      // Validate tenant context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+
+      // Use BusinessLogic utility to get week dates
+      const { weekStart, weekEnd } = BusinessLogic.getWeekDates(weekStartDate);
 
       const entries = await TimesheetEntry.find({
         tenantId: req.user?.tenantId,
         userId: req.user?.userId,
-        date: { $gte: startDate, $lte: endDate }
+        date: { $gte: weekStart, $lte: weekEnd }
       }).sort({ date: 1 });
 
       // Determine week status based on entries
@@ -156,19 +177,17 @@ export class TimesheetController {
         }
       }
 
-      // Calculate summary
-      const totalHours = entries.reduce((sum, entry) => sum + entry.hours, 0);
-      const billableHours = entries.reduce((sum, entry) => entry.isBillable ? sum + entry.hours : sum, 0);
-      const nonBillableHours = totalHours - billableHours;
+      // Calculate summary using utility
+      const hoursSummary = BusinessLogic.calculateWeekTotalHours(entries);
 
       const responseData = toWeeklyTimesheetResponse(
         entries,
-        startDate,
-        endDate,
+        weekStart,
+        weekEnd,
         weekStatus,
-        totalHours,
-        billableHours,
-        nonBillableHours
+        hoursSummary.total,
+        hoursSummary.billable,
+        hoursSummary.nonBillable
       );
       return ApiResponse.success(res, responseData, 'Week entries retrieved successfully');
     } catch (error) {
@@ -184,6 +203,23 @@ export class TimesheetController {
       const { entryId } = req.params;
       const { project, task, description, hours, isBillable }: IUpdateTimesheetEntryRequest = req.body;
 
+      // Validate tenant context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+
+      // Validate ObjectId
+      const idValidation = RequestValidator.validateObjectId(entryId, 'Entry ID');
+      if (!idValidation.valid) {
+        return ApiResponse.validationError(res, [idValidation.error!]);
+      }
+
+      // Validate hours if provided
+      if (hours !== undefined) {
+        const hoursValidation = BusinessLogic.validateTimesheetHours(hours);
+        if (!hoursValidation.valid) {
+          return ApiResponse.validationError(res, [hoursValidation.error!]);
+        }
+      }
+
       const entry = await TimesheetEntry.findOne({
         _id: entryId,
         tenantId: req.user?.tenantId,
@@ -192,13 +228,11 @@ export class TimesheetController {
 
       if (!entry) {
         return ApiResponse.notFound(res, 'Timesheet entry not found');
-        return;
       }
 
       // Can only edit Draft or Rejected entries
       if (entry.status !== TimesheetStatus.DRAFT && entry.status !== TimesheetStatus.REJECTED) {
         return ApiResponse.forbidden(res, 'Cannot edit submitted or approved entries');
-        return;
       }
 
       if (project) entry.project = project;
@@ -358,6 +392,13 @@ export class TimesheetController {
     try {
       const { entryIds, comments }: IApproveTimesheetEntriesRequest = req.body;
 
+      // Validate required fields
+      if (!RequestValidator.validateRequiredFields(req.body, ['entryIds'], res)) return;
+
+      if (!Array.isArray(entryIds) || entryIds.length === 0) {
+        return ApiResponse.validationError(res, ['Entry IDs array is required and must not be empty']);
+      }
+
       const entries = await TimesheetEntry.find({
         _id: { $in: entryIds },
         tenantId: req.user?.tenantId,
@@ -366,7 +407,6 @@ export class TimesheetController {
 
       if (entries.length === 0) {
         return ApiResponse.notFound(res, 'No submitted entries found');
-        return;
       }
 
       // Update all entries to approved
@@ -380,13 +420,40 @@ export class TimesheetController {
 
       await Promise.all(updatePromises);
 
+      // Send notifications (group by user and week)
+      const approver = await User.findById(req.user?.userId);
+      if (approver && entries.length > 0) {
+        const uniqueUserWeeks = new Map<string, {userId: string; weekStart: Date; weekEnd: Date}>();
+        entries.forEach(entry => {
+          const key = `${entry.userId}-${entry.weekStartDate}`;
+          if (!uniqueUserWeeks.has(key)) {
+            uniqueUserWeeks.set(key, {
+              userId: String(entry.userId),
+              weekStart: entry.weekStartDate,
+              weekEnd: entry.weekEndDate
+            });
+          }
+        });
+
+        for (const {userId, weekStart, weekEnd} of uniqueUserWeeks.values()) {
+          await NotificationService.notifyTimesheetApproved(
+            req.user!.tenantId,
+            userId,
+            DateUtil.formatDate(weekStart),
+            DateUtil.formatDate(weekEnd),
+            approver.fullName
+          );
+        }
+      }
+
       const responseData: ITimesheetApprovalActionResponse = {
         count: entries.length
       };
 
       return ApiResponse.success<ITimesheetApprovalActionResponse>(res, responseData, `${entries.length} entries approved`);
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to approve entries');
+      console.error('Approve entries error:', error);
+      return ApiResponse.error(res, 'Failed to approve entries', 500);
     }
   }
 
@@ -397,9 +464,11 @@ export class TimesheetController {
     try {
       const { entryIds, comments }: IRejectTimesheetEntriesRequest = req.body;
 
-      if (!comments) {
-        return ApiResponse.error(res, 'Rejection comments are required');
-        return;
+      // Validate required fields
+      if (!RequestValidator.validateRequiredFields(req.body, ['entryIds', 'comments'], res)) return;
+
+      if (!Array.isArray(entryIds) || entryIds.length === 0) {
+        return ApiResponse.validationError(res, ['Entry IDs array is required and must not be empty']);
       }
 
       const entries = await TimesheetEntry.find({
@@ -410,7 +479,6 @@ export class TimesheetController {
 
       if (entries.length === 0) {
         return ApiResponse.notFound(res, 'No submitted entries found');
-        return;
       }
 
       // Update all entries to rejected
@@ -424,13 +492,41 @@ export class TimesheetController {
 
       await Promise.all(updatePromises);
 
+      // Send notifications (group by user and week)
+      const approver = await User.findById(req.user?.userId);
+      if (approver && entries.length > 0) {
+        const uniqueUserWeeks = new Map<string, {userId: string; weekStart: Date; weekEnd: Date}>();
+        entries.forEach(entry => {
+          const key = `${entry.userId}-${entry.weekStartDate}`;
+          if (!uniqueUserWeeks.has(key)) {
+            uniqueUserWeeks.set(key, {
+              userId: String(entry.userId),
+              weekStart: entry.weekStartDate,
+              weekEnd: entry.weekEndDate
+            });
+          }
+        });
+
+        for (const {userId, weekStart, weekEnd} of uniqueUserWeeks.values()) {
+          await NotificationService.notifyTimesheetRejected(
+            req.user!.tenantId,
+            userId,
+            DateUtil.formatDate(weekStart),
+            DateUtil.formatDate(weekEnd),
+            approver.fullName,
+            comments
+          );
+        }
+      }
+
       const responseData: ITimesheetApprovalActionResponse = {
         count: entries.length
       };
 
       return ApiResponse.success<ITimesheetApprovalActionResponse>(res, responseData, `${entries.length} entries rejected`);
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to reject entries');
+      console.error('Reject entries error:', error);
+      return ApiResponse.error(res, 'Failed to reject entries', 500);
     }
   }
 

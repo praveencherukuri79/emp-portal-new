@@ -1,17 +1,14 @@
 import { Response } from 'express';
 import { LeaveRequest, User } from '../models';
-import { ApiResponse } from '@utils/response.util';
+import { ApiResponse, RequestValidator, BusinessLogic, DateUtil } from '../utils';
 import { IAuthRequest, LeaveStatus, LeaveType, UserRole, ILeaveRequestDTO } from '../types';
 import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
 import { toLeaveRequestResponse, toLeaveRequestResponseArray } from '../dto';
 import { PermissionChecker, userHasPermission } from '../utils/permission.util';
 import { Permission } from '@shared/types/permissions';
+import NotificationService from '../services/notification.service';
+import { formatLeaveType } from '@shared/utils/formatters';
 import dayjs from 'dayjs';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import isoWeek from 'dayjs/plugin/isoWeek';
-
-dayjs.extend(isSameOrBefore);
-dayjs.extend(isoWeek);
 
 export class LeaveController {
   /**
@@ -21,25 +18,18 @@ export class LeaveController {
     try {
       const { leaveType, startDate, endDate, isHalfDay, halfDayPeriod, reason }: ILeaveRequestDTO = req.body;
 
-      // Validate dates
-      if (new Date(startDate) > new Date(endDate)) {
-        return ApiResponse.error(res, 'End date must be after start date', 400);
-        return;
+      // Validate tenant context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
+      // Validate date range
+      const dateValidation = RequestValidator.validateDateRange(startDate, endDate);
+      if (!dateValidation.valid) {
+        return ApiResponse.validationError(res, [dateValidation.error!]);
       }
 
-      // Calculate total days
-      const start = dayjs(startDate);
-      const end = dayjs(endDate);
-      let totalDays = 0;
-      
-      let current = start;
-      while (current.isSameOrBefore(end, 'day')) {
-        const dayOfWeek = current.day();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip weekends
-          totalDays++;
-        }
-        current = current.add(1, 'day');
-      }
+      // Calculate total days using utility
+      let totalDays = BusinessLogic.calculateWorkingDays(startDate, endDate);
       
       // Adjust for half-day
       if (isHalfDay) {
@@ -50,7 +40,17 @@ export class LeaveController {
       const user = await User.findById(req.user?.userId);
       if (!user) {
         return ApiResponse.notFound(res, 'User not found');
-        return;
+      }
+
+      // Check if sufficient balance
+      const balanceCheck = BusinessLogic.hasSufficientLeaveBalance(
+        user.leaveBalance,
+        leaveType,
+        totalDays
+      );
+
+      if (!balanceCheck.sufficient) {
+        return ApiResponse.error(res, balanceCheck.error!, 400);
       }
 
       const leaveRequest = new LeaveRequest({
@@ -71,6 +71,7 @@ export class LeaveController {
       const responseData = toLeaveRequestResponse(leaveRequest);
       return ApiResponse.created(res, responseData, 'Leave request submitted successfully');
     } catch (error) {
+      console.error('Create leave request error:', error);
       return ApiResponse.error(res, 'Failed to create leave request', 500);
     }
   }
@@ -317,22 +318,38 @@ export class LeaveController {
   }
 
   /**
-   * Approve leave request
+   * Approve leave request (Supervisor/HR/Admin/Employer)
    */
   static async approveLeaveRequest(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
       const { leaveId } = req.params;
       const { comments }: IApproveLeaveRequest = req.body;
 
+      // Validate ID
+      const idValidation = RequestValidator.validateObjectId(leaveId, 'Leave ID');
+      if (!idValidation.valid) {
+        return ApiResponse.validationError(res, [idValidation.error!]);
+      }
+
       const leave = await LeaveRequest.findOne({
         _id: leaveId,
         tenantId: req.user?.tenantId,
         status: LeaveStatus.PENDING
-      });
+      }).populate('userId', 'firstName lastName');
 
       if (!leave) {
-        return ApiResponse.notFound(res, 'Leave request not found');
-        return;
+        return ApiResponse.notFound(res, 'Leave request not found or already processed');
+      }
+
+      // Deduct leave balance
+      const user = await User.findById(leave.userId);
+      if (user) {
+        user.leaveBalance = BusinessLogic.deductLeaveBalance(
+          user.leaveBalance,
+          leave.leaveType,
+          leave.totalDays
+        );
+        await user.save();
       }
 
       leave.status = LeaveStatus.APPROVED;
@@ -342,8 +359,23 @@ export class LeaveController {
 
       await leave.save();
 
-      return ApiResponse.success(res, leave, 'Leave request approved successfully');
+      // Send notification
+      const approver = await User.findById(req.user?.userId);
+      if (approver && user) {
+        await NotificationService.notifyLeaveApproved(
+          req.user!.tenantId,
+          String(leave.userId),
+          formatLeaveType(leave.leaveType),
+          DateUtil.formatDate(leave.startDate),
+          DateUtil.formatDate(leave.endDate),
+          approver.fullName
+        );
+      }
+
+      const responseData = toLeaveRequestResponse(leave);
+      return ApiResponse.success(res, responseData, 'Leave request approved successfully');
     } catch (error) {
+      console.error('Approve leave error:', error);
       return ApiResponse.error(res, 'Failed to approve leave request', 500);
     }
   }
@@ -356,10 +388,14 @@ export class LeaveController {
       const { leaveId } = req.params;
       const { comments }: IRejectLeaveRequest = req.body;
 
-      if (!comments) {
-        return ApiResponse.error(res, 'Rejection comments are required', 400);
-        return;
+      // Validate ID
+      const idValidation = RequestValidator.validateObjectId(leaveId, 'Leave ID');
+      if (!idValidation.valid) {
+        return ApiResponse.validationError(res, [idValidation.error!]);
       }
+
+      // Validate required fields
+      if (!RequestValidator.validateRequiredFields(req.body, ['comments'], res)) return;
 
       const leave = await LeaveRequest.findOne({
         _id: leaveId,
@@ -368,8 +404,7 @@ export class LeaveController {
       });
 
       if (!leave) {
-        return ApiResponse.notFound(res, 'Leave request not found');
-        return;
+        return ApiResponse.notFound(res, 'Leave request not found or already processed');
       }
 
       leave.status = LeaveStatus.REJECTED;
@@ -379,8 +414,24 @@ export class LeaveController {
 
       await leave.save();
 
-      return ApiResponse.success(res, leave, 'Leave request rejected successfully');
+      // Send notification
+      const approver = await User.findById(req.user?.userId);
+      if (approver) {
+        await NotificationService.notifyLeaveRejected(
+          req.user!.tenantId,
+          String(leave.userId),
+          formatLeaveType(leave.leaveType),
+          DateUtil.formatDate(leave.startDate),
+          DateUtil.formatDate(leave.endDate),
+          approver.fullName,
+          comments
+        );
+      }
+
+      const responseData = toLeaveRequestResponse(leave);
+      return ApiResponse.success(res, responseData, 'Leave request rejected');
     } catch (error) {
+      console.error('Reject leave error:', error);
       return ApiResponse.error(res, 'Failed to reject leave request', 500);
     }
   }
@@ -390,34 +441,44 @@ export class LeaveController {
    */
   static async getLeaveStatistics(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const yearStart = dayjs().startOf('year').toDate();
-      const yearEnd = dayjs().endOf('year').toDate();
+      // Validate context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+
+      const { startDate, endDate } = BusinessLogic.getYearRange();
 
       const leaves = await LeaveRequest.find({
-        tenantId: req.user?.tenantId,
+        tenantId: req.user!.tenantId,
         status: LeaveStatus.APPROVED,
-        startDate: { $gte: yearStart, $lte: yearEnd }
+        startDate: { $gte: startDate, $lte: endDate }
       });
+
+      // Group by type using utility
+      const grouped = BusinessLogic.groupBy(leaves, 'leaveType');
+      
+      const byType: Record<LeaveType, { count: number; totalDays: number }> = {} as any;
+      for (const type of Object.values(LeaveType)) {
+        const typeLeaves = grouped[type] || [];
+        byType[type] = {
+          count: typeLeaves.length,
+          totalDays: BusinessLogic.sum(typeLeaves.map((l: any) => l.totalDays))
+        };
+      }
+
+      const byStatus: Record<LeaveStatus, number> = {} as any;
+      for (const status of Object.values(LeaveStatus)) {
+        byStatus[status] = leaves.filter(l => l.status === status).length;
+      }
 
       const stats = {
         totalLeaves: leaves.length,
-        totalDays: leaves.reduce((sum: number, leave: any) => sum + leave.totalDays, 0),
-        byType: {
-          annual: leaves.filter(l => l.leaveType === LeaveType.ANNUAL).length,
-          sick: leaves.filter(l => l.leaveType === LeaveType.SICK).length,
-          personal: leaves.filter(l => l.leaveType === LeaveType.PERSONAL).length,
-          unpaid: leaves.filter(l => l.leaveType === LeaveType.UNPAID).length,
-          maternity: leaves.filter(l => l.leaveType === LeaveType.MATERNITY).length,
-          paternity: leaves.filter(l => l.leaveType === LeaveType.PATERNITY).length
-        },
-        pending: await LeaveRequest.countDocuments({
-          tenantId: req.user?.tenantId,
-          status: LeaveStatus.PENDING
-        })
+        totalDays: BusinessLogic.sum(leaves.map((l: any) => l.totalDays)),
+        byType,
+        byStatus
       };
 
       return ApiResponse.success(res, stats, 'Leave statistics retrieved successfully');
     } catch (error) {
+      console.error('Get leave statistics error:', error);
       return ApiResponse.error(res, 'Failed to retrieve leave statistics', 500);
     }
   }

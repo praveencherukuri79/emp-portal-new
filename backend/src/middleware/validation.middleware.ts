@@ -27,20 +27,24 @@ export const validate = (validations: ValidationChain[]) => {
 };
 
 /**
- * Common validation rules
+ * Common validation rules using shared constants
  */
 import { body, param, query } from 'express-validator';
+import { PASSWORD_REQUIREMENTS, FIELD_LENGTHS, NUMERIC_RANGES } from '@shared/types/validation';
 
 export const ValidationRules = {
   // User validation
   email: body('email')
     .trim()
     .isEmail().withMessage('Valid email is required')
+    .isLength({ min: FIELD_LENGTHS.EMAIL.min, max: FIELD_LENGTHS.EMAIL.max })
+    .withMessage(`Email must be ${FIELD_LENGTHS.EMAIL.min}-${FIELD_LENGTHS.EMAIL.max} characters`)
     .normalizeEmail(),
 
   password: body('password')
     .trim()
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .isLength({ min: PASSWORD_REQUIREMENTS.minLength, max: PASSWORD_REQUIREMENTS.maxLength })
+    .withMessage(`Password must be ${PASSWORD_REQUIREMENTS.minLength}-${PASSWORD_REQUIREMENTS.maxLength} characters`)
     .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
     .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
     .matches(/[0-9]/).withMessage('Password must contain at least one number')
@@ -49,12 +53,14 @@ export const ValidationRules = {
   firstName: body('firstName')
     .trim()
     .notEmpty().withMessage('First name is required')
-    .isLength({ min: 2, max: 50 }).withMessage('First name must be 2-50 characters'),
+    .isLength({ min: FIELD_LENGTHS.NAME.min, max: FIELD_LENGTHS.NAME.max })
+    .withMessage(`First name must be ${FIELD_LENGTHS.NAME.min}-${FIELD_LENGTHS.NAME.max} characters`),
 
   lastName: body('lastName')
     .trim()
     .notEmpty().withMessage('Last name is required')
-    .isLength({ min: 2, max: 50 }).withMessage('Last name must be 2-50 characters'),
+    .isLength({ min: FIELD_LENGTHS.NAME.min, max: FIELD_LENGTHS.NAME.max })
+    .withMessage(`Last name must be ${FIELD_LENGTHS.NAME.min}-${FIELD_LENGTHS.NAME.max} characters`),
 
   // Single-tenant deployment - tenantDomain validation removed
 
@@ -70,12 +76,14 @@ export const ValidationRules = {
 
   timesheetHours: body('hours')
     .notEmpty().withMessage('Hours are required')
-    .isFloat({ min: 0.5, max: 24 }).withMessage('Hours must be between 0.5 and 24'),
+    .isFloat({ min: NUMERIC_RANGES.TIMESHEET_HOURS.min, max: NUMERIC_RANGES.TIMESHEET_HOURS.max })
+    .withMessage(`Hours must be between ${NUMERIC_RANGES.TIMESHEET_HOURS.min} and ${NUMERIC_RANGES.TIMESHEET_HOURS.max}`),
 
   timesheetProject: body('project')
     .trim()
     .notEmpty().withMessage('Project name is required')
-    .isLength({ min: 2, max: 100 }).withMessage('Project name must be 2-100 characters'),
+    .isLength({ min: FIELD_LENGTHS.PROJECT_NAME.min, max: FIELD_LENGTHS.PROJECT_NAME.max })
+    .withMessage(`Project name must be ${FIELD_LENGTHS.PROJECT_NAME.min}-${FIELD_LENGTHS.PROJECT_NAME.max} characters`),
 
   // Leave validation
   leaveType: body('leaveType')
@@ -100,16 +108,18 @@ export const ValidationRules = {
   leaveReason: body('reason')
     .trim()
     .notEmpty().withMessage('Reason is required')
-    .isLength({ min: 10, max: 500 }).withMessage('Reason must be 10-500 characters'),
+    .isLength({ min: FIELD_LENGTHS.REASON.min, max: FIELD_LENGTHS.REASON.max })
+    .withMessage(`Reason must be ${FIELD_LENGTHS.REASON.min}-${FIELD_LENGTHS.REASON.max} characters`),
 
-  // Pagination validation
+  // Pagination validation  
   paginationPage: query('page')
     .optional()
     .isInt({ min: 1 }).withMessage('Page must be a positive integer'),
 
   paginationLimit: query('limit')
     .optional()
-    .isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+    .isInt({ min: 1, max: NUMERIC_RANGES.TIMESHEET_HOURS.max })
+    .withMessage(`Limit must be between 1 and ${NUMERIC_RANGES.TIMESHEET_HOURS.max}`),
 
   // Status validation
   status: (field: string, allowedValues: string[]) => body(field)

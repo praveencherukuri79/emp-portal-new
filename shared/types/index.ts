@@ -369,4 +369,6 @@ export type AsyncFunction<T = void> = (...args: any[]) => Promise<T>;
 // Import directly: import { IChangePasswordRequest } from '@shared/types/requests'
 // Constants are also exported separately
 // Import directly: import { API_ENDPOINTS } from '@shared/types/constants'
+// Validation constants are also exported separately
+// Import directly: import { PASSWORD_REQUIREMENTS, FIELD_LENGTHS } from '@shared/types/validation'
 

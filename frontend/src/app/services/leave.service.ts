@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { LeaveType, LeaveStatus, ILeaveRequestDTO, ILeaveBalance } from '@shared/types';
 import { IUpdateLeaveRequestRequest, ICancelLeaveRequest, IApproveLeaveRequest, IRejectLeaveRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
 import { ILeaveRequestResponse, ILeaveBalanceResponse, ILeaveCalendarResponse, ILeaveStatisticsResponse } from '@shared/types/responses';
+import { ResponseHandler } from '../shared/utils';
 
 export interface LeaveRequest extends ILeaveRequestDTO {
   _id?: string;
@@ -30,7 +32,8 @@ export class LeaveService {
       halfDayPeriod: request.halfDayPeriod?.toLowerCase() as 'morning' | 'afternoon' | undefined,
       reason: request.reason
     };
-    return this.http.post<IApiResponse<ILeaveRequestResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto);
+    return this.http.post<IApiResponse<ILeaveRequestResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.CREATE}`, dto)
+      .pipe(catchError(ResponseHandler.handleError()));
   }
 
   getMyLeaveRequests(params?: { status?: LeaveStatus; leaveType?: LeaveType }): Observable<IApiResponse<ILeaveRequestResponse[]>> {

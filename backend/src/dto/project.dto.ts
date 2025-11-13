@@ -1,36 +1,33 @@
-import { IProjectResponse } from '@shared/types/responses';
+/**
+ * Project DTOs
+ * Convert Project models to API responses
+ */
 
-interface ProjectData {
-  _id: string;
-  tenantId: string | { toString(): string };
-  name: string;
-  code: string;
-  description?: string;
-  isActive: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { IProjectResponse, IProjectsListResponse } from '@shared/types/responses';
+import { Document } from 'mongoose';
+import { IProject } from '../models/project.model';
 
 /**
- * Convert project object to IProjectResponse
+ * Convert Project model to IProjectResponse
  */
-export function toProjectResponse(project: ProjectData): IProjectResponse {
+export function toProjectResponse(project: Document & IProject): IProjectResponse {
   return {
-    _id: project._id,
+    _id: String(project._id),
     tenantId: String(project.tenantId),
     name: project.name,
     code: project.code,
     description: project.description,
     isActive: project.isActive,
-    createdAt: project.createdAt || new Date(),
-    updatedAt: project.updatedAt || new Date()
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt
   };
 }
 
 /**
- * Convert array of project objects to IProjectResponse[]
+ * Convert array of Project models to IProjectsListResponse
  */
-export function toProjectResponseArray(projects: ProjectData[]): IProjectResponse[] {
-  return projects.map(toProjectResponse);
+export function toProjectsListResponse(projects: (Document & IProject)[]): IProjectsListResponse {
+  return {
+    projects: projects.map(toProjectResponse)
+  };
 }
-

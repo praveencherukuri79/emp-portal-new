@@ -100,6 +100,20 @@ export class DateUtil {
   }
 
   /**
+   * Format date to YYYY-MM-DD
+   */
+  static formatDate(date: Date | string): string {
+    return dayjs(date).format('YYYY-MM-DD');
+  }
+
+  /**
+   * Format date for display (MMM DD, YYYY)
+   */
+  static formatDateDisplay(date: Date | string): string {
+    return dayjs(date).format('MMM DD, YYYY');
+  }
+
+  /**
    * Parse date string
    */
   static parse(dateString: string, format: string = 'YYYY-MM-DD'): Date {

@@ -20,6 +20,8 @@ import adminRoutes from './routes/admin.routes';
 import projectRoutes from './routes/project.routes';
 import employerRoutes from './routes/employer.routes';
 import settingsRoutes from './routes/settings.routes';
+import bulkRoutes from './routes/bulk.routes';
+import reportExportRoutes from './routes/report-export.routes';
 
 const app: Application = express();
 
@@ -87,11 +89,13 @@ app.use(`${apiPrefix}/projects`, projectRoutes);
 app.use(`${apiPrefix}/leaves`, leaveRoutes);
 app.use(`${apiPrefix}/documents`, documentRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
+app.use(`${apiPrefix}/reports`, reportExportRoutes); // Report exports
 app.use(`${apiPrefix}/notifications`, notificationRoutes);
 app.use(`${apiPrefix}/dashboard`, dashboardRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes); // Secure admin routes
 app.use(`${apiPrefix}/employer`, employerRoutes);
 app.use(`${apiPrefix}/settings`, settingsRoutes);
+app.use(`${apiPrefix}/bulk`, bulkRoutes); // Bulk operations
 
 // ==================== ERROR HANDLING ====================
 

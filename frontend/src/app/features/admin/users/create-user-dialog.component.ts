@@ -16,6 +16,7 @@ import { requiresEmployeeDetails } from '@shared/types/role-config';
 import { ICreateUserRequest } from '@shared/types/requests';
 import { UserService } from '../../../services/user.service';
 import { IUserResponse } from '@shared/types/responses';
+import { ValidatorsUtil } from '../../../shared/utils/validators.util';
 
 export interface CreateUserDialogData {
   // No data needed for create, but keeping interface for consistency
@@ -58,10 +59,10 @@ export class CreateUserDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: CreateUserDialogData
   ) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email, ValidatorsUtil.emailField()]],
+      password: ['', [Validators.required, ValidatorsUtil.strongPassword()]],
+      firstName: ['', [Validators.required, ValidatorsUtil.nameField()]],
+      lastName: ['', [Validators.required, ValidatorsUtil.nameField()]],
       role: ['', [Validators.required]],
       phoneNumber: [''],
       department: [''],

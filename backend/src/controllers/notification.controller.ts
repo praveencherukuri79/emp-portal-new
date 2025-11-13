@@ -1,9 +1,10 @@
 import { Response } from 'express';
 import Notification from '../models/notification.model';
-import { ApiResponse } from '../utils/response.util';
+import { ApiResponse, RequestValidator } from '../utils';
 import { IAuthRequest, NotificationPriority } from '../types';
 import { ICreateNotificationRequest } from '@shared/types/requests';
 import { toNotificationResponse, toNotificationsListResponse, toUnreadCountResponse } from '../dto';
+import NotificationService from '../services/notification.service';
 
 export class NotificationController {
   /**
@@ -55,30 +56,36 @@ export class NotificationController {
    */
   static async getMyNotifications(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
+      // Validate context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
       const { isRead, type } = req.query as any;
 
       const query: any = {
-        tenantId: req.user?.tenantId,
-        userId: req.user?.userId
+        tenantId: req.user!.tenantId,
+        userId: req.user!.userId
       };
 
       if (isRead !== undefined) query.isRead = isRead === 'true';
       if (type) query.type = type;
 
-      const notifications = await Notification.find(query)
-        .sort({ createdAt: -1 })
-        .limit(50);
+      const notifications = await NotificationService.getUserNotifications(
+        req.user!.tenantId,
+        req.user!.userId,
+        50
+      );
 
-      const unreadCount = await Notification.countDocuments({
-        tenantId: req.user?.tenantId,
-        userId: req.user?.userId,
-        isRead: false
-      });
+      const unreadCount = await NotificationService.getUnreadCount(
+        req.user!.tenantId,
+        req.user!.userId
+      );
 
       const responseData = toNotificationsListResponse(notifications, unreadCount);
       return ApiResponse.success(res, responseData, 'Notifications retrieved successfully');
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to retrieve notifications');
+      console.error('Get notifications error:', error);
+      return ApiResponse.error(res, 'Failed to retrieve notifications', 500);
     }
   }
 
@@ -89,15 +96,18 @@ export class NotificationController {
     try {
       const { notificationId } = req.params;
 
-      const notification = await Notification.findOne({
-        _id: notificationId,
-        tenantId: req.user?.tenantId,
-        userId: req.user?.userId
-      });
+      // Validate context and ID
+      if (!RequestValidator.validateUserContext(req, res)) return;
+      
+      const idValidation = RequestValidator.validateObjectId(notificationId, 'Notification ID');
+      if (!idValidation.valid) {
+        return ApiResponse.validationError(res, [idValidation.error!]);
+      }
+
+      const notification = await NotificationService.markAsRead(notificationId, req.user!.userId);
 
       if (!notification) {
         return ApiResponse.notFound(res, 'Notification not found');
-        return;
       }
 
       notification.isRead = true;
@@ -115,21 +125,19 @@ export class NotificationController {
    */
   static async markAllAsRead(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      await Notification.updateMany(
-        {
-          tenantId: req.user?.tenantId,
-          userId: req.user?.userId,
-          isRead: false
-        },
-        {
-          isRead: true,
-          readAt: new Date()
-        }
+      // Validate context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
+      const count = await NotificationService.markAllAsRead(
+        req.user!.tenantId,
+        req.user!.userId
       );
 
-      return ApiResponse.success(res, null, 'All notifications marked as read');
+      return ApiResponse.success(res, { count }, `${count} notifications marked as read`);
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to mark all notifications as read');
+      console.error('Mark all as read error:', error);
+      return ApiResponse.error(res, 'Failed to mark all notifications as read', 500);
     }
   }
 
@@ -140,20 +148,25 @@ export class NotificationController {
     try {
       const { notificationId } = req.params;
 
-      const result = await Notification.deleteOne({
-        _id: notificationId,
-        tenantId: req.user?.tenantId,
-        userId: req.user?.userId
-      });
+      // Validate ID
+      const idValidation = RequestValidator.validateObjectId(notificationId, 'Notification ID');
+      if (!idValidation.valid) {
+        return ApiResponse.validationError(res, [idValidation.error!]);
+      }
 
-      if (result.deletedCount === 0) {
+      const notification = await NotificationService.deleteNotification(
+        notificationId,
+        req.user!.userId
+      );
+
+      if (!notification) {
         return ApiResponse.notFound(res, 'Notification not found');
-        return;
       }
 
       return ApiResponse.success(res, null, 'Notification deleted successfully');
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to delete notification');
+      console.error('Delete notification error:', error);
+      return ApiResponse.error(res, 'Failed to delete notification', 500);
     }
   }
 
@@ -162,16 +175,20 @@ export class NotificationController {
    */
   static async getUnreadCount(req: IAuthRequest, res: Response): Promise<Response | void> {
     try {
-      const count = await Notification.countDocuments({
-        tenantId: req.user?.tenantId,
-        userId: req.user?.userId,
-        isRead: false
-      });
+      // Validate context
+      if (!RequestValidator.validateTenantContext(req, res)) return;
+      if (!RequestValidator.validateUserContext(req, res)) return;
+
+      const count = await NotificationService.getUnreadCount(
+        req.user!.tenantId,
+        req.user!.userId
+      );
 
       const responseData = toUnreadCountResponse(count);
       return ApiResponse.success(res, responseData, 'Unread count retrieved successfully');
     } catch (error) {
-      return ApiResponse.error(res, 'Failed to retrieve unread count');
+      console.error('Get unread count error:', error);
+      return ApiResponse.error(res, 'Failed to retrieve unread count', 500);
     }
   }
 

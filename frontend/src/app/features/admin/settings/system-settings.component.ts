@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SettingsService } from '../../../services/settings.service';
-import { UINotificationService } from '../../../core/services/notification.service';
+import { ToastService } from '../../../shared/components/toast-notification/toast-notification.component';
 import { IUpdateTenantRequest } from '@shared/types/requests';
 
 @Component({
@@ -32,7 +32,7 @@ import { IUpdateTenantRequest } from '@shared/types/requests';
 })
 export class SystemSettingsComponent implements OnInit {
   private settingsService = inject(SettingsService);
-  private notification = inject(UINotificationService);
+  private toast = inject(ToastService);
   private fb = inject(FormBuilder);
 
   loading = signal(false);
@@ -84,7 +84,7 @@ export class SystemSettingsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading settings:', error);
-        this.notification.showError('Failed to load settings');
+        this.toast.error('Failed to load settings');
         this.loading.set(false);
       }
     });
@@ -122,21 +122,21 @@ export class SystemSettingsComponent implements OnInit {
       this.settingsService.updateTenantSettings(updateData).subscribe({
         next: (response) => {
           if (response.status === 'success') {
-            this.notification.showSuccess('Settings saved successfully');
+            this.toast.success('Settings saved successfully');
             this.tenantData = response.data;
           } else {
-            this.notification.showError(response.message || 'Failed to save settings');
+            this.toast.error(response.message || 'Failed to save settings');
           }
           this.saving.set(false);
         },
         error: (error) => {
           console.error('Error saving settings:', error);
-          this.notification.showError(error.error?.message || 'Failed to save settings');
+          this.toast.error(error.message || 'Failed to save settings');
           this.saving.set(false);
         }
       });
     } else {
-      this.notification.showError('Please fill in all required fields');
+      this.toast.error('Please fill in all required fields');
     }
   }
 }
