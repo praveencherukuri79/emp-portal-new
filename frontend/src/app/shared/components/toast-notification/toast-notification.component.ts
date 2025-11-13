@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Injectable, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
@@ -95,10 +95,8 @@ export class ToastNotificationComponent {
 /**
  * Toast Notification Service
  */
-@Component({
-  selector: 'app-toast-service',
-  standalone: true,
-  template: ''
+@Injectable({
+  providedIn: 'root'
 })
 export class ToastService {
   private snackBar = inject(MatSnackBar);
