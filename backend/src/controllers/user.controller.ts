@@ -4,6 +4,25 @@ import { ApiResponse } from '@utils/response.util';
 import { IAuthRequest, Gender, EmploymentType } from '../types';
 import { IUpdateProfileRequest, IUpdateEmployeeInfoRequest, ICreateUserRequest, IUpdateUserRoleRequest } from '@shared/types/requests';
 import { toUserResponse, toUsersListResponse } from '../dto';
+import { ImageProcessor } from '../utils/image-processor.util';
+import multer from 'multer';
+
+// Configure multer for memory storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed'));
+    }
+  }
+}).single('avatar');
+
+// Export upload middleware
+export const avatarUploadMiddleware = upload;
 
 export class UserController {
   /**

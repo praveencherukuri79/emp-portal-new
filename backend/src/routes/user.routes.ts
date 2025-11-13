@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { UserController } from '../controllers/user.controller';
+import { UserController, avatarUploadMiddleware } from '../controllers/user.controller';
+import { UserAvatarController } from '../controllers/user.controller.avatar';
 import { authenticate } from '../middleware/auth.middleware';
 import { authorize, authorizeSelfOrRole } from '../middleware/authorization.middleware';
 import { UserRole } from '../types';
@@ -12,6 +13,11 @@ router.use(authenticate);
 // Profile routes (any authenticated user)
 router.get('/profile', UserController.getProfile);
 router.put('/profile', UserController.updateProfile);
+
+// Avatar routes (any authenticated user)
+router.post('/avatar', avatarUploadMiddleware, UserAvatarController.uploadAvatar);
+router.delete('/avatar', UserAvatarController.deleteAvatar);
+router.get('/avatar/default', UserAvatarController.getDefaultAvatar);
 
 // Get team members (Supervisor)
 router.get('/team', authorize(UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserController.getTeamMembers);
