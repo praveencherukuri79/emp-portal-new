@@ -148,7 +148,8 @@ export interface ITimesheetEntry extends Document {
   weekEndDate: Date;
   year: number;
   weekNumber: number;
-  project: string;
+  project: string | any; // Can be string (old) or ObjectId (new)
+  projectName?: string; // Project name for backward compatibility
   task?: string;
   description?: string;
   hours: number;

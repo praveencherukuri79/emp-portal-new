@@ -12,11 +12,19 @@ import { Document } from 'mongoose';
  * Convert TimesheetEntry model to ITimesheetEntryResponse
  */
 export function toTimesheetEntryResponse(entry: Document & ITimesheetEntry): ITimesheetEntryResponse {
+  // Handle both string (old) and ObjectId (new) project field
+  const projectValue = typeof entry.project === 'string' 
+    ? entry.project 
+    : (entry.project && typeof entry.project === 'object' && 'name' in entry.project)
+      ? (entry.project as any).name 
+      : (entry as any).projectName || String(entry.project);
+
   return {
     _id: String(entry._id),
     userId: String(entry.userId),
     date: entry.date,
-    project: entry.project,
+    project: projectValue,
+    projectId: typeof entry.project === 'string' ? undefined : String(entry.project),
     task: entry.task,
     description: entry.description,
     hours: entry.hours,

@@ -50,8 +50,12 @@ const timesheetEntrySchema = new Schema<ITimesheetEntry>({
 
   // Project/Task details
   project: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
+    required: [true, 'Project is required']
+  },
+  projectName: {
     type: String,
-    required: [true, 'Project name is required'],
     trim: true
   },
   task: {
@@ -119,7 +123,7 @@ timesheetEntrySchema.index({ tenantId: 1, status: 1 });
 timesheetEntrySchema.index({ tenantId: 1, approvedBy: 1, status: 1 });
 
 // Prevent duplicate entries for same user, date, and project
-timesheetEntrySchema.index({ tenantId: 1, userId: 1, date: 1, project: 1 }, { unique: true });
+timesheetEntrySchema.index({ tenantId: 1, userId: 1, date: 1, project: 1 });
 
 // Calculate week number and dates before saving
 timesheetEntrySchema.pre('save', function(next) {

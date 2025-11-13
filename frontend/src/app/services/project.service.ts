@@ -93,4 +93,39 @@ export class ProjectService {
   archiveProject(projectId: string): Observable<IApiResponse<IProjectResponse>> {
     return this.http.delete<IApiResponse<IProjectResponse>>(`${this.baseUrl}/${projectId}`);
   }
+
+  /**
+   * Get current user's assigned projects
+   */
+  getMyProjects(): Observable<IApiResponse<{ projects: IProjectResponse[] }>> {
+    return this.http.get<IApiResponse<{ projects: IProjectResponse[] }>>(`${this.apiUrl}/my-projects/list`);
+  }
+
+  /**
+   * Assign users to a project
+   */
+  assignUsers(projectId: string, userIds: string[]): Observable<IApiResponse<IProjectResponse>> {
+    return this.http.post<IApiResponse<IProjectResponse>>(
+      `${this.apiUrl}/${projectId}/assign`,
+      { userIds }
+    );
+  }
+
+  /**
+   * Remove user from a project
+   */
+  unassignUser(projectId: string, userId: string): Observable<IApiResponse<IProjectResponse>> {
+    return this.http.delete<IApiResponse<IProjectResponse>>(
+      `${this.apiUrl}/${projectId}/unassign/${userId}`
+    );
+  }
+
+  /**
+   * Get project team members
+   */
+  getProjectTeam(projectId: string): Observable<IApiResponse<{ projectId: string; projectName: string; team: any[] }>> {
+    return this.http.get<IApiResponse<{ projectId: string; projectName: string; team: any[] }>>(
+      `${this.apiUrl}/${projectId}/team`
+    );
+  }
 }

@@ -89,7 +89,8 @@ export interface ITimesheetEntryResponse {
   _id: string;
   userId: string;
   date: Date | string;
-  project: string;
+  project: string; // Project name (for backward compatibility)
+  projectId?: string; // Project ObjectId (new field)
   task?: string;
   description?: string;
   hours: number;
