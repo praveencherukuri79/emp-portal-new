@@ -124,7 +124,7 @@ export const routes: Routes = [
       {
         path: 'documents',
         loadComponent: () => import('./features/hr/documents/hr-documents.component').then((m: any) => m.HrDocumentsComponent),
-        title: 'Document Management - Employee Portal'
+        title: 'Documents - Employee Portal'
       }
     ]
   },
@@ -185,14 +185,9 @@ export const routes: Routes = [
         title: 'Approvals - Employee Portal'
       },
       {
-        path: 'users',
-        loadComponent: () => import('./features/admin/users/user-management.component').then((m: any) => m.UserManagementComponent),
-        title: 'User Management - Employee Portal'
-      },
-      {
-        path: 'settings',
-        loadComponent: () => import('./features/admin/settings/system-settings.component').then((m: any) => m.SystemSettingsComponent),
-        title: 'Settings - Employee Portal'
+        path: 'workforce',
+        loadComponent: () => import('./features/employer/workforce/workforce-management.component').then(m => m.WorkforceManagementComponent),
+        title: 'Workforce Management - Employee Portal'
       },
       {
         path: 'financial',
@@ -200,19 +195,9 @@ export const routes: Routes = [
         title: 'Financial Reports - Employee Portal'
       },
       {
-        path: 'analytics',
-        loadComponent: () => import('./features/employer/analytics/business-analytics.component').then(m => m.BusinessAnalyticsComponent),
-        title: 'Business Analytics - Employee Portal'
-      },
-      {
-        path: 'workforce',
-        loadComponent: () => import('./features/employer/workforce/workforce-management.component').then(m => m.WorkforceManagementComponent),
-        title: 'Workforce Management - Employee Portal'
-      },
-      {
-        path: 'employees',
-        loadComponent: () => import('./features/hr/employees/employee-management.component').then((m: any) => m.EmployeeManagementComponent),
-        title: 'Employees - Employee Portal'
+        path: 'settings',
+        loadComponent: () => import('./features/admin/settings/system-settings.component').then((m: any) => m.SystemSettingsComponent),
+        title: 'Settings - Employee Portal'
       }
     ]
   },

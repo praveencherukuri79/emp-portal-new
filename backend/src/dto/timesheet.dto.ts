@@ -65,7 +65,7 @@ export function toWeeklyTimesheetResponse(
  * Convert grouped entries to IPendingTimesheetGroupResponse[]
  */
 interface GroupedEntry {
-  userId: string | { _id: string };
+  userId: string | { _id: string; firstName: string; lastName: string; email: string; employeeId?: string };
   weekStartDate: Date;
   weekEndDate: Date;
   entries: (Document & ITimesheetEntry)[];
@@ -76,7 +76,7 @@ export function toPendingTimesheetGroupResponse(
   groupedEntries: Record<string, GroupedEntry>
 ): IPendingTimesheetGroupResponse[] {
   return Object.values(groupedEntries).map((group) => ({
-    userId: typeof group.userId === 'string' ? group.userId : String(group.userId._id),
+    userId: group.userId, // Keep populated object or string as-is
     weekStartDate: group.weekStartDate,
     weekEndDate: group.weekEndDate,
     entries: group.entries.map(toTimesheetEntryResponse),

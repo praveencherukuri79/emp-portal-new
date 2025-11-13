@@ -15,11 +15,10 @@
       <mat-card-content>
         <div class="filters">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Search team members</mat-label>
+            <mat-label>Search by name, email, or employee ID</mat-label>
             <input matInput 
                    [(ngModel)]="searchQuery" 
-                   (ngModelChange)="searchQuery.set($event)"
-                   placeholder="Search by name, email, or employee ID">
+                   (ngModelChange)="searchQuery.set($event)">
             <mat-icon matPrefix>search</mat-icon>
           </mat-form-field>
 

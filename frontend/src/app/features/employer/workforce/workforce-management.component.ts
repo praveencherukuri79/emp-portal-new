@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
@@ -22,6 +21,10 @@ import {
   IEmployerRecentHire
 } from '@shared/types';
 import { EmployerService } from '../../../services/employer.service';
+import { UserTableComponent } from '../../../shared/components/user-table/user-table.component';
+import { UserTableAction, DEFAULT_COLUMNS } from '../../../shared/components/user-table/user-table.types';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { EmployeeDetailDialogComponent } from './employee-detail-dialog.component';
 
 @Component({
   selector: 'app-workforce-management',
@@ -32,19 +35,21 @@ import { EmployerService } from '../../../services/employer.service';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
     MatProgressSpinnerModule,
     MatTabsModule,
     MatChipsModule,
     MatTooltipModule,
     MatProgressBarModule,
-    MatListModule
+    MatListModule,
+    MatDialogModule,
+    UserTableComponent
   ],
   templateUrl: './workforce-management.component.html',
   styleUrls: ['./workforce-management.component.scss']
 })
 export class WorkforceManagementComponent implements OnInit {
   private employerService = inject(EmployerService);
+  private dialog = inject(MatDialog);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -78,7 +83,8 @@ export class WorkforceManagementComponent implements OnInit {
     return Number(((data.activeEmployees / data.totalEmployees) * 100).toFixed(1));
   });
 
-  displayedColumns: string[] = ['name', 'department', 'role', 'employmentType', 'tenure', 'status', 'actions'];
+  // Table configuration
+  tableColumns = DEFAULT_COLUMNS.EMPLOYER;
 
   ngOnInit(): void {
     this.loadWorkforceData();
@@ -146,5 +152,19 @@ export class WorkforceManagementComponent implements OnInit {
     }
 
     return `${years} yr ${remainingMonths} mo`;
+  }
+
+  // Event handlers for UserTableComponent
+  onViewEmployee(event: UserTableAction): void {
+    this.dialog.open(EmployeeDetailDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      data: event.user
+    });
+  }
+
+  onEditEmployee(event: UserTableAction): void {
+    // Employers have read-only access - no edit functionality
+    // This button could be hidden via permissions in UserTableComponent
   }
 }

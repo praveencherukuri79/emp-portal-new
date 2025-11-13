@@ -58,7 +58,7 @@ export class TopnavComponent implements OnInit, OnDestroy {
       roles: [UserRole.PROSPECT, UserRole.EMPLOYEE, UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
     },
     
-    // Employee Type Routes (Employee and Supervisor only - for their own submissions)
+    // EMPLOYEE Routes
     {
       label: 'Timesheets',
       icon: 'schedule',
@@ -78,7 +78,7 @@ export class TopnavComponent implements OnInit, OnDestroy {
       roles: [UserRole.EMPLOYEE]
     },
     
-    // Admin Type - Supervisor Routes
+    // SUPERVISOR Routes
     {
       label: 'Approvals',
       icon: 'approval',
@@ -98,21 +98,41 @@ export class TopnavComponent implements OnInit, OnDestroy {
       roles: [UserRole.SUPERVISOR, UserRole.HR, UserRole.ADMIN]
     },
     
-    // Admin Type - HR Routes (Direct menu items, no dropdown)
+    // HR Routes
     {
       label: 'Employees',
       icon: 'people',
       route: '/hr/employees',
-      roles: [UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER]
+      roles: [UserRole.HR, UserRole.ADMIN]
     },
     {
-      label: 'Document Management',
+      label: 'Documents',
       icon: 'folder_special',
       route: '/hr/documents',
       roles: [UserRole.HR, UserRole.ADMIN]
     },
     
-    // Admin Type - Admin Routes
+    // EMPLOYER Routes (ONLY these - no duplication!)
+    {
+      label: 'Workforce',
+      icon: 'work',
+      route: '/employer/workforce',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Financial Reports',
+      icon: 'attach_money',
+      route: '/employer/financial',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      route: '/employer/settings',
+      roles: [UserRole.EMPLOYER]
+    },
+    
+    // ADMIN Dropdown
     {
       label: 'Admin',
       icon: 'admin_panel_settings',
@@ -126,6 +146,12 @@ export class TopnavComponent implements OnInit, OnDestroy {
           roles: [UserRole.ADMIN]
         },
         {
+          label: 'Projects',
+          icon: 'work_outline',
+          route: '/admin/projects',
+          roles: [UserRole.ADMIN]
+        },
+        {
           label: 'Roles',
           icon: 'shield',
           route: '/admin/roles',
@@ -136,52 +162,6 @@ export class TopnavComponent implements OnInit, OnDestroy {
           icon: 'settings',
           route: '/admin/settings',
           roles: [UserRole.ADMIN]
-        }
-      ]
-    },
-    
-    // Admin Type - Employer Routes (NO employee routes)
-    {
-      label: 'Approvals',
-      icon: 'approval',
-      route: '/employer/approvals',
-      roles: [UserRole.EMPLOYER]
-    },
-    {
-      label: 'Employer',
-      icon: 'business',
-      route: '/employer',
-      roles: [UserRole.EMPLOYER],
-      children: [
-        {
-          label: 'Workforce',
-          icon: 'work',
-          route: '/employer/workforce',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Financial Reports',
-          icon: 'attach_money',
-          route: '/employer/financial',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Analytics',
-          icon: 'analytics',
-          route: '/employer/analytics',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Users',
-          icon: 'manage_accounts',
-          route: '/employer/users',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          route: '/employer/settings',
-          roles: [UserRole.EMPLOYER]
         }
       ]
     }

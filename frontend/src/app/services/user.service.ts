@@ -23,6 +23,10 @@ export class UserService {
     return this.http.put<IApiResponse<IUserResponse>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.PROFILE}`, data);
   }
 
+  updateUserById(userId: string, data: IUpdateProfileRequest): Observable<IApiResponse<IUserResponse>> {
+    return this.http.put<IApiResponse<IUserResponse>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.BY_ID(userId)}`, data);
+  }
+
   getAllUsers(params?: { role?: string; isActive?: boolean }): Observable<IApiResponse<IUsersListResponse>> {
     let httpParams = new HttpParams();
     if (params?.role) httpParams = httpParams.set('role', params.role);

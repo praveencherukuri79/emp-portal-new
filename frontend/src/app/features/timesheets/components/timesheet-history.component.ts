@@ -230,7 +230,6 @@ export class TimesheetHistoryComponent implements OnInit {
   viewWeek(week: WeekSummary) {
     // Navigate to weekly grid with specific week
     const dateParam = this.timesheetService.formatDate(week.weekStart);
-    console.log('Navigating to week:', week.weekStart, 'formatted as:', dateParam);
     this.router.navigate(['/employee/timesheets'], {
       queryParams: {
         date: dateParam

@@ -128,8 +128,7 @@
                     min="0" 
                     max="24" 
                     step="0.5"
-                    [disabled]="!canEdit()"
-                    placeholder="0" />
+                    [disabled]="!canEdit()" />
                 </td>
               }
               <td class="total-cell">{{ getProjectTotal(projectEntry) }}h</td>
@@ -190,11 +189,6 @@
               }
             </mat-select>
             <mat-hint>Select a project from your assigned projects</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Description</mat-label>
-            <input matInput [(ngModel)]="projectDescription">
           </mat-form-field>
 
           <mat-checkbox [(ngModel)]="projectBillable">Billable</mat-checkbox>

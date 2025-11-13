@@ -1,256 +1,19 @@
 /**
- * Admin Dashboard - Enterprise Grade
- * BEM Methodology: .dashboard__element--modifier
+ * Admin Dashboard - Aligned with Theme System
+ * Uses ONLY theme variables and mixins - matches employer dashboard structure
  */
 
 @import '../../../../styles/mixins/components.scss';
 @import '../../../../styles/mixins/layout.scss';
-@import '../../../../styles/tokens/breakpoints.scss';
 
-.dashboard {
-  &__container {
-    @include container;
-    padding: var(--spacing-page-padding);
-    min-height: calc(100vh - var(--header-height));
-  }
-
-  &__content {
-    @include dashboard-content-grid;
-    margin-top: var(--spacing-10);
-  }
-
-  &__card {
-    @include card;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    &--clickable {
-      @include card-clickable;
-    }
-
-    mat-card-header {
-      @include card-header;
-      margin-bottom: var(--spacing-6);
-    }
-
-    mat-card-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-
-  &__section {
-    margin-bottom: var(--spacing-10);
-
-    &-title {
-      font-size: var(--font-size-2xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-6) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-3);
-      letter-spacing: -0.01em;
-
-      mat-icon {
-        color: var(--action-primary);
-        font-size: var(--font-size-xl);
-        width: var(--font-size-xl);
-        height: var(--font-size-xl);
-      }
-    }
-  }
-
-  &__health {
-    &-metrics {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-6);
-    }
-
-    &-metric {
-      .dashboard__metric-header {
-        @include flex-between;
-        margin-bottom: var(--spacing-2);
-
-        .dashboard__metric-label {
-          font-size: var(--font-size-sm);
-          font-weight: var(--font-weight-medium);
-          color: var(--text-secondary);
-        }
-
-        .dashboard__metric-value {
-          font-size: var(--font-size-lg);
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-primary);
-        }
-      }
-
-      mat-progress-bar {
-        height: var(--spacing-2);
-        border-radius: var(--radius-full);
-      }
-    }
-  }
-
-  &__activity {
-    &-list {
-      @include flex-column;
-      gap: var(--spacing-4);
-    }
-
-    &-item {
-      @include activity-item;
-
-      .dashboard__activity-icon {
-        flex-shrink: 0;
-
-        mat-icon {
-          font-size: var(--font-size-2xl);
-          width: var(--font-size-2xl);
-          height: var(--font-size-2xl);
-        }
-
-        &--info mat-icon {
-          color: var(--status-info);
-        }
-
-        &--warning mat-icon {
-          color: var(--status-warning);
-        }
-
-        &--error mat-icon {
-          color: var(--status-error);
-        }
-      }
-
-      .dashboard__activity-details {
-        flex: 1;
-        @include flex-column;
-        gap: var(--spacing-1);
-
-        strong {
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-primary);
-        }
-
-        span {
-          color: var(--text-secondary);
-          font-size: var(--font-size-sm);
-        }
-
-        .dashboard__activity-timestamp {
-          color: var(--text-tertiary);
-          font-size: var(--font-size-xs);
-        }
-      }
-    }
-  }
-
-  &__management {
-    &-grid {
-      @include grid-auto-fit(280px);
-      gap: var(--spacing-6);
-    }
-
-    &-button {
-      @include card;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--spacing-4);
-      padding: var(--spacing-8);
-      text-align: left;
-      min-height: 160px;
-      height: auto;
-      border: var(--border-width-thin) solid var(--border-secondary);
-      background: var(--card-background);
-      cursor: pointer;
-      transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-      position: relative;
-
-      mat-icon {
-        font-size: var(--font-size-4xl);
-        width: var(--font-size-4xl);
-        height: var(--font-size-4xl);
-        margin-bottom: var(--spacing-2);
-        color: var(--action-primary);
-        transition: color var(--transition-normal);
-      }
-
-      .dashboard__management-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-2);
-        flex: 1;
-
-        span {
-          font-weight: var(--font-weight-bold);
-          font-size: var(--font-size-xl);
-          color: var(--text-primary);
-        }
-
-        small {
-          font-size: var(--font-size-sm);
-          color: var(--text-secondary);
-          line-height: var(--line-height-relaxed);
-        }
-      }
-
-      @include hover-clickable;
-      
-      &:hover mat-icon {
-        color: var(--action-secondary);
-      }
-    }
-  }
-
-  &__reports {
-    &-grid {
-      @include grid-auto-fit(200px);
-      gap: var(--spacing-6);
-    }
-
-    &-button {
-      @include card;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--spacing-4);
-      padding: var(--spacing-8);
-      min-height: 140px;
-      height: auto;
-      border: var(--border-width-thin) solid var(--border-secondary);
-      background: var(--card-background);
-      cursor: pointer;
-      transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-      text-align: center;
-
-      mat-icon {
-        font-size: var(--font-size-4xl);
-        width: var(--font-size-4xl);
-        height: var(--font-size-4xl);
-        color: var(--action-primary);
-        transition: color var(--transition-normal);
-      }
-
-      span {
-        font-weight: var(--font-weight-semibold);
-        text-align: center;
-        font-size: var(--font-size-md);
-        color: var(--text-primary);
-      }
-
-      @include hover-clickable;
-      
-      &:hover mat-icon {
-        color: var(--action-accent);
-      }
-    }
-  }
+.admin-dashboard {
+  @include container;
+  padding: var(--spacing-page-padding);
+  min-height: calc(100vh - var(--header-height));
+  @include rich-background;
 }
+
+// Use global .page-header class
 
 .stats-grid {
   @include stats-grid;
@@ -260,7 +23,222 @@
   overflow-y: visible;
 }
 
-// Health status chips
+.dashboard-content {
+  @include dashboard-content-grid;
+  margin-top: var(--spacing-8);
+}
+
+/* System Health Metrics */
+.health-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+
+  .health-metric {
+    .metric-header {
+      @include flex-between;
+      margin-bottom: var(--spacing-2);
+
+      .metric-label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-secondary);
+      }
+
+      .metric-value {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+      }
+    }
+
+    mat-progress-bar {
+      height: var(--spacing-2);
+      border-radius: var(--radius-full);
+    }
+  }
+}
+
+/* Activity List */
+.activity-list {
+  @include flex-column;
+  gap: var(--spacing-4);
+
+  .activity-item {
+    @include activity-item;
+
+    .activity-icon {
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: var(--font-size-2xl);
+        width: var(--font-size-2xl);
+        height: var(--font-size-2xl);
+      }
+
+      &.info mat-icon {
+        color: var(--status-info);
+      }
+
+      &.warning mat-icon {
+        color: var(--status-warning);
+      }
+
+      &.error mat-icon {
+        color: var(--status-error);
+      }
+    }
+
+    .activity-details {
+      flex: 1;
+      @include flex-column;
+      gap: var(--spacing-1);
+
+      strong {
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+      }
+
+      span {
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+      }
+
+      .activity-timestamp {
+        color: var(--text-tertiary);
+        font-size: var(--font-size-xs);
+      }
+    }
+  }
+}
+
+/* Management Actions Grid */
+.management-actions {
+  @include grid-auto-fit(250px);
+
+  .action-btn {
+    @include flex-column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    padding: var(--spacing-6);
+    text-align: left;
+    height: auto;
+    min-height: calc(var(--spacing-20) * 1.5);
+    width: 100%;
+    background: var(--background-secondary);
+    border: var(--border-default) solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal);
+
+    &:hover {
+      background: var(--background-tertiary);
+      border-color: var(--action-accent);
+    }
+
+    mat-icon {
+      font-size: var(--font-size-3xl);
+      width: var(--font-size-3xl);
+      height: var(--font-size-3xl);
+      margin-bottom: var(--spacing-2);
+      color: var(--text-primary) !important;
+    }
+
+    .action-content {
+      @include flex-column;
+      gap: var(--spacing-1);
+
+      span {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-lg);
+        color: var(--text-primary);
+      }
+
+      small {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+/* Reports Grid */
+.reports-grid {
+  @include grid-auto-fit(180px);
+
+  .report-btn {
+    @include flex-column;
+    @include flex-center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-6);
+    min-height: calc(var(--spacing-20) * 1.5);
+    height: auto;
+    width: 100%;
+    background: var(--background-secondary);
+    border: var(--border-default) solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal);
+
+    &:hover {
+      background: var(--background-tertiary);
+      border-color: var(--action-secondary);
+    }
+
+    mat-icon {
+      font-size: var(--font-size-3xl);
+      width: var(--font-size-3xl);
+      height: var(--font-size-3xl);
+      color: var(--text-primary) !important;
+    }
+
+    span {
+      font-weight: var(--font-weight-medium);
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Cards */
+mat-card {
+  @include card;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &.clickable {
+    @include card-clickable;
+  }
+
+  mat-card-header {
+    padding: 0 0 var(--spacing-5) 0;
+    margin-bottom: var(--spacing-5);
+    border-bottom: var(--border-default) solid var(--border-primary);
+    @include flex-between;
+
+    mat-card-title {
+      @include flex-center;
+      gap: var(--spacing-3);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+
+      mat-icon {
+        color: var(--action-primary);
+        font-size: var(--font-size-2xl);
+        width: var(--font-size-2xl);
+        height: var(--font-size-2xl);
+      }
+    }
+
+    mat-card-subtitle {
+      margin: 0;
+    }
+  }
+}
+
+/* Health Status Chips */
 mat-chip {
   &.health-healthy {
     background-color: var(--status-success-bg) !important;
@@ -279,4 +257,35 @@ mat-chip {
     color: var(--status-error) !important;
     font-weight: var(--font-weight-semibold) !important;
   }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-4);
+  color: var(--text-secondary);
+
+  mat-icon {
+    font-size: var(--font-size-5xl);
+    width: var(--font-size-5xl);
+    height: var(--font-size-5xl);
+    margin-bottom: var(--spacing-4);
+    display: block;
+    opacity: 0.5;
+    color: var(--text-tertiary);
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-md);
+  }
+}
+
+/* Loading & Error States */
+.loading-container {
+  @include loading-state;
+}
+
+.error-container {
+  @include error-state;
 }

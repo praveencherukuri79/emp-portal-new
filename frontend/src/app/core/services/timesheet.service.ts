@@ -6,7 +6,7 @@ import { TimesheetStatus, ITimesheetEntryDTO } from '@shared/types';
 import { IBatchTimesheetEntriesRequest, IUpdateTimesheetEntryRequest, ISubmitWeekRequest, IApproveTimesheetEntriesRequest, IRejectTimesheetEntriesRequest } from '@shared/types/requests';
 import { API_ENDPOINTS } from '@shared/types/constants';
 import { IApiResponse } from '@shared/types';
-import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse, IProjectResponse } from '@shared/types/responses';
+import { ITimesheetEntryResponse, IWeeklyTimesheetResponse, ITimesheetHistoryResponse, IPendingTimesheetGroupResponse, ITimesheetApprovalActionResponse, IProjectResponse, IProjectsListResponse } from '@shared/types/responses';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -49,8 +49,8 @@ export class TimesheetService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}${API_ENDPOINTS.TIMESHEETS.ENTRIES}`;
 
-  getProjects(): Observable<IApiResponse<IProjectResponse[]>> {
-    return this.http.get<IApiResponse<IProjectResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`);
+  getProjects(): Observable<IApiResponse<IProjectsListResponse>> {
+    return this.http.get<IApiResponse<IProjectsListResponse>>(`${environment.apiUrl}${API_ENDPOINTS.PROJECTS.ALL}`);
   }
 
   getWeeklyEntries(weekStart: string): Observable<IApiResponse<IWeeklyTimesheetResponse>> {

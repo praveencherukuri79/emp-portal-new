@@ -280,4 +280,39 @@ export class ApprovalsComponent implements OnInit {
   getStatusLabel(status: string, type: 'timesheet' | 'leave' = 'leave'): string {
     return getStatusLabel(status, type);
   }
+
+  getEmployeeName(userId: any): string {
+    if (!userId) return 'Unknown';
+    if (typeof userId === 'string') return userId;
+    if (typeof userId === 'object' && userId.firstName && userId.lastName) {
+      return `${userId.firstName} ${userId.lastName}`;
+    }
+    return 'Unknown';
+  }
+
+  getSubmittedDate(week: any): string {
+    if (week.submittedAt) return this.formatDate(week.submittedAt);
+    if (week.entries && week.entries.length > 0 && week.entries[0].submittedAt) {
+      return this.formatDate(week.entries[0].submittedAt);
+    }
+    if (week.entries && week.entries.length > 0) {
+      return this.formatDate(week.entries[0].createdAt);
+    }
+    return 'N/A';
+  }
+
+  getTimesheetStatus(week: any): string {
+    if (week.entries && week.entries.length > 0) {
+      return week.entries[0].status || 'Submitted';
+    }
+    return 'Submitted';
+  }
+
+  getStatusChipColor(week: any): string {
+    const status = this.getTimesheetStatus(week);
+    if (status === 'submitted') return 'accent';
+    if (status === 'approved') return 'primary';
+    if (status === 'rejected') return 'warn';
+    return 'default';
+  }
 }

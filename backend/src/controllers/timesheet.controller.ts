@@ -354,7 +354,7 @@ export class TimesheetController {
 
       // Group by user and week
       interface GroupedEntry {
-        userId: string | { _id: string };
+        userId: string | { _id: string; firstName: string; lastName: string; email: string; employeeId?: string };
         weekStartDate: Date;
         weekEndDate: Date;
         entries: (Document & ITimesheetEntry)[];

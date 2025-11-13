@@ -29,6 +29,9 @@ router.post('/', authorize(UserRole.ADMIN), UserController.createUser);
 // Get user by ID (Admin/HR/Employer or self)
 router.get('/:userId', authorizeSelfOrRole(UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserController.getUserById);
 
+// Update user profile by ID (Admin/HR only) - for editing another user's full profile
+router.put('/:userId', authorize(UserRole.HR, UserRole.ADMIN), UserController.updateUserById);
+
 // Update employee information (Admin/HR)
 router.put('/:userId/employee-info', authorize(UserRole.HR, UserRole.ADMIN, UserRole.EMPLOYER), UserController.updateEmployeeInfo);
 

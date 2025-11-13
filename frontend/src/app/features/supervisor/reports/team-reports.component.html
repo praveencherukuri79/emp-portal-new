@@ -21,17 +21,103 @@
       <mat-spinner></mat-spinner>
       <p>Loading reports...</p>
     </div>
-  } @else {
+  } @else if (reports()) {
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>schedule</mat-icon>
+            Timesheet Summary
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getTimesheetStat('totalSubmitted') }}</span>
+            <span class="stat-label">Total Submitted</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getTimesheetStat('pending') }}</span>
+            <span class="stat-label">Pending Approval</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getTimesheetStat('approved') }}</span>
+            <span class="stat-label">Approved</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>event_available</mat-icon>
+            Leave Summary
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getLeaveStat('totalRequests') }}</span>
+            <span class="stat-label">Total Requests</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getLeaveStat('pending') }}</span>
+            <span class="stat-label">Pending</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getLeaveStat('approved') }}</span>
+            <span class="stat-label">Approved</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>groups</mat-icon>
+            Team Overview
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getTeamSize() }}</span>
+            <span class="stat-label">Team Members</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ getTeamMembersCount() }}</span>
+            <span class="stat-label">Active</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-value">{{ calculateUtilization() }}%</span>
+            <span class="stat-label">Utilization</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Detailed Reports -->
     <mat-card>
       <mat-card-header>
         <mat-card-title>
           <mat-icon>assessment</mat-icon>
-          Team Performance Report
+          Team Member Performance
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="reports-content">
-          <p>Team reports will be displayed here</p>
+        <div class="report-info">
+          <p class="info-text">
+            <mat-icon>info</mat-icon>
+            Detailed team performance metrics and individual reports are available via the export functionality.
+            Use the "Export PDF" or "Export Excel" buttons above to generate comprehensive reports.
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <mat-card>
+      <mat-card-content>
+        <div class="empty-state">
+          <mat-icon>assessment</mat-icon>
+          <p>No report data available</p>
         </div>
       </mat-card-content>
     </mat-card>

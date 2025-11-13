@@ -54,8 +54,8 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
           <!-- Search and Filter -->
           <div class="filter-section">
             <mat-form-field appearance="outline">
-              <mat-label>Search projects</mat-label>
-              <input matInput (keyup)="onSearch($event)" placeholder="Search by name or code">
+              <mat-label>Search by name or code</mat-label>
+              <input matInput (keyup)="onSearch($event)">
               <mat-icon matPrefix>search</mat-icon>
             </mat-form-field>
 
@@ -120,6 +120,9 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let project">
+                  <button mat-icon-button [matTooltip]="'Assign Team'" (click)="openAssignTeamDialog(project)">
+                    <mat-icon>people</mat-icon>
+                  </button>
                   <button mat-icon-button [matTooltip]="'Edit'" (click)="openEditDialog(project)">
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -282,7 +285,178 @@ export class ProjectManagementComponent implements OnInit {
       }
     });
   }
+
+  openAssignTeamDialog(project: IProjectResponse): void {
+    const dialogRef = this.dialog.open(AssignTeamDialogComponent, {
+      width: '600px',
+      data: { project }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadProjects();
+      }
+    });
+  }
 }
+
+// Assign Team Dialog Component
+@Component({
+  selector: 'app-assign-team-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule
+  ],
+  template: `
+    <h2 mat-dialog-title>Assign Team - {{ data.project.name }}</h2>
+    <mat-dialog-content>
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Team Members</mat-label>
+          <mat-select formControlName="userIds" multiple>
+            @for (user of availableUsers(); track user._id) {
+              <mat-option [value]="user._id">
+                {{ user.firstName }} {{ user.lastName }}
+                @if (user.employeeId) {
+                  ({{ user.employeeId }})
+                }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (currentTeam().length > 0) {
+          <div class="current-team">
+            <h4>Current Team:</h4>
+            <mat-chip-set>
+              @for (member of currentTeam(); track member._id) {
+                <mat-chip (removed)="removeMember(member._id)">
+                  {{ member.firstName }} {{ member.lastName }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+          </div>
+        }
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="assignUsers()" [disabled]="form.invalid || loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Assign Users
+        }
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width { width: 100%; }
+    .current-team { margin-top: 16px; }
+    mat-chip-set { margin-top: 8px; }
+  `]
+})
+export class AssignTeamDialogComponent implements OnInit {
+  private projectService = inject(ProjectService);
+  private userService = inject(UserService);
+  private toast = inject(ToastService);
+  private fb = inject(FormBuilder);
+  
+  availableUsers = signal<any[]>([]);
+  currentTeam = signal<any[]>([]);
+  loading = signal(false);
+  form: FormGroup;
+
+  constructor(
+    public dialogRef: MatDialogRef<AssignTeamDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { project: IProjectResponse }
+  ) {
+    this.form = this.fb.group({
+      userIds: [[], Validators.required]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadUsers();
+    this.loadCurrentTeam();
+  }
+
+  loadUsers(): void {
+    this.userService.getAllUsers({}).subscribe({
+      next: (response) => {
+        if (response.status === 'success' && response.data) {
+          this.availableUsers.set(response.data.users || []);
+        }
+      }
+    });
+  }
+
+  loadCurrentTeam(): void {
+    this.projectService.getProjectTeam(this.data.project._id).subscribe({
+      next: (response) => {
+        if (response.status === 'success' && response.data) {
+          this.currentTeam.set(response.data.team || []);
+        }
+      }
+    });
+  }
+
+  assignUsers(): void {
+    if (this.form.invalid) return;
+
+    this.loading.set(true);
+    const userIds = this.form.value.userIds;
+
+    this.projectService.assignUsers(this.data.project._id, userIds).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.toast.success('Users assigned successfully');
+          this.dialogRef.close(true);
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.toast.error('Failed to assign users');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  removeMember(userId: string): void {
+    this.projectService.unassignUser(this.data.project._id, userId).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.toast.success('User removed from project');
+          this.loadCurrentTeam();
+        }
+      },
+      error: () => {
+        this.toast.error('Failed to remove user');
+      }
+    });
+  }
+
+  cancel(): void {
+    this.dialogRef.close(false);
+  }
+}
+
+// Import additional dependencies
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
+import { UserService } from '../../../services/user.service';
 
 /**
  * Project Form Dialog Component
@@ -308,7 +482,8 @@ export class ProjectManagementComponent implements OnInit {
         <div class="form-grid">
           <mat-form-field appearance="outline">
             <mat-label>Project Code *</mat-label>
-            <input matInput formControlName="code" placeholder="PROJ001" [readonly]="data.mode === 'edit'">
+            <input matInput formControlName="code" [readonly]="data.mode === 'edit'">
+            <mat-hint>e.g., PROJ001</mat-hint>
             @if (form.get('code')?.hasError('required') && form.get('code')?.touched) {
               <mat-error>Project code is required</mat-error>
             }
@@ -316,7 +491,7 @@ export class ProjectManagementComponent implements OnInit {
 
           <mat-form-field appearance="outline">
             <mat-label>Project Name *</mat-label>
-            <input matInput formControlName="name" placeholder="Enter project name">
+            <input matInput formControlName="name">
             @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
               <mat-error>Project name is required</mat-error>
             }
@@ -357,7 +532,7 @@ export class ProjectManagementComponent implements OnInit {
 
           <mat-form-field appearance="outline">
             <mat-label>Budget</mat-label>
-            <input matInput type="number" formControlName="budget" placeholder="0">
+            <input matInput type="number" formControlName="budget">
           </mat-form-field>
 
           <mat-form-field appearance="outline">

@@ -15,6 +15,7 @@ router.use(authenticate);
 
 // Get settings (all authenticated users can view)
 router.get('/', SettingsController.getSettings);
+router.get('/tenant', SettingsController.getSettings); // Alias for compatibility
 
 // Update settings (Admin only)
 router.put(
@@ -22,6 +23,12 @@ router.put(
   requirePermission(Permission.CAN_MANAGE_SYSTEM_SETTINGS),
   SettingsController.updateSettings
 );
+
+router.put(
+  '/tenant',
+  requirePermission(Permission.CAN_MANAGE_SYSTEM_SETTINGS),
+  SettingsController.updateSettings
+); // Alias for compatibility
 
 // Holiday management (Admin/HR only)
 router.post(

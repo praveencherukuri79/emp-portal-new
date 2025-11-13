@@ -121,7 +121,7 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       roles: [UserRole.HR, UserRole.ADMIN]
     },
     {
-      label: 'Document Management',
+      label: 'Documents',
       icon: 'folder_special',
       route: '/hr/documents',
       roles: [UserRole.HR, UserRole.ADMIN]
@@ -155,50 +155,24 @@ export class MobileNavComponent implements OnInit, OnDestroy {
       ]
     },
     
-    // Admin Type - Employer Routes (NO employee routes)
+    // EMPLOYER Routes (ONLY these - matches topnav exactly)
     {
-      label: 'Employer',
-      icon: 'business',
-      route: '/employer',
-      roles: [UserRole.EMPLOYER],
-      children: [
-        {
-          label: 'Approvals',
-          icon: 'approval',
-          route: '/employer/approvals',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Workforce',
-          icon: 'work',
-          route: '/employer/workforce',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Financial Reports',
-          icon: 'attach_money',
-          route: '/employer/financial',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Analytics',
-          icon: 'analytics',
-          route: '/employer/analytics',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Users',
-          icon: 'manage_accounts',
-          route: '/employer/users',
-          roles: [UserRole.EMPLOYER]
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          route: '/employer/settings',
-          roles: [UserRole.EMPLOYER]
-        }
-      ]
+      label: 'Workforce',
+      icon: 'work',
+      route: '/employer/workforce',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Financial Reports',
+      icon: 'attach_money',
+      route: '/employer/financial',
+      roles: [UserRole.EMPLOYER]
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      route: '/employer/settings',
+      roles: [UserRole.EMPLOYER]
     }
   ];
 

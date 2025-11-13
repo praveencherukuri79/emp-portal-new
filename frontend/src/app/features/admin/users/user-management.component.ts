@@ -1,17 +1,13 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { UINotificationService } from '../../../core/services/notification.service';
@@ -19,6 +15,9 @@ import { User, UserRole } from '../../../core/models/user.model';
 import { ROLE_LABELS } from '@shared/types/constants';
 import { ICreateUserRequest } from '@shared/types/requests';
 import { CreateUserDialogComponent } from './create-user-dialog.component';
+import { UserViewDialogComponent } from './user-view-dialog.component';
+import { UserTableComponent } from '../../../shared/components/user-table/user-table.component';
+import { UserTableAction, DEFAULT_COLUMNS } from '../../../shared/components/user-table/user-table.types';
 
 @Component({
   selector: 'app-user-management',
@@ -28,16 +27,13 @@ import { CreateUserDialogComponent } from './create-user-dialog.component';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
-    MatChipsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
-    MatMenuModule,
-    MatTooltipModule,
-    FormsModule
+    FormsModule,
+    UserTableComponent
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss']
@@ -52,10 +48,29 @@ export class UserManagementComponent implements OnInit {
   searchQuery = signal('');
   roleFilter = signal<string>('');
 
-  displayedColumns = ['name', 'email', 'role', 'department', 'status', 'actions'];
+  // Table configuration
+  tableColumns = DEFAULT_COLUMNS.ADMIN;
   roles = Object.values(UserRole);
   roleLabels = ROLE_LABELS;
-  UserRole = UserRole; // Expose to template
+
+  // Filtered users for the table
+  filteredUsersData = computed(() => {
+    const allUsers = this.users();
+    if (!Array.isArray(allUsers)) return [];
+    
+    let filtered = [...allUsers];
+    
+    if (this.searchQuery()) {
+      const query = this.searchQuery().toLowerCase();
+      filtered = filtered.filter(u => 
+        `${u.firstName} ${u.lastName}`.toLowerCase().includes(query) ||
+        u.email?.toLowerCase().includes(query) ||
+        u.employeeId?.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  });
 
   ngOnInit(): void {
     this.loadUsers();
@@ -87,27 +102,66 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  get filteredUsers(): User[] {
-    const allUsers = this.users();
-    if (!Array.isArray(allUsers)) {
-      return [];
-    }
-    let filtered = [...allUsers];
-    
-    if (this.searchQuery()) {
-      const query = this.searchQuery().toLowerCase();
-      filtered = filtered.filter(u => 
-        `${u.firstName} ${u.lastName}`.toLowerCase().includes(query) ||
-        u.email?.toLowerCase().includes(query) ||
-        u.employeeId?.toLowerCase().includes(query)
-      );
-    }
-    
-    return filtered;
-  }
-
   getRoleLabel(role: UserRole): string {
     return this.roleLabels[role.toUpperCase() as keyof typeof ROLE_LABELS] || role;
+  }
+
+  // Event handlers for UserTableComponent
+  onViewUser(event: UserTableAction): void {
+    const user = event.user as User;
+    const dialogRef = this.dialog.open(UserViewDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      data: user
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'edit') {
+        this.onEditUser({ action: 'edit', user: result.user });
+      }
+    });
+  }
+
+  onEditUser(event: UserTableAction): void {
+    const user = event.user as User;
+    const dialogRef = this.dialog.open(CreateUserDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: { user, mode: 'edit' }
+    });
+
+    dialogRef.afterClosed().subscribe((userData: ICreateUserRequest | null) => {
+      if (userData && user._id) {
+        this.loading.set(true);
+        this.userService.updateUserById(user._id, userData as any).subscribe({
+          next: (response) => {
+            if (response.status === 'success') {
+              this.notification.showSuccess('User updated successfully');
+              this.loadUsers();
+            } else {
+              this.notification.showError(response.message || 'Failed to update user');
+              this.loading.set(false);
+            }
+          },
+          error: (error) => {
+            console.error('Error updating user:', error);
+            this.notification.showError(error.error?.message || 'Failed to update user');
+            this.loading.set(false);
+          }
+        });
+      }
+    });
+  }
+
+  onStatusToggle(event: UserTableAction): void {
+    this.toggleUserStatus(event.user as User);
+  }
+
+  onRoleChange(event: UserTableAction): void {
+    if (event.data) {
+      this.updateUserRole(event.user as User, event.data);
+    }
   }
 
   openCreateUserDialog(): void {

@@ -36,96 +36,24 @@
     </mat-card>
   </div>
 
-  @if (loading()) {
-    <div class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>Loading users...</p>
-    </div>
-  } @else {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>people</mat-icon>
-          Users ({{ filteredUsers.length }})
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        @if (filteredUsers.length === 0) {
-          <div class="empty-state">
-            <mat-icon>people_outline</mat-icon>
-            <h3>No users found</h3>
-            <p>Try adjusting your search or filters</p>
-          </div>
-        } @else {
-          <div class="table-container">
-            <table mat-table [dataSource]="filteredUsers" class="users-table mat-elevation-z0">
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let user">
-                  <div class="user-name">
-                    <strong>{{ user.firstName }} {{ user.lastName }}</strong>
-                    @if (user.employeeId) {
-                      <span class="employee-id">{{ user.employeeId }}</span>
-                    }
-                  </div>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef>Email</th>
-                <td mat-cell *matCellDef="let user">{{ user.email }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="role">
-                <th mat-header-cell *matHeaderCellDef>Role</th>
-                <td mat-cell *matCellDef="let user">
-                  <mat-chip>{{ getRoleLabel(user.role) }}</mat-chip>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="department">
-                <th mat-header-cell *matHeaderCellDef>Department</th>
-                <td mat-cell *matCellDef="let user">{{ user.department || 'N/A' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let user">
-                  <mat-chip [color]="user.isActive ? 'primary' : 'default'">
-                    {{ user.isActive ? 'Active' : 'Inactive' }}
-                  </mat-chip>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let user">
-                  <button mat-icon-button [matMenuTriggerFor]="menu" [matTooltip]="'User actions'">
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
-                  <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="updateUserRole(user, UserRole.ADMIN)" *ngIf="user.role !== UserRole.ADMIN">
-                      <mat-icon>admin_panel_settings</mat-icon>
-                      <span>Make Admin</span>
-                    </button>
-                    <button mat-menu-item (click)="updateUserRole(user, UserRole.EMPLOYEE)" *ngIf="user.role !== UserRole.EMPLOYEE">
-                      <mat-icon>person</mat-icon>
-                      <span>Make Employee</span>
-                    </button>
-                    <button mat-menu-item (click)="toggleUserStatus(user)">
-                      <mat-icon>{{ user.isActive ? 'block' : 'check_circle' }}</mat-icon>
-                      <span>{{ user.isActive ? 'Deactivate' : 'Activate' }}</span>
-                    </button>
-                  </mat-menu>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
-            </table>
-          </div>
-        }
-      </mat-card-content>
-    </mat-card>
-  }
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>people</mat-icon>
+        Users ({{ filteredUsersData().length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-user-table
+        [columns]="tableColumns"
+        [dataSource]="filteredUsersData()"
+        [loading]="loading()"
+        [emptyMessage]="'No users found. Try adjusting your search or filters.'"
+        (view)="onViewUser($event)"
+        (edit)="onEditUser($event)"
+        (statusToggle)="onStatusToggle($event)"
+        (roleChange)="onRoleChange($event)"
+      ></app-user-table>
+    </mat-card-content>
+  </mat-card>
 </div>

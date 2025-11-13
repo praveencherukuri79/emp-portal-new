@@ -64,8 +64,55 @@ export class TeamReportsComponent implements OnInit {
     });
   }
 
+  getTeamSize(): number {
+    const report = this.reports();
+    return report?.teamSize || 0;
+  }
+
+  getTeamMembersCount(): number {
+    const report = this.reports();
+    return report?.teamMembers?.length || 0;
+  }
+
+  getTimesheetStat(key: string): number {
+    const report = this.reports() as any;
+    return report?.timesheetStats?.[key] || 0;
+  }
+
+  getLeaveStat(key: string): number {
+    const report = this.reports() as any;
+    return report?.leaveStats?.[key] || 0;
+  }
+
+  calculateUtilization(): number {
+    const teamSize = this.getTeamSize();
+    const activeCount = this.getTeamMembersCount();
+    if (teamSize === 0) return 0;
+    return Math.round((activeCount / teamSize) * 100);
+  }
+
   exportReport(format: 'pdf' | 'excel'): void {
-    this.notification.showInfo(`Exporting report as ${format.toUpperCase()}...`);
+    this.loading.set(true);
+    this.reportService.getTeamReport({ format }).subscribe({
+      next: (response) => {
+        if (response instanceof Blob) {
+          // Download the file
+          const url = window.URL.createObjectURL(response);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `team-report-${new Date().toISOString().split('T')[0]}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.notification.showSuccess(`Report exported as ${format.toUpperCase()}`);
+        }
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error exporting report:', error);
+        this.notification.showError(`Failed to export report as ${format.toUpperCase()}`);
+        this.loading.set(false);
+      }
+    });
   }
 }
 

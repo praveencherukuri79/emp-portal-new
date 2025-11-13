@@ -66,7 +66,7 @@ export class UserController {
 
       if (!user) {
         return ApiResponse.notFound(res, 'User not found');
-        return;
+        
       }
 
       // Update only allowed fields
@@ -87,6 +87,52 @@ export class UserController {
     } catch (error) {
       console.error('Update profile error:', error);
       return ApiResponse.error(res, 'Failed to update profile');
+    }
+  }
+
+  /**
+   * Update another user's profile (Admin/HR only)
+   * This is different from updateProfile which updates the current user
+   */
+  static async updateUserById(req: IAuthRequest, res: Response): Promise<Response | void> {
+    try {
+      const { userId } = req.params;
+      const updateData: any = req.body; // Using any since we accept both profile and employee fields
+
+      const user = await User.findOne({ 
+        _id: userId, 
+        tenantId: req.user?.tenantId 
+      });
+
+      if (!user) {
+        return ApiResponse.notFound(res, 'User not found');
+        return;
+      }
+
+      // Update basic profile fields
+      if (updateData.firstName) user.firstName = updateData.firstName;
+      if (updateData.lastName) user.lastName = updateData.lastName;
+      if (updateData.phoneNumber !== undefined) user.phone = updateData.phoneNumber;
+      if (updateData.phone !== undefined) user.phone = updateData.phone;
+      if (updateData.dateOfBirth) user.dateOfBirth = new Date(updateData.dateOfBirth);
+      if (updateData.gender) user.gender = updateData.gender;
+      if (updateData.email) user.email = updateData.email;
+      
+      // Update employee information if provided
+      if (updateData.employeeId) user.employeeId = updateData.employeeId;
+      if (updateData.department) user.department = updateData.department;
+      if (updateData.designation) user.designation = updateData.designation;
+      if (updateData.dateOfJoining) user.joiningDate = new Date(updateData.dateOfJoining);
+      if (updateData.employmentType) user.employmentType = updateData.employmentType;
+      if (updateData.role) user.role = updateData.role;
+
+      await user.save();
+
+      const responseData = toUserResponse(user);
+      return ApiResponse.success(res, responseData, 'User profile updated successfully');
+    } catch (error) {
+      console.error('Update user by ID error:', error);
+      return ApiResponse.error(res, 'Failed to update user profile');
     }
   }
 

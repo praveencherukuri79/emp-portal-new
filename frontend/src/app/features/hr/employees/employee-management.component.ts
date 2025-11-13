@@ -1,23 +1,22 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { UINotificationService } from '../../../core/services/notification.service';
 import { User } from '../../../core/models/user.model';
 import { EmployeeViewDialogComponent } from './employee-view-dialog.component';
 import { EmployeeEditDialogComponent } from './employee-edit-dialog.component';
+import { UserTableComponent } from '../../../shared/components/user-table/user-table.component';
+import { UserTableAction, DEFAULT_COLUMNS } from '../../../shared/components/user-table/user-table.types';
 
 @Component({
   selector: 'app-employee-management',
@@ -28,15 +27,13 @@ import { EmployeeEditDialogComponent } from './employee-edit-dialog.component';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
-    MatChipsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
-    MatTooltipModule,
-    FormsModule
+    FormsModule,
+    UserTableComponent
   ],
   templateUrl: './employee-management.component.html',
   styleUrls: ['./employee-management.component.scss']
@@ -52,7 +49,33 @@ export class EmployeeManagementComponent implements OnInit {
   selectedRole = signal<string>('all');
   selectedStatus = signal<string>('all');
 
-  displayedColumns = ['name', 'employeeId', 'department', 'role', 'status', 'actions'];
+  // Table configuration
+  tableColumns = DEFAULT_COLUMNS.HR;
+
+  // Filtered employees for the table
+  filteredEmployeesData = computed(() => {
+    const allEmployees = this.employees();
+    if (!Array.isArray(allEmployees)) return [];
+    
+    let employees = [...allEmployees];
+    
+    if (this.searchQuery()) {
+      const query = this.searchQuery().toLowerCase();
+      employees = employees.filter(e => 
+        `${e.firstName} ${e.lastName}`.toLowerCase().includes(query) ||
+        e.email?.toLowerCase().includes(query) ||
+        e.employeeId?.toLowerCase().includes(query)
+      );
+    }
+
+    if (this.selectedStatus() !== 'all') {
+      employees = employees.filter(e => 
+        this.selectedStatus() === 'active' ? e.isActive : !e.isActive
+      );
+    }
+
+    return employees;
+  });
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -80,29 +103,13 @@ export class EmployeeManagementComponent implements OnInit {
     });
   }
 
-  get filteredEmployees(): User[] {
-    const allEmployees = this.employees();
-    if (!Array.isArray(allEmployees)) {
-      return [];
-    }
-    let employees = [...allEmployees];
-    
-    if (this.searchQuery()) {
-      const query = this.searchQuery().toLowerCase();
-      employees = employees.filter(e => 
-        `${e.firstName} ${e.lastName}`.toLowerCase().includes(query) ||
-        e.email?.toLowerCase().includes(query) ||
-        e.employeeId?.toLowerCase().includes(query)
-      );
-    }
+  // Event handlers for UserTableComponent
+  onViewEmployee(event: UserTableAction): void {
+    this.viewEmployee(event.user as User);
+  }
 
-    if (this.selectedStatus() !== 'all') {
-      employees = employees.filter(e => 
-        this.selectedStatus() === 'active' ? e.isActive : !e.isActive
-      );
-    }
-
-    return employees;
+  onEditEmployee(event: UserTableAction): void {
+    this.editEmployee(event.user as User);
   }
 
   viewEmployee(employee: User): void {
@@ -134,7 +141,9 @@ export class EmployeeManagementComponent implements OnInit {
   }
 
   updateEmployee(userId: string, data: Partial<User>): void {
-    this.userService.updateProfile(data as any).subscribe({
+    // ✅ FIX: Use updateUserById instead of updateProfile
+    // updateProfile updates the CURRENT user (HR), updateUserById updates the target employee
+    this.userService.updateUserById(userId, data as any).subscribe({
       next: (response) => {
         if (response.status === 'success') {
           this.notification.showSuccess('Employee updated successfully');

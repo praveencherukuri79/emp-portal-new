@@ -19,7 +19,8 @@ import { IUserResponse } from '@shared/types/responses';
 import { ValidatorsUtil } from '../../../shared/utils/validators.util';
 
 export interface CreateUserDialogData {
-  // No data needed for create, but keeping interface for consistency
+  user?: any;
+  mode?: 'create' | 'edit';
 }
 
 @Component({
@@ -82,6 +83,52 @@ export class CreateUserDialogComponent implements OnInit {
     this.form.get('role')?.valueChanges.subscribe(role => {
       this.updateFormFields(role);
     });
+
+    // Patch form if editing existing user
+    if (this.isEditMode && this.data.user) {
+      this.patchFormValues();
+    }
+  }
+
+  get isEditMode(): boolean {
+    return this.data?.mode === 'edit' && !!this.data.user;
+  }
+
+  get dialogTitle(): string {
+    return this.isEditMode ? 'Edit User' : 'Create New User';
+  }
+
+  get submitButtonText(): string {
+    return this.isEditMode ? 'Update User' : 'Create User';
+  }
+
+  patchFormValues(): void {
+    const user = this.data.user;
+    
+    // Make password optional for edit mode
+    if (this.isEditMode) {
+      this.form.get('password')?.clearValidators();
+      this.form.get('password')?.updateValueAndValidity();
+    }
+
+    this.form.patchValue({
+      email: user.email || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      role: user.role || '',
+      phoneNumber: user.phoneNumber || '',
+      department: user.department || '',
+      designation: user.designation || '',
+      employeeId: user.employeeId || '',
+      joiningDate: user.dateOfJoining || user.joiningDate || '',
+      employmentType: user.employmentType || '',
+      reportingTo: user.reportingManagerId || user.reportingTo || ''
+    });
+
+    // Trigger role change to show appropriate fields
+    if (user.role) {
+      this.updateFormFields(user.role);
+    }
   }
 
   loadSupervisors(): void {
@@ -144,9 +191,8 @@ export class CreateUserDialogComponent implements OnInit {
     this.loading.set(true);
     const formValue = this.form.value;
     
-    const userData: ICreateUserRequest = {
+    const userData: any = {
       email: formValue.email,
-      password: formValue.password,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
       role: formValue.role,
@@ -154,10 +200,15 @@ export class CreateUserDialogComponent implements OnInit {
       department: formValue.department || undefined,
       designation: formValue.designation || undefined,
       employeeId: formValue.employeeId || undefined,
-      joiningDate: formValue.joiningDate ? new Date(formValue.joiningDate).toISOString() : undefined,
+      dateOfJoining: formValue.joiningDate ? new Date(formValue.joiningDate).toISOString() : undefined,
       employmentType: formValue.employmentType || undefined,
       reportingTo: formValue.reportingTo || undefined
     };
+
+    // Only include password if provided (for edit mode, password is optional)
+    if (formValue.password) {
+      userData.password = formValue.password;
+    }
 
     this.dialogRef.close(userData);
   }

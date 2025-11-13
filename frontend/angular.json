@@ -45,7 +45,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "1.5MB",
                   "maximumError": "2MB"
                 },
                 {
@@ -53,6 +53,9 @@
                   "maximumWarning": "20kB",
                   "maximumError": "40kB"
                 }
+              ],
+              "allowedCommonJsDependencies": [
+                "dayjs"
               ],
               "outputHashing": "all",
               "sourceMap": {

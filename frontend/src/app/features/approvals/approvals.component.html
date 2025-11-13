@@ -51,8 +51,8 @@
                     <th mat-header-cell *matHeaderCellDef>Employee</th>
                     <td mat-cell *matCellDef="let week">
                       <div class="employee-info">
-                        <div class="employee-avatar">{{ week.employeeName?.[0] || 'U' }}</div>
-                        <span>{{ week.employeeName || 'Unknown' }}</span>
+                        <div class="employee-avatar">{{ getEmployeeName(week.userId)[0] || 'U' }}</div>
+                        <span>{{ getEmployeeName(week.userId) }}</span>
                       </div>
                     </td>
                   </ng-container>
@@ -61,7 +61,7 @@
                   <ng-container matColumnDef="week">
                     <th mat-header-cell *matHeaderCellDef>Week</th>
                     <td mat-cell *matCellDef="let week">
-                      {{ formatDate(week.weekStart) }} - {{ formatDate(week.weekEnd) }}
+                      {{ formatDate(week.weekStartDate) }} - {{ formatDate(week.weekEndDate) }}
                     </td>
                   </ng-container>
 
@@ -80,7 +80,7 @@
                   <ng-container matColumnDef="submittedAt">
                     <th mat-header-cell *matHeaderCellDef>Submitted</th>
                     <td mat-cell *matCellDef="let week">
-                      {{ formatDate(week.submittedAt) }}
+                      {{ getSubmittedDate(week) }}
                     </td>
                   </ng-container>
 
@@ -88,8 +88,8 @@
                   <ng-container matColumnDef="status">
                     <th mat-header-cell *matHeaderCellDef>Status</th>
                     <td mat-cell *matCellDef="let week">
-                      <mat-chip [color]="week.status === 'submitted' ? 'warn' : 'default'">
-                        {{ week.status | titlecase }}
+                      <mat-chip [color]="getStatusChipColor(week)">
+                        {{ getTimesheetStatus(week) }}
                       </mat-chip>
                     </td>
                   </ng-container>
@@ -159,8 +159,8 @@
                     <th mat-header-cell *matHeaderCellDef>Employee</th>
                     <td mat-cell *matCellDef="let leave">
                       <div class="employee-info">
-                        <div class="employee-avatar">{{ leave.userId?.[0] || 'U' }}</div>
-                        <span>{{ leave.userId || 'Unknown' }}</span>
+                        <div class="employee-avatar">{{ getEmployeeName(leave.userId)[0] || 'U' }}</div>
+                        <span>{{ getEmployeeName(leave.userId) }}</span>
                       </div>
                     </td>
                   </ng-container>

@@ -184,9 +184,8 @@ export class HrDashboardComponent implements OnInit {
   }
 
   handleAlert(id: string): void {
-    // Navigate to document management or send notification
-    this.notification.showInfo(`Handling document alert: ${id}`);
-    // TODO: Implement full alert handling via DocumentService when API is ready
+    // Navigate to HR documents with filter
+    window.location.href = `/hr/documents?alert=${id}`;
   }
 
   getAlertStatusColor(status: string): string {
