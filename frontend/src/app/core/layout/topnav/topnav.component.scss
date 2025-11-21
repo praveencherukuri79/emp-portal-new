@@ -11,7 +11,7 @@
 ::ng-deep mat-toolbar.topnav__toolbar {
   background: var(--header-background) !important;
   backdrop-filter: blur(20px);
-  border-bottom: var(--border-width-thin) solid var(--border-primary);
+  border-bottom: 1px solid var(--border-primary);
   box-shadow: var(--shadow-lg) !important;
   padding: 0 !important;
   height: var(--header-height) !important;
@@ -27,8 +27,8 @@
   &__toolbar {
     background: var(--header-background);
     backdrop-filter: blur(20px);
-    border-bottom: var(--border-width-thin) solid var(--border-primary);
-    box-shadow: var(--shadow-lg);
+    border-bottom: 1px solid var(--border-primary);
+    @include shadow('lg');
     padding: 0;
     height: var(--header-height);
     position: sticky;
@@ -69,19 +69,19 @@
     padding: var(--spacing-2) 0;
 
     mat-icon {
-      font-size: var(--font-size-2xl);
-      width: var(--font-size-2xl);
-      height: var(--font-size-2xl);
-      color: var(--header-text);
+      @include icon-container-gradient(var(--action-primary));
+      @include icon-container(32px);
+      color: var(--text-on-primary);
+      border-radius: var(--radius-md);
     }
 
     @include hover-link(var(--action-secondary));
-    
+
     &:hover {
       opacity: 0.9;
-      
+
       mat-icon {
-        color: var(--action-secondary);
+        color: var(--text-on-primary);
       }
     }
   }
@@ -128,7 +128,7 @@
     }
 
     @include hover-interactive(var(--action-secondary-light), var(--action-secondary));
-    
+
     &:hover mat-icon {
       color: var(--action-secondary);
     }
@@ -203,9 +203,9 @@
       top: calc(100% + var(--spacing-2));
       left: 0;
       background: var(--card-background);
-      border: var(--border-width-thin) solid var(--border-secondary);
+      border: 1px solid var(--border-secondary);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-xl);
+      @include shadow('xl');
       min-width: 220px;
       padding: var(--spacing-2);
       z-index: calc(var(--z-index-sticky) + 10);
@@ -280,29 +280,23 @@
 
   &__user-trigger {
     .user-avatar {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      min-height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--action-accent), var(--action-accent-hover));
+      @include icon-container(36px);
+      @include icon-container-gradient(var(--action-accent));
       color: var(--text-on-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: var(--radius-full);
       font-weight: var(--font-weight-bold);
       font-size: var(--font-size-sm);
       border: 2px solid var(--border-primary);
       transition: background var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
       cursor: pointer;
-      box-shadow: var(--shadow-sm);
+      @include shadow('sm');
       letter-spacing: 0.5px;
       flex-shrink: 0;
 
       &:hover {
         background: linear-gradient(135deg, var(--action-accent-hover), var(--action-accent-active));
         border-color: var(--action-accent);
-        box-shadow: var(--shadow-md);
+        @include shadow('md');
       }
     }
   }
@@ -317,25 +311,21 @@
   &__header {
     padding: var(--spacing-6);
     background: var(--background-secondary);
-    border-bottom: var(--border-width-thin) solid var(--border-primary);
+    border-bottom: 1px solid var(--border-primary);
     display: flex;
     align-items: center;
     gap: var(--spacing-4);
     color: var(--text-primary);
 
     .user-menu__avatar {
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: var(--radius-full);
-      background: var(--action-accent);
+      @include icon-container(3.5rem);
+      @include icon-container-gradient(var(--action-accent));
       color: var(--text-on-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: var(--radius-full);
       font-weight: var(--font-weight-bold);
       font-size: var(--font-size-lg);
       border: 2px solid var(--border-primary);
-      box-shadow: var(--shadow-md);
+      @include shadow('md');
     }
 
     .user-menu__info {
@@ -381,9 +371,9 @@
     opacity: 0;
     transform: translateY(-12px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
-

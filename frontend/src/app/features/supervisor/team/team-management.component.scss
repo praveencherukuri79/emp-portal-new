@@ -16,6 +16,11 @@
     @include flex-between;
     align-items: flex-start;
     gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+
+    h1 {
+      @include gradient-text;
+    }
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -41,10 +46,12 @@
   }
 
   .team-table-card {
-    @include card;
+    @include premium-card;
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-4);
 
       mat-card-title {
         @include flex-center;
@@ -55,7 +62,10 @@
         color: var(--text-primary);
 
         mat-icon {
-          color: var(--action-primary);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
     }
@@ -66,6 +76,7 @@
   }
 
   .team-table {
+    @include table-card;
     width: 100%;
     background: transparent;
 
@@ -74,13 +85,13 @@
       color: var(--text-primary);
       background: var(--table-header-background);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--border-primary);
+      border-bottom: 1px solid var(--border-primary);
     }
 
     td {
       color: var(--text-secondary);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--table-border);
+      border-bottom: 1px solid var(--table-border);
     }
 
     .table-row {
@@ -97,8 +108,11 @@
       gap: var(--spacing-3);
 
       .member-avatar {
-        @include icon-container(var(--spacing-10)); /* 40px equivalent */
+        @include icon-container(var(--spacing-10));
+        /* 40px equivalent */
         @include icon-container-gradient(var(--action-primary));
+        color: var(--text-on-primary);
+        border-radius: var(--radius-full);
       }
 
       .member-name {

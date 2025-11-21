@@ -118,7 +118,7 @@ import { User } from '../../../core/models/user.model';
       justify-content: space-between;
       align-items: flex-start;
       padding: var(--spacing-6);
-      border-bottom: var(--border-default) solid var(--border-secondary);
+      border-bottom: 1px solid var(--border-secondary);
 
       h2 {
         display: flex;
@@ -129,7 +129,7 @@ import { User } from '../../../core/models/user.model';
         .employee-avatar-large {
           width: 60px;
           height: 60px;
-          border-radius: 50%;
+          border-radius: var(--radius-full);
           background: var(--action-primary);
           color: var(--text-on-primary);
           display: flex;
@@ -221,7 +221,7 @@ import { User } from '../../../core/models/user.model';
 
     mat-dialog-actions {
       padding: var(--spacing-4) var(--spacing-6);
-      border-top: var(--border-default) solid var(--border-secondary);
+      border-top: 1px solid var(--border-secondary);
     }
   `]
 })
@@ -229,7 +229,7 @@ export class EmployeeViewDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<EmployeeViewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public employee: User
-  ) {}
+  ) { }
 
   formatDate(date: Date | string | undefined): string {
     if (!date) return 'N/A';

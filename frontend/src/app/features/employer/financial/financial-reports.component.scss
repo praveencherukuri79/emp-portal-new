@@ -16,6 +16,11 @@
     @include flex-between;
     align-items: flex-start;
     gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+
+    h1 {
+      @include gradient-text;
+    }
 
     .header-actions {
       @include flex-center;
@@ -41,7 +46,7 @@
   }
 
   .summary-card {
-    @include card;
+    @include premium-card;
     padding: var(--spacing-6);
     position: relative;
     overflow: hidden;
@@ -73,27 +78,33 @@
     }
 
     &.primary {
-      background: linear-gradient(135deg, rgba(0, 200, 83, 0.12), transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-success-500) 12%, transparent), transparent);
+      border-left: 4px solid var(--color-success-500);
     }
 
     &.accent {
-      background: linear-gradient(135deg, rgba(30, 136, 229, 0.12), transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-500) 12%, transparent), transparent);
+      border-left: 4px solid var(--color-primary-500);
     }
 
     &.success {
-      background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-warning-500) 12%, transparent), transparent);
+      border-left: 4px solid var(--color-warning-500);
     }
 
     &.warning {
-      background: linear-gradient(135deg, rgba(156, 39, 176, 0.12), transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary-500) 12%, transparent), transparent);
+      border-left: 4px solid var(--color-secondary-500);
     }
   }
 
   .report-card {
-    @include card;
+    @include premium-card;
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-4);
 
       mat-card-title {
         @include flex-center;
@@ -104,13 +115,17 @@
         color: var(--text-primary);
 
         mat-icon {
-          color: var(--action-primary);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
     }
   }
 
   .table-container {
+    @include table-card;
     overflow-x: auto;
   }
 
@@ -123,13 +138,13 @@
       color: var(--text-primary);
       background: var(--table-header-background);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--border-primary);
+      border-bottom: 1px solid var(--border-primary);
     }
 
     td {
       color: var(--text-secondary);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--table-border);
+      border-bottom: 1px solid var(--table-border);
     }
 
     .table-row {
@@ -149,7 +164,13 @@
       padding: var(--spacing-card-padding);
       background: var(--background-secondary);
       border-radius: var(--radius-md);
-      border: var(--border-default) solid var(--border-primary);
+      border: 1px solid var(--border-primary);
+      transition: all var(--transition-normal);
+
+      &:hover {
+        background: var(--background-tertiary);
+        border-color: var(--action-primary);
+      }
 
       .project-info {
         @include flex-between;
@@ -233,7 +254,7 @@
     &.compact {
       padding: var(--spacing-8);
       border-radius: var(--radius-lg);
-      border: var(--border-default) dashed var(--border-secondary);
+      border: 1px dashed var(--border-secondary);
     }
   }
 

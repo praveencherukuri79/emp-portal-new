@@ -21,7 +21,7 @@
 .login-card {
   max-width: 450px;
   width: 100%;
-  @include card;
+  @include premium-card;
   margin: 0 auto;
   // Card padding comes from global Material override (default padding since no header/content)
 
@@ -34,7 +34,7 @@
       font-size: var(--font-size-3xl);
       font-weight: var(--font-weight-semibold);
       margin-bottom: var(--spacing-2);
-      color: var(--text-primary);
+      @include gradient-text;
     }
 
     mat-card-subtitle {

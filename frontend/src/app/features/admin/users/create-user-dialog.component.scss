@@ -1,44 +1,51 @@
+@import '../../../../styles/mixins/components';
+@import '../../../../styles/tokens/breakpoints';
+
 .create-user-dialog {
   min-width: 600px;
   max-width: 800px;
 
   h2 {
-    margin: 0 0 20px 0;
-    font-size: 24px;
-    font-weight: 500;
-    color: #2c3e50;
+    margin: 0 0 var(--spacing-5) 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--spacing-4);
   }
 
   mat-dialog-content {
     max-height: 70vh;
     overflow-y: auto;
-    padding: 20px 24px;
+    padding: var(--spacing-5) var(--spacing-6);
   }
 
   .user-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--spacing-6);
   }
 
   .form-section {
     h3 {
-      margin: 0 0 16px 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: #34495e;
-      border-bottom: 2px solid #ecf0f1;
-      padding-bottom: 8px;
+      margin: 0 0 var(--spacing-4) 0;
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
   }
 
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
 
-    @media (max-width: 768px) {
+    @include breakpoint-down(sm) {
       grid-template-columns: 1fr;
     }
   }
@@ -48,18 +55,18 @@
   }
 
   mat-dialog-actions {
-    padding: 16px 24px;
+    padding: var(--spacing-4) var(--spacing-6);
     margin: 0;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--border-secondary);
+    gap: var(--spacing-2);
 
     button {
-      margin-left: 8px;
+      margin-left: 0;
     }
 
     .spinner {
       display: inline-block;
-      margin-right: 8px;
+      margin-right: var(--spacing-2);
     }
   }
 }
-

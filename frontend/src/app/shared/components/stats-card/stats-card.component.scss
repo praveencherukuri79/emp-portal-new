@@ -10,10 +10,7 @@
   align-items: center;
   gap: var(--spacing-6);
   padding: var(--spacing-8);
-  background: var(--card-background);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: var(--border-default) solid var(--border-secondary);
+  @include premium-card;
   position: relative;
   text-decoration: none;
   color: inherit;
@@ -23,14 +20,14 @@
 
   &.clickable {
     cursor: pointer;
-    
+
     .stats-card__action {
       opacity: 0;
     }
-    
+
     &:hover {
-      box-shadow: var(--shadow-xl);
-      
+      transform: translateY(-5px);
+
       .stats-card__action {
         opacity: 1;
       }
@@ -50,7 +47,7 @@
     box-shadow: var(--shadow-md);
     position: relative;
     z-index: 1;
-    
+
     mat-icon {
       font-size: var(--font-size-4xl);
       width: var(--font-size-4xl);
@@ -60,7 +57,8 @@
 
   &__content {
     flex: 1;
-    min-width: 0;  /* Allow text truncation */
+    min-width: 0;
+    /* Allow text truncation */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -117,7 +115,7 @@
     opacity: 0;
     color: var(--action-accent);
     flex-shrink: 0;
-    
+
     mat-icon {
       font-size: var(--font-size-xl);
       width: var(--font-size-xl);
@@ -130,12 +128,12 @@
     background: var(--action-primary-light);
     color: var(--action-primary);
   }
-  
+
   &[data-color="secondary"] &__icon {
     background: var(--action-secondary-light);
     color: var(--action-secondary);
   }
-  
+
   &[data-color="accent"] &__icon {
     background: var(--action-accent-light);
     color: var(--action-accent);

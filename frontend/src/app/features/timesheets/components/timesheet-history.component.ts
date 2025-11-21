@@ -150,7 +150,6 @@ export class TimesheetHistoryComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Failed to load history:', error);
         this.loading.set(false);
       }
     });

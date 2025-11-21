@@ -1,2 +1,400 @@
-/* Styles moved to inline styles in component */
+/**
+ * Project Management - Premium Design
+ * Comprehensive styling for all Material components
+ */
 
+@import '../../../../styles/mixins/components.scss';
+@import '../../../../styles/mixins/layout.scss';
+
+.project-management-container {
+    @include container;
+    padding: var(--spacing-page-padding);
+    animation: fadeIn 0.3s ease-out;
+
+    mat-card {
+        @include glass-panel;
+        @include shadow('lg');
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        background: var(--glass-background);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border);
+
+        mat-card-header {
+            @include flex-between;
+            padding: var(--spacing-6) var(--spacing-7);
+            background: linear-gradient(135deg,
+                    var(--background-secondary) 0%,
+                    var(--background-tertiary) 100%);
+            border-bottom: 1px solid var(--border-primary);
+            margin-bottom: 0;
+
+            mat-card-title {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+
+                .header-actions {
+                    @include flex-between;
+                    width: 100%;
+
+                    h2 {
+                        @include gradient-text;
+                        font-size: var(--font-size-3xl);
+                        font-weight: var(--font-weight-bold);
+                        margin: 0;
+                        letter-spacing: -0.5px;
+                    }
+
+                    button {
+                        @include shadow('md');
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        font-weight: var(--font-weight-bold);
+                        border-radius: var(--radius-full);
+                        padding: 0 var(--spacing-7);
+                        height: 44px;
+                        transition: all var(--transition-normal);
+
+                        &:hover {
+                            transform: translateY(-2px);
+                            @include shadow('lg');
+                        }
+
+                        mat-icon {
+                            margin-right: var(--spacing-2);
+                        }
+                    }
+                }
+            }
+        }
+
+        mat-card-content {
+            padding: var(--spacing-7);
+
+            /* Filter Section */
+            .filter-section {
+                display: flex;
+                gap: var(--spacing-4);
+                margin-bottom: var(--spacing-7);
+                background: var(--background-secondary);
+                padding: var(--spacing-5);
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--border-secondary);
+                align-items: flex-start;
+                @include shadow('sm');
+
+                mat-form-field {
+                    flex: 1;
+                    max-width: 350px;
+                    margin-bottom: 0;
+
+                    ::ng-deep {
+                        .mat-mdc-form-field-subscript-wrapper {
+                            display: none;
+                        }
+
+                        .mat-mdc-text-field-wrapper {
+                            background: var(--background-primary);
+                            border-radius: var(--radius-md);
+                            padding: var(--spacing-2);
+                        }
+
+                        .mat-mdc-form-field-focus-overlay {
+                            background-color: transparent;
+                        }
+
+                        .mdc-text-field--filled {
+                            background-color: transparent;
+                        }
+
+                        .mat-mdc-form-field-icon-prefix,
+                        .mat-mdc-form-field-icon-suffix {
+                            color: var(--action-primary);
+                        }
+                    }
+                }
+            }
+
+            /* Projects Table */
+            .projects-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                border: 1px solid var(--border-secondary);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                @include shadow('md');
+                background: var(--background-primary);
+
+                tr.mat-mdc-header-row {
+                    background: linear-gradient(135deg,
+                            var(--background-secondary) 0%,
+                            var(--background-tertiary) 100%);
+                    height: 56px;
+
+                    th {
+                        font-weight: var(--font-weight-bold);
+                        font-size: var(--font-size-sm);
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        color: var(--text-primary);
+                        border-bottom: 2px solid var(--border-primary);
+                        padding: var(--spacing-4) var(--spacing-5);
+                    }
+                }
+
+                tr.mat-mdc-row {
+                    transition: all var(--transition-fast);
+                    height: 64px;
+
+                    &:hover {
+                        background: var(--background-secondary);
+                        transform: scale(1.01);
+                        @include shadow('sm');
+                    }
+
+                    &:not(:last-child) {
+                        border-bottom: 1px solid var(--border-secondary);
+                    }
+
+                    td {
+                        padding: var(--spacing-4) var(--spacing-5);
+                        color: var(--text-primary);
+                        font-size: var(--font-size-sm);
+
+                        mat-chip {
+                            font-size: var(--font-size-xs);
+                            font-weight: var(--font-weight-bold);
+                            padding: var(--spacing-2) var(--spacing-4);
+                            height: auto;
+                            border-radius: var(--radius-full);
+                            @include shadow('sm');
+                            transition: all var(--transition-fast);
+
+                            &:hover {
+                                transform: scale(1.05);
+                            }
+                        }
+
+                        button {
+                            transition: all var(--transition-fast);
+
+                            &:hover {
+                                transform: scale(1.1);
+                                background: var(--action-primary-light);
+
+                                mat-icon {
+                                    color: var(--action-primary);
+                                }
+                            }
+
+                            &:disabled {
+                                opacity: 0.4;
+                                cursor: not-allowed;
+                            }
+                        }
+                    }
+                }
+            }
+
+            /* Loading State */
+            .loading {
+                @include loading-state;
+                padding: var(--spacing-12);
+            }
+
+            /* Empty State */
+            .empty-state {
+                @include empty-state;
+                padding: var(--spacing-16);
+                background: var(--background-secondary);
+                border-radius: var(--radius-lg);
+                border: 2px dashed var(--border-secondary);
+
+                mat-icon {
+                    font-size: 80px;
+                    width: 80px;
+                    height: 80px;
+                    color: var(--text-tertiary);
+                    opacity: 0.3;
+                    margin-bottom: var(--spacing-5);
+                }
+
+                p {
+                    font-size: var(--font-size-lg);
+                    color: var(--text-secondary);
+                    margin-bottom: var(--spacing-5);
+                    font-weight: var(--font-weight-medium);
+                }
+
+                button {
+                    @include shadow('md');
+                    text-transform: uppercase;
+                    font-weight: var(--font-weight-bold);
+                    border-radius: var(--radius-full);
+                    padding: 0 var(--spacing-7);
+                    height: 44px;
+
+                    &:hover {
+                        transform: translateY(-2px);
+                        @include shadow('lg');
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Dialog Styling */
+mat-dialog-container {
+    .full-width {
+        width: 100%;
+    }
+
+    .current-team {
+        margin-top: var(--spacing-5);
+        padding: var(--spacing-5);
+        background: var(--background-secondary);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-secondary);
+
+        h4 {
+            margin: 0 0 var(--spacing-3) 0;
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+
+        mat-chip-set {
+            margin-top: var(--spacing-3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-2);
+
+            mat-chip {
+                @include shadow('sm');
+                background: var(--action-primary-light);
+                color: var(--action-primary);
+                font-weight: var(--font-weight-semibold);
+                border-radius: var(--radius-full);
+                padding: var(--spacing-2) var(--spacing-4);
+
+                button[matChipRemove] {
+                    transition: all var(--transition-fast);
+
+                    &:hover {
+                        transform: scale(1.2);
+                        color: var(--status-error);
+                    }
+                }
+            }
+        }
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-4);
+
+        mat-form-field {
+            &.full-width {
+                grid-column: 1 / -1;
+            }
+
+            ::ng-deep {
+                .mat-mdc-text-field-wrapper {
+                    background: var(--background-secondary);
+                    border-radius: var(--radius-md);
+                }
+
+                .mat-mdc-form-field-hint,
+                .mat-mdc-form-field-error {
+                    font-size: var(--font-size-xs);
+                }
+            }
+        }
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+
+            mat-form-field {
+                grid-column: 1;
+            }
+        }
+    }
+
+    mat-dialog-actions {
+        padding: var(--spacing-5) var(--spacing-6);
+        background: var(--background-secondary);
+        border-top: 1px solid var(--border-primary);
+        margin: 0;
+
+        button {
+            text-transform: uppercase;
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: 0.5px;
+            border-radius: var(--radius-full);
+            padding: 0 var(--spacing-6);
+            height: 40px;
+            transition: all var(--transition-normal);
+
+            &:not(:disabled):hover {
+                transform: translateY(-2px);
+                @include shadow('md');
+            }
+
+            mat-spinner {
+                display: inline-block;
+                margin-right: var(--spacing-2);
+            }
+        }
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .project-management-container {
+        padding: var(--spacing-4);
+
+        mat-card {
+            mat-card-header {
+                padding: var(--spacing-4);
+
+                .header-actions {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: var(--spacing-3);
+
+                    button {
+                        width: 100%;
+                    }
+                }
+            }
+
+            mat-card-content {
+                padding: var(--spacing-4);
+
+                .filter-section {
+                    flex-direction: column;
+
+                    mat-form-field {
+                        max-width: 100%;
+                    }
+                }
+
+                .projects-table {
+                    font-size: var(--font-size-xs);
+
+                    tr.mat-mdc-row {
+                        height: auto;
+
+                        td {
+                            padding: var(--spacing-3);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

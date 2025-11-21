@@ -13,19 +13,36 @@
   min-height: calc(100vh - var(--header-height));
 
   // Use global .page-header class
+  .page-header {
+    margin-bottom: var(--spacing-6);
 
-  // Material handles tab body content padding - don't override
+    h1 {
+      @include gradient-text;
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: var(--font-size-lg);
+      margin: 0;
+    }
+  }
 
   .tab-content {
     min-height: calc(var(--spacing-20) * 2);
-    // Material handles padding - don't override
+    padding-top: var(--spacing-4);
   }
 
   .approvals-card {
-    @include card;
+    @include premium-card;
+    margin-bottom: var(--spacing-6);
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-4);
 
       mat-card-title {
         @include flex-center;
@@ -36,25 +53,33 @@
         color: var(--text-primary);
 
         mat-icon {
-          color: var(--action-primary);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
     }
   }
 
-  // Use global .table-container class
-  // Use global .table-base class for .approvals-table
+  .table-container {
+    @include table-card;
+    overflow-x: auto;
+  }
 
-  // Component-specific table cell styles
   .approvals-table {
+    width: 100%;
+
     .employee-info {
       @include flex-center;
       justify-content: flex-start;
       gap: var(--spacing-3);
 
       .employee-avatar {
-        @include icon-container(calc(var(--spacing-10) + var(--spacing-1))); /* 36px */
+        @include icon-container(36px);
         @include icon-container-gradient(var(--action-primary));
+        color: var(--text-on-primary);
+        border-radius: var(--radius-full);
       }
     }
 
@@ -74,7 +99,7 @@
     }
 
     .reason-text {
-      max-width: calc(var(--spacing-20) * 1.5); /* 300px equivalent */
+      max-width: 300px;
       @include truncate-text;
     }
 
@@ -85,7 +110,13 @@
     }
   }
 
-  // Use global .loading-container, .error-container, .empty-state classes
+  .loading-container {
+    @include loading-state;
+  }
+
+  .empty-state {
+    @include empty-state;
+  }
 }
 
 /* Responsive Design */
@@ -95,7 +126,9 @@
   }
 
   .approvals-table {
-    th, td {
+
+    th,
+    td {
       padding: var(--spacing-3);
       font-size: var(--font-size-sm);
     }

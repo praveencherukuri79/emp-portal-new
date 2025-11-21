@@ -1,4 +1,5 @@
 @import '../../../../styles/mixins/components.scss';
+@import '../../../../styles/mixins/layout.scss';
 
 .mobile-nav-container {
   height: 100vh;
@@ -6,14 +7,14 @@
   .mobile-sidenav {
     width: 280px;
     background: var(--sidebar-background);
-    border-right: var(--border-width-thin) solid var(--border-secondary);
+    border-right: 1px solid var(--border-secondary);
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-xl);
+    @include shadow('xl');
 
     .sidenav-header {
       padding: var(--spacing-4);
-      border-bottom: var(--border-width-thin) solid var(--border-secondary);
+      border-bottom: 1px solid var(--border-secondary);
       background: var(--background-elevated);
       display: flex;
       align-items: center;
@@ -29,9 +30,10 @@
         text-decoration: none;
 
         mat-icon {
-          font-size: var(--font-size-2xl);
-          width: var(--font-size-2xl);
-          height: var(--font-size-2xl);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
 
@@ -150,7 +152,7 @@
 
     .sidenav-footer {
       padding: var(--spacing-4);
-      border-top: var(--border-width-thin) solid var(--border-secondary);
+      border-top: 1px solid var(--border-secondary);
       background: var(--background-elevated);
 
       .user-info {
@@ -163,14 +165,10 @@
         margin-bottom: var(--spacing-3);
 
         .user-avatar {
-          width: 2.5rem;
-          height: 2.5rem;
+          @include icon-container(2.5rem);
+          @include icon-container-gradient(var(--action-primary));
+          color: var(--text-on-primary);
           border-radius: var(--radius-full);
-          background: var(--action-primary);
-          color: var(--text-inverse);
-          display: flex;
-          align-items: center;
-          justify-content: center;
           font-weight: var(--font-weight-semibold);
           font-size: var(--font-size-sm);
         }
@@ -218,8 +216,8 @@
     justify-content: space-between;
     padding: var(--spacing-3) var(--spacing-4);
     background: var(--header-background);
-    border-bottom: var(--border-width-thin) solid var(--border-secondary);
-    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-secondary);
+    @include shadow('sm');
     height: var(--header-height-mobile);
     position: sticky;
     top: 0;
@@ -239,9 +237,10 @@
       text-decoration: none;
 
       mat-icon {
-        font-size: var(--font-size-xl);
-        width: var(--font-size-xl);
-        height: var(--font-size-xl);
+        @include icon-container-gradient(var(--action-primary));
+        @include icon-container(32px);
+        color: var(--text-on-primary);
+        border-radius: var(--radius-md);
       }
     }
 
@@ -252,14 +251,10 @@
 
       .user-menu-trigger {
         .user-avatar {
-          width: 2rem;
-          height: 2rem;
+          @include icon-container(2rem);
+          @include icon-container-gradient(var(--action-primary));
+          color: var(--text-on-primary);
           border-radius: var(--radius-full);
-          background: var(--text-inverse);
-          color: var(--action-primary);
-          display: flex;
-          align-items: center;
-          justify-content: center;
           font-weight: var(--font-weight-semibold);
           font-size: var(--font-size-xs);
         }
@@ -276,14 +271,10 @@
     gap: var(--spacing-3);
 
     .user-menu-avatar {
-      width: 2.5rem;
-      height: 2.5rem;
+      @include icon-container(2.5rem);
+      @include icon-container-gradient(var(--action-primary));
+      color: var(--text-on-primary);
       border-radius: var(--radius-full);
-      background: var(--action-primary);
-      color: var(--text-inverse);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-weight: var(--font-weight-semibold);
       font-size: var(--font-size-sm);
     }
@@ -328,9 +319,9 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-

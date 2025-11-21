@@ -30,8 +30,8 @@ export interface ToastConfig {
     .toast-container {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 4px 8px;
+      gap: var(--spacing-3);
+      padding: var(--spacing-1) var(--spacing-2);
       min-width: 300px;
     }
 
@@ -41,26 +41,27 @@ export interface ToastConfig {
 
     .toast-message {
       flex: 1;
+      font-size: var(--font-size-sm);
     }
 
     .toast-success {
-      background-color: #4caf50;
-      color: white;
+      background-color: var(--status-success);
+      color: var(--text-on-primary);
     }
 
     .toast-error {
-      background-color: #f44336;
-      color: white;
+      background-color: var(--status-error);
+      color: var(--text-on-primary);
     }
 
     .toast-warning {
-      background-color: #ff9800;
-      color: white;
+      background-color: var(--status-warning);
+      color: var(--text-on-primary);
     }
 
     .toast-info {
-      background-color: #2196f3;
-      color: white;
+      background-color: var(--status-info);
+      color: var(--text-on-primary);
     }
   `]
 })

@@ -11,9 +11,9 @@
     margin-bottom: var(--spacing-6);
 
     h1 {
+      @include gradient-text;
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
       margin: 0 0 var(--spacing-2) 0;
     }
 
@@ -34,13 +34,29 @@
     }
 
     .role-card {
+      @include premium-card;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
       mat-card-header {
         margin-bottom: var(--spacing-4);
+        border-bottom: 1px solid var(--border-secondary);
+        padding-bottom: var(--spacing-4);
 
         mat-card-title {
           display: flex;
           align-items: center;
-          gap: var(--spacing-2);
+          gap: var(--spacing-3);
+          font-size: var(--font-size-xl);
+          color: var(--text-primary);
+
+          mat-icon {
+            @include icon-container-gradient(var(--action-primary));
+            @include icon-container(40px);
+            color: var(--text-on-primary);
+            border-radius: var(--radius-lg);
+          }
         }
 
         mat-card-subtitle {
@@ -50,13 +66,15 @@
       }
 
       .permissions-list {
+        flex: 1;
+
         h4 {
-          font-size: var(--font-size-sm);
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-secondary);
-          margin: 0 0 var(--spacing-2) 0;
+          font-size: var(--font-size-xs);
+          font-weight: var(--font-weight-bold);
+          color: var(--text-tertiary);
+          margin: 0 0 var(--spacing-3) 0;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
         }
 
         ul {
@@ -72,28 +90,38 @@
             align-items: center;
             gap: var(--spacing-2);
             font-size: var(--font-size-sm);
-            color: var(--text-primary);
+            color: var(--text-secondary);
+            padding: var(--spacing-2);
+            border-radius: var(--radius-sm);
+            transition: background-color var(--transition-fast);
+
+            &:hover {
+              background-color: var(--background-tertiary);
+              color: var(--text-primary);
+            }
 
             .permission-icon {
               font-size: 18px;
               width: 18px;
               height: 18px;
-              color: var(--color-success);
+              color: var(--status-success);
             }
           }
         }
+      }
+
+      mat-card-actions {
+        margin-top: auto;
+        padding-top: var(--spacing-4);
+        border-top: 1px solid var(--border-secondary);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-2);
       }
     }
   }
 
   .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-8);
-    gap: var(--spacing-4);
-    text-align: center;
-    color: var(--text-secondary);
+    @include loading-state;
   }
 }

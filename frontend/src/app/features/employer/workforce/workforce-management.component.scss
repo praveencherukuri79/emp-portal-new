@@ -17,6 +17,11 @@
     @include flex-between;
     align-items: flex-start;
     gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+
+    h1 {
+      @include gradient-text;
+    }
 
     @include breakpoint-down(sm) {
       flex-direction: column;
@@ -26,10 +31,13 @@
   // Material handles tab content padding - don't override
 
   mat-card {
-    @include card;
+    @include premium-card;
+    margin-bottom: var(--spacing-6);
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-4);
 
       mat-card-title {
         @include flex-center;
@@ -40,13 +48,17 @@
         color: var(--text-primary);
 
         mat-icon {
-          color: var(--action-primary);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
     }
   }
 
   .table-container {
+    @include table-card;
     overflow-x: auto;
   }
 
@@ -62,8 +74,10 @@
     gap: var(--spacing-4);
 
     .summary-card {
+      @include premium-card;
       position: relative;
       overflow: hidden;
+      padding: var(--spacing-6);
 
       .summary-title {
         @include flex-center;
@@ -93,15 +107,18 @@
       }
 
       &.primary {
-        background: linear-gradient(135deg, rgba(0, 123, 255, 0.12), transparent);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-500) 12%, transparent), transparent);
+        border-left: 4px solid var(--color-primary-500);
       }
 
       &.accent {
-        background: linear-gradient(135deg, rgba(123, 31, 162, 0.12), transparent);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary-500) 12%, transparent), transparent);
+        border-left: 4px solid var(--color-secondary-500);
       }
 
       &.warning {
-        background: linear-gradient(135deg, rgba(255, 111, 0, 0.12), transparent);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--color-warning-500) 12%, transparent), transparent);
+        border-left: 4px solid var(--color-warning-500);
       }
     }
   }
@@ -169,6 +186,7 @@
     mat-chip {
       @include hover-interactive(var(--background-tertiary), var(--text-primary));
       font-weight: var(--font-weight-medium);
+
       .chip-meta {
         margin-left: var(--spacing-2);
         font-size: var(--font-size-xs);
@@ -270,13 +288,13 @@
       color: var(--text-primary);
       background: var(--table-header-background);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--border-primary);
+      border-bottom: 1px solid var(--border-primary);
     }
 
     td {
       color: var(--text-secondary);
       padding: var(--spacing-card-padding);
-      border-bottom: var(--border-default) solid var(--table-border);
+      border-bottom: 1px solid var(--table-border);
     }
 
     .table-row {
@@ -295,6 +313,8 @@
       .employee-avatar {
         @include icon-container(var(--spacing-10));
         @include icon-container-gradient(var(--action-primary));
+        color: var(--text-on-primary);
+        border-radius: var(--radius-full);
       }
 
       .employee-name {
@@ -334,7 +354,7 @@
     &.compact {
       padding: var(--spacing-8);
       border-radius: var(--radius-lg);
-      border: var(--border-default) dashed var(--border-secondary);
+      border: 1px dashed var(--border-secondary);
     }
   }
 }

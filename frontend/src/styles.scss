@@ -30,7 +30,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
@@ -179,7 +180,7 @@ body {
 /* Error Container - STANDARDIZED */
 .error-container {
   @extend .loading-container;
-  
+
   mat-icon {
     font-size: var(--font-size-5xl);
     width: var(--font-size-5xl);
@@ -271,7 +272,7 @@ body {
   border: 2px solid transparent;
   background-clip: padding-box;
   transition: all var(--transition-normal);
-  
+
   &:hover {
     background: linear-gradient(135deg, var(--action-primary), var(--action-primary-hover));
     border: 1px solid transparent;
@@ -283,8 +284,21 @@ body {
 }
 
 /* Premium smooth transitions for all interactive elements */
-a, button, input, select, textarea {
+a,
+button,
+input,
+select,
+textarea {
   transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  @include glass-panel;
+}
+
+.text-gradient {
+  @include gradient-text;
 }
 
 /* Enhanced link styling */
@@ -341,4 +355,3 @@ a {
 .scale-in {
   animation: scaleIn 0.3s ease-out;
 }
-

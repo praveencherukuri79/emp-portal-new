@@ -163,7 +163,7 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
       justify-content: space-between;
       align-items: flex-start;
       padding: var(--spacing-6);
-      border-bottom: var(--border-default) solid var(--border-secondary);
+      border-bottom: 1px solid var(--border-secondary);
 
       h2 {
         display: flex;
@@ -174,7 +174,7 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
         .employee-avatar-large {
           width: 60px;
           height: 60px;
-          border-radius: 50%;
+          border-radius: var(--radius-full);
           background: var(--action-primary);
           color: var(--text-on-primary);
           display: flex;
@@ -243,7 +243,7 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
 
     mat-dialog-actions {
       padding: var(--spacing-4) var(--spacing-6);
-      border-top: var(--border-default) solid var(--border-secondary);
+      border-top: 1px solid var(--border-secondary);
     }
   `]
 })

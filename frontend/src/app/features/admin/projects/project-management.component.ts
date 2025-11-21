@@ -143,49 +143,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
       </mat-card>
     </div>
   `,
-  styles: [`
-    .project-management-container {
-      padding: 24px;
-    }
-
-    .header-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .filter-section {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .filter-section mat-form-field {
-      flex: 1;
-      max-width: 300px;
-    }
-
-    .loading, .empty-state {
-      text-align: center;
-      padding: 48px;
-    }
-
-    .empty-state mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-      color: #ccc;
-    }
-
-    .projects-table {
-      width: 100%;
-    }
-
-    mat-chip {
-      font-size: 12px;
-    }
-  `]
+  styleUrl: './project-management.component.scss'
 })
 export class ProjectManagementComponent implements OnInit {
   private projectService = inject(ProjectService);
@@ -363,8 +321,8 @@ export class ProjectManagementComponent implements OnInit {
   `,
   styles: [`
     .full-width { width: 100%; }
-    .current-team { margin-top: 16px; }
-    mat-chip-set { margin-top: 8px; }
+    .current-team { margin-top: var(--spacing-4); }
+    mat-chip-set { margin-top: var(--spacing-2); }
   `]
 })
 export class AssignTeamDialogComponent implements OnInit {
@@ -372,7 +330,7 @@ export class AssignTeamDialogComponent implements OnInit {
   private userService = inject(UserService);
   private toast = inject(ToastService);
   private fb = inject(FormBuilder);
-  
+
   availableUsers = signal<any[]>([]);
   currentTeam = signal<any[]>([]);
   loading = signal(false);
@@ -562,8 +520,8 @@ import { UserService } from '../../../services/user.service';
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      padding: 16px 0;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4) 0;
     }
 
     .full-width {

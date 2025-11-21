@@ -79,41 +79,44 @@ import { EMPLOYMENT_TYPE_LABELS, ROLE_LABELS } from '@shared/types/constants';
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 1.5rem;
-      border-bottom: 1px solid #e0e0e0;
+      padding: var(--spacing-6);
+      border-bottom: 1px solid var(--border-secondary);
 
       .header-content {
         display: flex;
-        gap: 1rem;
+        gap: var(--spacing-4);
         align-items: center;
 
         .employee-avatar-large {
           width: 60px;
           height: 60px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
+          border-radius: var(--radius-full);
+          background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
+          color: var(--text-on-primary);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-weight: 600;
-          font-size: 1.5rem;
+          font-weight: var(--font-weight-semibold);
+          font-size: var(--font-size-2xl);
         }
 
         h2 {
           margin: 0;
-          font-size: 1.5rem;
+          font-size: var(--font-size-2xl);
+          font-weight: var(--font-weight-semibold);
+          color: var(--text-primary);
         }
 
         .employee-email {
-          margin: 0.25rem 0 0 0;
-          color: #666;
+          margin: var(--spacing-1) 0 0 0;
+          color: var(--text-secondary);
+          font-size: var(--font-size-sm);
         }
       }
     }
 
     .dialog-content {
-      padding: 1.5rem;
+      padding: var(--spacing-6);
       max-height: 60vh;
       overflow-y: auto;
     }
@@ -121,7 +124,7 @@ import { EMPLOYMENT_TYPE_LABELS, ROLE_LABELS } from '@shared/types/constants';
     .info-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
+      gap: var(--spacing-8);
 
       @media (max-width: 768px) {
         grid-template-columns: 1fr;
@@ -130,42 +133,42 @@ import { EMPLOYMENT_TYPE_LABELS, ROLE_LABELS } from '@shared/types/constants';
 
     .info-section {
       h3 {
-        margin: 0 0 1rem 0;
-        color: #333;
-        font-size: 1.125rem;
-        font-weight: 600;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e0e0e0;
+        margin: 0 0 var(--spacing-4) 0;
+        color: var(--text-primary);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        padding-bottom: var(--spacing-2);
+        border-bottom: 2px solid var(--border-secondary);
       }
 
       .info-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f5f5f5;
+        padding: var(--spacing-3) 0;
+        border-bottom: 1px solid var(--border-secondary);
 
         &:last-child {
           border-bottom: none;
         }
 
         .label {
-          font-size: 0.875rem;
-          color: #666;
-          font-weight: 500;
+          font-size: var(--font-size-sm);
+          color: var(--text-secondary);
+          font-weight: var(--font-weight-medium);
         }
 
         .value {
-          font-size: 1rem;
-          color: #333;
-          font-weight: 500;
+          font-size: var(--font-size-md);
+          color: var(--text-primary);
+          font-weight: var(--font-weight-medium);
         }
       }
     }
 
     mat-dialog-actions {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #e0e0e0;
+      padding: var(--spacing-4) var(--spacing-6);
+      border-top: 1px solid var(--border-secondary);
     }
   `]
 })
@@ -173,7 +176,7 @@ export class EmployeeDetailDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<EmployeeDetailDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public employee: any
-  ) {}
+  ) { }
 
   getInitials(): string {
     if (this.employee.firstName && this.employee.lastName) {

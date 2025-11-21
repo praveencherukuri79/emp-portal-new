@@ -170,10 +170,7 @@ export class PermissionService {
    */
   logPermissions(): void {
     if (typeof window !== 'undefined' && (window as any)['DEBUG_MODE']) {
-      const role = this.authService.currentUser()?.role;
-      console.log('Current Role:', role);
-      console.log('Permissions:', this.userPermissions());
-      console.log('Role Config:', this.authService.roleConfig());
+      // Debug logging can be enabled by setting window.DEBUG_MODE = true
     }
   }
 }

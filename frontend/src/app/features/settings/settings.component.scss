@@ -12,7 +12,6 @@
     @include container;
     padding: var(--spacing-page-padding);
     min-height: calc(100vh - var(--header-height));
-    @include rich-background;
   }
 
   &__content {
@@ -23,35 +22,38 @@
   }
 
   &__card {
-    @include card;
+    @include premium-card;
     margin-bottom: var(--spacing-8);
 
     mat-card-header {
       @include card-header;
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-6);
+      margin-bottom: var(--spacing-6);
     }
 
     mat-card-content {
-      padding-top: var(--spacing-8);
+      padding-top: 0;
     }
   }
 
   &__item {
     @include flex-between;
     padding: var(--spacing-6) 0;
-    border-bottom: var(--border-width-thin) solid var(--border-secondary);
-    transition: background-color var(--transition-normal);
+    border-bottom: 1px solid var(--border-secondary);
+    transition: all var(--transition-normal);
 
     &:last-child {
       border-bottom: none;
       padding-bottom: 0;
     }
-    
+
     &:first-child {
       padding-top: 0;
     }
 
     &:hover {
-      background: var(--table-row-hover);
+      background: var(--background-tertiary);
       margin: 0 calc(var(--spacing-4) * -1);
       padding-left: var(--spacing-4);
       padding-right: var(--spacing-4);
@@ -84,7 +86,7 @@
     gap: var(--spacing-4);
     margin-top: var(--spacing-10);
     padding-top: var(--spacing-8);
-    border-top: var(--border-width-medium) solid var(--border-secondary);
+    border-top: 1px solid var(--border-secondary);
 
     button {
       min-width: 140px;
@@ -104,7 +106,7 @@
 @include breakpoint-down(sm) {
   .settings {
     &__page {
-      padding: var(--spacing-6);
+      padding: var(--spacing-page-padding);
     }
 
     &__item {

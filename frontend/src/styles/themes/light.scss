@@ -8,12 +8,15 @@
 :root[data-theme="light"],
 :root:not([data-theme]) {
   /* Background colors - Rich, premium backgrounds with depth */
-  --background-primary: #f5f5f5;                    /* Material gray */
-  --background-secondary: #ffffff;                  /* Surface white */
-  --background-tertiary: #e0f2f1;                   /* Light teal */
+  --background-primary: #f5f5f5;
+  /* Material gray */
+  --background-secondary: #ffffff;
+  /* Surface white */
+  --background-tertiary: #e0f2f1;
+  /* Light teal */
   --background-elevated: #ffffff;
   --background-overlay: rgba(27, 27, 27, 0.6);
-  
+
   /* Premium rich gradient backgrounds - Teal & Lime Theme */
   --background-gradient-primary: linear-gradient(135deg, #009688 0%, #26a69a 50%, #4db6ac 100%);
   --background-gradient-secondary: linear-gradient(135deg, #00897b 0%, #26a69a 50%, #80cbc4 100%);
@@ -21,90 +24,136 @@
   --background-gradient-card: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
   --background-gradient-surface: linear-gradient(135deg, #e0f2f1 0%, #f1f8e9 50%, #f9fbe7 100%);
   --background-gradient-hero: linear-gradient(135deg, #009688 0%, #26a69a 100%);
-  
+
   /* Rich, vibrant background patterns with more depth - Teal & Lime theme */
-  --background-pattern: 
+  --background-pattern:
     radial-gradient(circle at 20% 50%, rgba(0, 150, 136, 0.12) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(38, 166, 154, 0.12) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, rgba(192, 202, 51, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 60% 70%, rgba(212, 225, 87, 0.08) 0%, transparent 50%);
-  
+
   /* Colored surface backgrounds */
-  --surface-primary: #b2dfdb;                       /* Light teal - better contrast */
-  --surface-secondary: #f9fbe7;                     /* Light lime */
-  --surface-success: #c8e6c9;                       /* Light green */
-  --surface-warning: #ffe0b2;                       /* Light orange */
-  --surface-error: #ffcdd2;                         /* Light red */
-  --surface-info: #b2dfdb;                          /* Light teal */
+  --surface-primary: #b2dfdb;
+  /* Light teal - better contrast */
+  --surface-secondary: #f9fbe7;
+  /* Light lime */
+  --surface-success: #c8e6c9;
+  /* Light green */
+  --surface-warning: #ffe0b2;
+  /* Light orange */
+  --surface-error: #ffcdd2;
+  /* Light red */
+  --surface-info: #b2dfdb;
+  /* Light teal */
 
   /* Text colors - Rich, high contrast for premium feel */
-  --text-primary: #1b1b1b;                          /* On-surface text */
-  --text-secondary: #424242;                        /* Secondary text */
-  --text-tertiary: #757575;                         /* Tertiary text */
-  --text-disabled: #bdbdbd;                         /* Disabled text */
+  --text-primary: #1b1b1b;
+  /* On-surface text */
+  --text-secondary: #424242;
+  /* Secondary text */
+  --text-tertiary: #757575;
+  /* Tertiary text */
+  --text-disabled: #bdbdbd;
+  /* Disabled text */
   --text-inverse: var(--color-white);
   --text-on-primary: var(--color-white);
-  --text-accent: #00796b;                           /* Teal 700 - Deeper teal for better contrast */
+  --text-accent: #00796b;
+  /* Teal 700 - Deeper teal for better contrast */
 
   /* Border colors - More visible */
-  --border-primary: #cbd5e0;                        /* Slate 300 */
-  --border-secondary: #e2e8f0;                     /* Slate 200 */
-  --border-tertiary: #f1f5f9;                       /* Slate 100 */
-  --border-focus: #00796b;                          /* Teal 700 - Deeper teal for focus */
-  --border-error: #f4511e;                          /* Deep Orange 600 */
-  --border-success: #00796b;                        /* Teal 700 - Deeper teal */
-  --border-warning: #ff9800;                        /* Orange 500 */
-  
+  --border-primary: #cbd5e0;
+  /* Slate 300 */
+  --border-secondary: #e2e8f0;
+  /* Slate 200 */
+  --border-tertiary: #f1f5f9;
+  /* Slate 100 */
+  --border-focus: #00796b;
+  /* Teal 700 - Deeper teal for focus */
+  --border-error: #f4511e;
+  /* Deep Orange 600 */
+  --border-success: #00796b;
+  /* Teal 700 - Deeper teal */
+  --border-warning: #ff9800;
+  /* Orange 500 */
+
   /* Border width */
   --border-default: var(--border-width-thin);
   --border-focus-width: var(--border-width-medium);
 
   /* Action colors - Varied palette for better design */
-  --action-primary: #009688;                        /* Teal 500 - Primary actions */
-  --action-primary-hover: #00796b;                  /* Teal 700 */
-  --action-primary-active: #00695c;                 /* Teal 800 */
+  --action-primary: #009688;
+  /* Teal 500 - Primary actions */
+  --action-primary-hover: #00796b;
+  /* Teal 700 */
+  --action-primary-active: #00695c;
+  /* Teal 800 */
   --action-primary-light: rgba(0, 150, 136, 0.1);
   --action-primary-gradient: linear-gradient(135deg, #009688 0%, #26a69a 100%);
-  
+
   /* Secondary actions - Blue for variety */
-  --action-secondary: #3b82f6;                      /* Blue 500 */
-  --action-secondary-hover: #2563eb;                /* Blue 600 */
-  --action-secondary-active: #1d4ed8;               /* Blue 700 */
+  --action-secondary: #3b82f6;
+  /* Blue 500 */
+  --action-secondary-hover: #2563eb;
+  /* Blue 600 */
+  --action-secondary-active: #1d4ed8;
+  /* Blue 700 */
   --action-secondary-light: rgba(59, 130, 246, 0.1);
-  
+
   /* Accent actions - Lime for highlights */
-  --action-accent: #c0ca33;                         /* Lime 600 */
-  --action-accent-hover: #afb42b;                   /* Lime 700 */
-  --action-accent-active: #9e9d24;                  /* Lime 800 */
+  --action-accent: #c0ca33;
+  /* Lime 600 */
+  --action-accent-hover: #afb42b;
+  /* Lime 700 */
+  --action-accent-active: #9e9d24;
+  /* Lime 800 */
   --action-accent-light: rgba(192, 202, 51, 0.1);
-  
+
   /* Neutral actions - For less important interactions */
-  --action-neutral: #64748b;                        /* Slate 500 */
-  --action-neutral-hover: #475569;                 /* Slate 600 */
-  --action-neutral-active: #334155;                 /* Slate 700 */
+  --action-neutral: #64748b;
+  /* Slate 500 */
+  --action-neutral-hover: #475569;
+  /* Slate 600 */
+  --action-neutral-active: #334155;
+  /* Slate 700 */
   --action-neutral-light: rgba(100, 116, 139, 0.1);
-  
-  --action-disabled: #cbd5e0;                       /* Slate 300 */
+
+  --action-disabled: #cbd5e0;
+  /* Slate 300 */
 
   /* Status colors - High contrast - Teal theme accents */
-  --status-success: #00897b;                        /* Teal 600 - Better contrast */
-  --status-success-light: #b2dfdb;                  /* Teal 100 */
-  --status-success-bg: #e0f2f1;                     /* Teal 50 */
-  --status-warning: #ff9800;                        /* Orange 500 - Better contrast */
-  --status-warning-light: #ffe0b2;                  /* Orange 100 */
-  --status-warning-bg: #fff3e0;                     /* Orange 50 */
-  --status-error: #ff7043;                          /* Deep Orange 400 - Better contrast */
-  --status-error-light: #ffccbc;                    /* Deep Orange 100 */
-  --status-error-bg: #fbe9e7;                       /* Deep Orange 50 */
-  --status-info: #00897b;                           /* Teal 600 - Use teal for info to match theme */
-  --status-info-light: #b2dfdb;                     /* Teal 100 */
-  --status-info-bg: #e0f2f1;                        /* Teal 50 */
+  --status-success: #00897b;
+  /* Teal 600 - Better contrast */
+  --status-success-light: #b2dfdb;
+  /* Teal 100 */
+  --status-success-bg: #e0f2f1;
+  /* Teal 50 */
+  --status-warning: #ff9800;
+  /* Orange 500 - Better contrast */
+  --status-warning-light: #ffe0b2;
+  /* Orange 100 */
+  --status-warning-bg: #fff3e0;
+  /* Orange 50 */
+  --status-error: #ff7043;
+  /* Deep Orange 400 - Better contrast */
+  --status-error-light: #ffccbc;
+  /* Deep Orange 100 */
+  --status-error-bg: #fbe9e7;
+  /* Deep Orange 50 */
+  --status-info: #00897b;
+  /* Teal 600 - Use teal for info to match theme */
+  --status-info-light: #b2dfdb;
+  /* Teal 100 */
+  --status-info-bg: #e0f2f1;
+  /* Teal 50 */
 
   /* Premium component-specific backgrounds */
   --card-background: var(--color-white);
-  --card-background-hover: #f8fafc;                 /* Slate 50 */
-  --card-background-accent: #f0f9ff;                /* Sky 50 */
-  --card-background-glass: rgba(255, 255, 255, 0.85); /* Glassmorphism */
+  --card-background-hover: #f8fafc;
+  /* Slate 50 */
+  --card-background-accent: #f0f9ff;
+  /* Sky 50 */
+  --card-background-glass: rgba(255, 255, 255, 0.85);
+  /* Glassmorphism */
   --input-background: var(--color-white);
   --input-background-focus: #f8fafc;
   --sidebar-background: rgba(255, 255, 255, 0.95);
@@ -112,28 +161,37 @@
   --header-background-gradient: var(--background-gradient-primary);
   --header-text: var(--color-white);
   --header-glass: rgba(255, 255, 255, 0.1);
-  
+
   /* Table colors */
-  --table-header-background: #f1f5f9;               /* Slate 100 */
+  --table-header-background: #f1f5f9;
+  /* Slate 100 */
   --table-row-background: var(--color-white);
-  --table-row-hover: #f8fafc;                       /* Slate 50 */
-  --table-border: #e2e8f0;                          /* Slate 200 */
+  --table-row-hover: #f8fafc;
+  /* Slate 50 */
+  --table-border: #e2e8f0;
+  /* Slate 200 */
 
   /* Premium shadow colors with depth */
   --shadow-color-light: rgba(27, 27, 27, 0.08);
   --shadow-color-medium: rgba(27, 27, 27, 0.12);
   --shadow-color-dark: rgba(27, 27, 27, 0.2);
   --shadow-color-overlay: rgba(27, 27, 27, 0.5);
-  
+
   /* Rich colored shadow overlays for depth - Teal theme */
   --shadow-primary-color: rgba(0, 150, 136, 0.25);
   --shadow-primary-lg: rgba(0, 150, 136, 0.35);
   --shadow-success-color: rgba(0, 137, 123, 0.25);
   --shadow-error-color: rgba(255, 112, 67, 0.25);
   --shadow-accent-color: rgba(192, 202, 51, 0.25);
-  
+
   /* Gradient overlays - Teal & Lime theme */
   --gradient-overlay-light: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   --gradient-overlay-primary: linear-gradient(135deg, rgba(0, 150, 136, 0.15) 0%, rgba(0, 150, 136, 0.08) 100%);
   --gradient-overlay-accent: linear-gradient(135deg, rgba(192, 202, 51, 0.12) 0%, rgba(192, 202, 51, 0.06) 100%);
+
+  /* Premium Glass Effects */
+  --glass-opacity: 0.7;
+  --glass-blur: 10px;
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }

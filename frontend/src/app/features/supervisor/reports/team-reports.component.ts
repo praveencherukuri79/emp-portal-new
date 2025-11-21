@@ -9,6 +9,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSortModule } from '@angular/material/sort';
 import { ReportService } from '../../../services/report.service';
 import { UINotificationService } from '../../../core/services/notification.service';
 import { ITeamReportResponse } from '@shared/types/responses';
@@ -26,7 +27,8 @@ import { ITeamReportResponse } from '@shared/types/responses';
     MatTabsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatSortModule
   ],
   templateUrl: './team-reports.component.html',
   styleUrls: ['./team-reports.component.scss']
@@ -37,6 +39,7 @@ export class TeamReportsComponent implements OnInit {
 
   loading = signal(false);
   reports = signal<ITeamReportResponse | null>(null);
+  displayedColumns: string[] = ['name', 'employeeId', 'totalHours', 'billableHours', 'leaveDays', 'pendingLeaves', 'entries'];
 
   ngOnInit(): void {
     this.loadTeamReports();
@@ -89,6 +92,10 @@ export class TeamReportsComponent implements OnInit {
     const activeCount = this.getTeamMembersCount();
     if (teamSize === 0) return 0;
     return Math.round((activeCount / teamSize) * 100);
+  }
+
+  getTeamMembers() {
+    return this.reports()?.teamMembers || [];
   }
 
   exportReport(format: 'pdf' | 'excel'): void {

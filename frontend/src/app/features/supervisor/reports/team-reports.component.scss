@@ -5,7 +5,6 @@
   @include container;
   padding: var(--spacing-page-padding);
   min-height: calc(100vh - var(--header-height));
-  @include rich-background;
 }
 
 .summary-grid {
@@ -16,12 +15,12 @@
   margin-bottom: var(--spacing-8);
 
   mat-card {
-    @include card;
+    @include premium-card;
 
     mat-card-header {
       padding: 0 0 var(--spacing-4) 0;
       margin-bottom: var(--spacing-4);
-      border-bottom: var(--border-default) solid var(--border-primary);
+      border-bottom: 1px solid var(--border-secondary);
 
       mat-card-title {
         @include flex-center;
@@ -31,7 +30,10 @@
         color: var(--text-primary);
 
         mat-icon {
-          color: var(--action-primary);
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
         }
       }
     }
@@ -46,7 +48,7 @@
         justify-content: space-between;
         align-items: center;
         padding: var(--spacing-3) 0;
-        border-bottom: var(--border-default) solid var(--border-secondary);
+        border-bottom: 1px solid var(--border-secondary);
 
         &:last-child {
           border-bottom: none;
@@ -71,7 +73,7 @@
 .report-info {
   padding: var(--spacing-6);
   background: var(--color-info-50);
-  border-left: var(--border-width-thick) solid var(--status-info);
+  border-left: 4px solid var(--status-info);
   border-radius: var(--radius-md);
 
   .info-text {
@@ -100,6 +102,49 @@
   padding: var(--spacing-16) var(--spacing-8);
 }
 
+.table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-4);
+
+  .performance-table {
+    @include table-card;
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--table-header-background);
+      padding: var(--spacing-4);
+      text-align: left;
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-primary);
+      font-size: var(--font-size-sm);
+    }
+
+    td {
+      padding: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      color: var(--text-primary);
+      font-size: var(--font-size-sm);
+    }
+
+    tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+.empty-data {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 mat-card {
-  @include card;
+  @include premium-card;
 }

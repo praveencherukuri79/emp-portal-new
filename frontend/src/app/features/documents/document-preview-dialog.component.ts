@@ -83,7 +83,7 @@ export interface DocumentPreviewData {
       justify-content: space-between;
       align-items: center;
       padding: var(--spacing-6);
-      border-bottom: var(--border-default) solid var(--border-secondary);
+      border-bottom: 1px solid var(--border-secondary);
 
       h2 {
         display: flex;
@@ -145,9 +145,9 @@ export interface DocumentPreviewData {
       text-align: center;
 
       mat-icon {
-        font-size: var(--font-size-5xl);
-        width: var(--font-size-5xl);
-        height: var(--font-size-5xl);
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
         color: var(--text-tertiary);
         opacity: 0.5;
       }
@@ -176,7 +176,7 @@ export interface DocumentPreviewData {
 
     mat-dialog-actions {
       padding: var(--spacing-4) var(--spacing-6);
-      border-top: var(--border-default) solid var(--border-secondary);
+      border-top: 1px solid var(--border-secondary);
     }
   `]
 })
@@ -187,7 +187,7 @@ export class DocumentPreviewDialogComponent {
     public dialogRef: MatDialogRef<DocumentPreviewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DocumentPreviewData,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   isPDF(): boolean {
     return this.data.mimeType === 'application/pdf' || this.data.fileName.toLowerCase().endsWith('.pdf');
@@ -195,8 +195,8 @@ export class DocumentPreviewDialogComponent {
 
   isImage(): boolean {
     const imageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    return imageTypes.includes(this.data.mimeType.toLowerCase()) || 
-           /\.(jpg|jpeg|png|gif|webp)$/i.test(this.data.fileName);
+    return imageTypes.includes(this.data.mimeType.toLowerCase()) ||
+      /\.(jpg|jpeg|png|gif|webp)$/i.test(this.data.fileName);
   }
 
   canPreview(): boolean {

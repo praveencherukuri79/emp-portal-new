@@ -11,9 +11,9 @@
     margin-bottom: var(--spacing-6);
 
     h1 {
+      @include gradient-text;
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
       margin: 0 0 var(--spacing-2) 0;
     }
 
@@ -25,15 +25,27 @@
   }
 
   .settings-card {
+    @include premium-card;
     margin-bottom: var(--spacing-6);
 
     mat-card-header {
       margin-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-secondary);
+      padding-bottom: var(--spacing-4);
 
       mat-card-title {
         display: flex;
         align-items: center;
-        gap: var(--spacing-2);
+        gap: var(--spacing-3);
+        font-size: var(--font-size-xl);
+        color: var(--text-primary);
+
+        mat-icon {
+          @include icon-container-gradient(var(--action-primary));
+          @include icon-container(32px);
+          color: var(--text-on-primary);
+          border-radius: var(--radius-md);
+        }
       }
     }
 
@@ -41,6 +53,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: var(--spacing-4);
+      padding: var(--spacing-2) 0;
 
       .full-width {
         grid-column: 1 / -1;
@@ -58,7 +71,7 @@
     justify-content: flex-end;
     margin-top: var(--spacing-6);
     padding-top: var(--spacing-6);
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-secondary);
 
     @include breakpoint-down(sm) {
       flex-direction: column;
@@ -70,13 +83,6 @@
   }
 
   .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-8);
-    gap: var(--spacing-4);
-    text-align: center;
-    color: var(--text-secondary);
+    @include loading-state;
   }
 }

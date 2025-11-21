@@ -11,14 +11,14 @@
 // Tab content styling - tab group is already styled as card
 .tab-content {
   padding: var(--spacing-6);
-  
+
   h2 {
     margin: 0 0 var(--spacing-6) 0;
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
   }
-  
+
   // Component-level: Form fields need spacing from h2
   form {
     margin-top: var(--spacing-4);
@@ -36,7 +36,7 @@
 }
 
 .balance-card {
-  @include card;
+  @include premium-card;
 
   .balance-header {
     display: flex;
@@ -45,10 +45,11 @@
     margin-bottom: var(--spacing-4);
 
     mat-icon {
-      color: var(--action-primary);
+      @include icon-container-gradient(var(--action-primary));
+      @include icon-container(48px);
+      color: var(--text-on-primary);
+      border-radius: var(--radius-md);
       font-size: var(--font-size-3xl);
-      width: var(--font-size-3xl);
-      height: var(--font-size-3xl);
     }
 
     h3 {
@@ -107,10 +108,8 @@
 }
 
 .leaves-table {
+  @include table-card;
   width: 100%;
-  background: var(--card-background);
-  border-radius: var(--radius-md);
-  overflow: hidden;
 
   th {
     background: var(--table-header-background);
@@ -118,12 +117,13 @@
     font-weight: var(--font-weight-semibold);
     padding: var(--spacing-4);
     text-align: left;
+    border-bottom: 1px solid var(--border-primary);
   }
 
   td {
     padding: var(--spacing-4);
     color: var(--text-primary);
-    border-bottom: var(--border-default) solid var(--table-border);
+    border-bottom: 1px solid var(--table-border);
   }
 
   tr:hover {
@@ -132,15 +132,15 @@
 }
 
 .status-success {
-  @include badge-variant(var(--status-success));
+  @include badge-variant('success');
 }
 
 .status-warning {
-  @include badge-variant(var(--status-warning));
+  @include badge-variant('warning');
 }
 
 .status-error {
-  @include badge-variant(var(--status-error));
+  @include badge-variant('error');
 }
 
 .no-data {
@@ -149,7 +149,7 @@
 
 @include breakpoint-down(sm) {
   .leave-management {
-    padding: var(--spacing-4);
+    padding: var(--spacing-page-padding);
   }
 
   .form-actions {

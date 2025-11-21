@@ -103,13 +103,60 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="report-info">
-          <p class="info-text">
-            <mat-icon>info</mat-icon>
-            Detailed team performance metrics and individual reports are available via the export functionality.
-            Use the "Export PDF" or "Export Excel" buttons above to generate comprehensive reports.
-          </p>
-        </div>
+        @if (reports()?.teamMembers && reports()!.teamMembers.length > 0) {
+          <div class="table-container">
+            <table mat-table [dataSource]="getTeamMembers()" class="performance-table">
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let element">{{ element.user.name }}</td>
+              </ng-container>
+
+              <!-- Employee ID Column -->
+              <ng-container matColumnDef="employeeId">
+                <th mat-header-cell *matHeaderCellDef>Employee ID</th>
+                <td mat-cell *matCellDef="let element">{{ element.user.employeeId || '-' }}</td>
+              </ng-container>
+
+              <!-- Total Hours Column -->
+              <ng-container matColumnDef="totalHours">
+                <th mat-header-cell *matHeaderCellDef>Total Hours</th>
+                <td mat-cell *matCellDef="let element">{{ element.timesheetSummary.totalHours }}</td>
+              </ng-container>
+
+              <!-- Billable Hours Column -->
+              <ng-container matColumnDef="billableHours">
+                <th mat-header-cell *matHeaderCellDef>Billable Hours</th>
+                <td mat-cell *matCellDef="let element">{{ element.timesheetSummary.billableHours }}</td>
+              </ng-container>
+
+              <!-- Leave Days Column -->
+              <ng-container matColumnDef="leaveDays">
+                <th mat-header-cell *matHeaderCellDef>Leave Days</th>
+                <td mat-cell *matCellDef="let element">{{ element.leaveSummary.totalDays }}</td>
+              </ng-container>
+
+              <!-- Pending Leaves Column -->
+              <ng-container matColumnDef="pendingLeaves">
+                <th mat-header-cell *matHeaderCellDef>Pending Leaves</th>
+                <td mat-cell *matCellDef="let element">{{ element.leaveSummary.pending }}</td>
+              </ng-container>
+
+              <!-- Entries Count Column -->
+              <ng-container matColumnDef="entries">
+                <th mat-header-cell *matHeaderCellDef>Entries</th>
+                <td mat-cell *matCellDef="let element">{{ element.timesheetSummary.entriesCount }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-data">
+            <p>No team member data available</p>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
   } @else {
