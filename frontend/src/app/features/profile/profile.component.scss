@@ -48,14 +48,16 @@
   }
 
   &__avatar {
-    @include icon-container(calc(var(--spacing-20) * 1.25));
+    @include icon-container(120px);
     @include icon-container-gradient(var(--action-primary));
     box-shadow: var(--shadow-lg);
-    border: 4px solid var(--card-background);
     transition: all var(--transition-normal);
     color: var(--text-on-primary);
-    font-size: 48px;
+    font-size: 32px;
     font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       box-shadow: var(--shadow-xl);
@@ -89,6 +91,22 @@
 
   &__form {
     margin-top: var(--spacing-6);
+
+    // Fix icon alignment in form fields - use stronger selectors
+    ::ng-deep {
+
+      .mat-mdc-form-field-icon-prefix,
+      .mat-icon.mat-mdc-form-field-icon-prefix {
+        padding-right: var(--spacing-3) !important;
+        margin-right: var(--spacing-2) !important;
+
+        >mat-icon,
+        >.mat-icon {
+          color: var(--text-secondary) !important;
+          vertical-align: middle !important;
+        }
+      }
+    }
   }
 
   &__actions {

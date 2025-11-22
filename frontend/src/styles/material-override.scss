@@ -152,6 +152,30 @@
   }
 }
 
+/* Enhanced shadow for light theme cards */
+:root[data-theme="light"] .mat-mdc-card,
+:root:not([data-theme]) .mat-mdc-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Standardize card header and content padding - GLOBAL */
+.mat-mdc-card-header {
+  padding: var(--spacing-6) var(--spacing-6) 0 var(--spacing-6) !important;
+  margin-bottom: 0 !important;
+}
+
+.mat-mdc-card-content {
+  padding: var(--spacing-4) var(--spacing-6) var(--spacing-6) var(--spacing-6) !important;
+
+  &:first-child {
+    padding-top: var(--spacing-6) !important;
+  }
+}
+
+.mat-mdc-card-actions {
+  padding: 0 var(--spacing-6) var(--spacing-6) var(--spacing-6) !important;
+}
+
 /* Card Title/Subtitle - Colors Only */
 .mat-mdc-card-title {
   color: var(--text-primary) !important;
