@@ -175,7 +175,7 @@
             </div>
           </div>
         } @else {
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Select Project</mat-label>
             <mat-select [(ngModel)]="selectedProject">
               @for (project of availableProjects(); track project._id) {
@@ -253,3 +253,4 @@
     </div>
   </div>
 </div>
+

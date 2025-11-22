@@ -32,7 +32,7 @@
     </div>
 
     <div class="filters-grid">
-      <mat-form-field appearance="outline" class="filter-field">
+      <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Status</mat-label>
         <mat-select [(ngModel)]="statusFilter">
           @for (option of statusOptions; track option.value) {
@@ -41,7 +41,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="filter-field">
+      <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Start Date</mat-label>
         <input 
           matInput 
@@ -51,7 +51,7 @@
         <mat-datepicker #startPicker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="filter-field">
+      <mat-form-field appearance="fill" class="filter-field">
         <mat-label>End Date</mat-label>
         <input 
           matInput 
@@ -206,3 +206,4 @@
     </mat-card>
   }
 </div>
+

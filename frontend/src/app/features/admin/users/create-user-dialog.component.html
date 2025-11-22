@@ -7,7 +7,7 @@
       <div class="form-section">
         <h3>Basic Information</h3>
         <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>Email *</mat-label>
             <input matInput type="email" formControlName="email" required>
             <mat-icon matPrefix>email</mat-icon>
@@ -19,7 +19,7 @@
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>Password @if (!isEditMode) {*}</mat-label>
             <input matInput type="password" formControlName="password" [required]="!isEditMode">
             <mat-icon matPrefix>lock</mat-icon>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>First Name *</mat-label>
             <input matInput formControlName="firstName" required>
             <mat-icon matPrefix>person</mat-icon>
@@ -45,7 +45,7 @@
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>Last Name *</mat-label>
             <input matInput formControlName="lastName" required>
             <mat-icon matPrefix>person</mat-icon>
@@ -56,13 +56,13 @@
         </div>
 
         <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>Phone Number</mat-label>
             <input matInput type="tel" formControlName="phoneNumber">
             <mat-icon matPrefix>phone</mat-icon>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="form-field">
+          <mat-form-field appearance="fill" class="form-field">
             <mat-label>Role *</mat-label>
             <mat-select formControlName="role" required>
               <mat-option *ngFor="let role of roles" [value]="role">
@@ -82,13 +82,13 @@
         <div class="form-section">
           <h3>Employee Information</h3>
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Employee ID</mat-label>
               <input matInput formControlName="employeeId">
               <mat-icon matPrefix>badge</mat-icon>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Department</mat-label>
               <input matInput formControlName="department">
               <mat-icon matPrefix>business</mat-icon>
@@ -96,13 +96,13 @@
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Designation</mat-label>
               <input matInput formControlName="designation">
               <mat-icon matPrefix>work</mat-icon>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Employment Type</mat-label>
               <mat-select formControlName="employmentType">
                 <mat-option value="">Select Type</mat-option>
@@ -115,14 +115,14 @@
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Joining Date</mat-label>
               <input matInput [matDatepicker]="picker" formControlName="joiningDate">
               <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
+            <mat-form-field appearance="fill" class="form-field">
               <mat-label>Reporting To</mat-label>
               <mat-select formControlName="reportingTo">
                 <mat-option value="">None</mat-option>
@@ -156,4 +156,5 @@
     </button>
   </mat-dialog-actions>
 </div>
+
 

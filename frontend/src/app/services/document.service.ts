@@ -90,3 +90,4 @@ export class DocumentService {
     return this.http.get(`${environment.apiUrl}${API_ENDPOINTS.DOCUMENTS.DOWNLOAD(documentId)}`, { responseType: 'blob' });
   }
 }
+

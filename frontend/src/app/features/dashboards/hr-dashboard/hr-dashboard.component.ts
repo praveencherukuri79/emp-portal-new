@@ -211,3 +211,4 @@ export class HrDashboardComponent implements OnInit {
     return new Date(date).toLocaleDateString();
   }
 }
+

@@ -22,3 +22,4 @@ export interface Document {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+

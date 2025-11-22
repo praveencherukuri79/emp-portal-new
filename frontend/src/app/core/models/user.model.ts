@@ -122,3 +122,4 @@ export interface ChangePasswordRequest {
 export interface ForgotPasswordRequest extends IPasswordResetRequestDTO {}
 
 export interface ResetPasswordRequest extends IPasswordResetDTO {}
+

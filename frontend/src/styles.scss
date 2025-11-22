@@ -7,6 +7,7 @@
 /* Import themes (must be imported before mixins) */
 @import './styles/themes/light.scss';
 @import './styles/themes/dark.scss';
+@import './styles/themes/cosmic.scss';
 
 /* Import mixins */
 @import './styles/mixins/animations.scss';
@@ -86,6 +87,25 @@ body {
 /* Page Header - STANDARDIZED - Use .page-header everywhere */
 .page-header {
   @include page-header;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: var(--spacing-6) !important;
+  flex-wrap: wrap !important;
+
+  h1,
+  h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-shrink: 0;
+  }
 }
 
 /* Cards */
@@ -354,4 +374,27 @@ a {
 
 .scale-in {
   animation: scaleIn 0.3s ease-out;
+}
+
+/* Theme menu active state */
+.mat-mdc-menu-panel .active-theme {
+  background: var(--action-primary-light) !important;
+  color: var(--action-primary) !important;
+  position: relative;
+
+  mat-icon {
+    color: var(--action-primary) !important;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: var(--action-primary);
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  }
 }

@@ -65,3 +65,4 @@ export class RoleManagementComponent implements OnInit {
     return getRoleIcon(role);
   }
 }
+

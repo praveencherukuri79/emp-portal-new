@@ -36,30 +36,28 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatTooltipModule
   ],
   template: `
-    <div class="project-management-container">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>
-            <div class="header-actions">
-              <h2>Project Management</h2>
-              <button mat-raised-button color="primary" (click)="openCreateDialog()">
-                <mat-icon>add</mat-icon>
-                Create Project
-              </button>
-            </div>
-          </mat-card-title>
-        </mat-card-header>
+    <div class="page-container">
+      <div class="page-header">
+        <h2>Project Management</h2>
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="openCreateDialog()">
+            <mat-icon>add</mat-icon>
+            CREATE PROJECT
+          </button>
+        </div>
+      </div>
 
+      <mat-card>
         <mat-card-content>
           <!-- Search and Filter -->
           <div class="filter-section">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Search by name or code</mat-label>
               <input matInput (keyup)="onSearch($event)">
               <mat-icon matPrefix>search</mat-icon>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Status Filter</mat-label>
               <mat-select (selectionChange)="onFilterChange()">
                 <mat-option value="all">All Projects</mat-option>
@@ -277,7 +275,7 @@ export class ProjectManagementComponent implements OnInit {
     <h2 mat-dialog-title>Assign Team - {{ data.project.name }}</h2>
     <mat-dialog-content>
       <form [formGroup]="form">
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Select Team Members</mat-label>
           <mat-select formControlName="userIds" multiple>
             @for (user of availableUsers(); track user._id) {
@@ -438,7 +436,7 @@ import { UserService } from '../../../services/user.service';
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-dialog-content>
         <div class="form-grid">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Project Code *</mat-label>
             <input matInput formControlName="code" [readonly]="data.mode === 'edit'">
             <mat-hint>e.g., PROJ001</mat-hint>
@@ -447,7 +445,7 @@ import { UserService } from '../../../services/user.service';
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Project Name *</mat-label>
             <input matInput formControlName="name">
             @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
@@ -455,17 +453,17 @@ import { UserService } from '../../../services/user.service';
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="fill" class="full-width">
             <mat-label>Description</mat-label>
             <textarea matInput formControlName="description" rows="3"></textarea>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Client Name</mat-label>
             <input matInput formControlName="clientName">
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
             <mat-select formControlName="status">
               <mat-option value="active">Active</mat-option>
@@ -475,12 +473,12 @@ import { UserService } from '../../../services/user.service';
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Start Date</mat-label>
             <input matInput type="date" formControlName="startDate">
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>End Date</mat-label>
             <input matInput type="date" formControlName="endDate">
             @if (form.hasError('dateRange')) {
@@ -488,12 +486,12 @@ import { UserService } from '../../../services/user.service';
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Budget</mat-label>
             <input matInput type="number" formControlName="budget">
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Currency</mat-label>
             <mat-select formControlName="currency">
               <mat-option value="USD">USD</mat-option>
@@ -606,4 +604,6 @@ export class ProjectFormDialogComponent {
     this.dialogRef.closeAll();
   }
 }
+
+
 

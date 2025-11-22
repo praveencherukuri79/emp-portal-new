@@ -1,11 +1,6 @@
 <mat-sidenav-container class="mobile-nav-container">
-  <mat-sidenav 
-    #sidenav 
-    [opened]="sidenavOpened()" 
-    mode="over"
-    class="mobile-sidenav"
-    (closedStart)="closeSidenav()">
-    
+  <mat-sidenav #sidenav [opened]="sidenavOpened()" mode="over" class="mobile-sidenav" (closedStart)="closeSidenav()">
+
     <div class="sidenav-header">
       <div class="logo">
         <mat-icon>business</mat-icon>
@@ -18,45 +13,36 @@
 
     <nav class="sidenav-nav">
       @for (item of getVisibleNavItems(); track item.route) {
-        @if (!item.children) {
-          <a 
-            [routerLink]="item.route" 
-            [class.active]="isActive(item.route)"
-            (click)="closeSidenav()"
-            class="nav-item">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span>{{ item.label }}</span>
+      @if (!item.children) {
+      <a [routerLink]="item.route" [class.active]="isActive(item.route)" (click)="closeSidenav()" class="nav-item">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+      } @else {
+      <div class="nav-group">
+        <button class="nav-group-label" (click)="toggleGroup(item.label)"
+          [attr.aria-expanded]="isGroupExpanded(item.label)">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+          <mat-icon class="expand-icon" [class.expanded]="isGroupExpanded(item.label)">
+            chevron_right
+          </mat-icon>
+        </button>
+        @if (isGroupExpanded(item.label)) {
+        <div class="nav-group-children">
+          @for (child of item.children; track child.route) {
+          @if (hasAccess(child.roles)) {
+          <a [routerLink]="child.route" [class.active]="isActive(child.route)" (click)="closeSidenav()"
+            class="nav-item nav-child">
+            <mat-icon>{{ child.icon }}</mat-icon>
+            <span>{{ child.label }}</span>
           </a>
-        } @else {
-          <div class="nav-group">
-            <button 
-              class="nav-group-label"
-              (click)="toggleGroup(item.label)"
-              [attr.aria-expanded]="isGroupExpanded(item.label)">
-              <mat-icon>{{ item.icon }}</mat-icon>
-              <span>{{ item.label }}</span>
-              <mat-icon class="expand-icon" [class.expanded]="isGroupExpanded(item.label)">
-                chevron_right
-              </mat-icon>
-            </button>
-            @if (isGroupExpanded(item.label)) {
-              <div class="nav-group-children">
-                @for (child of item.children; track child.route) {
-                  @if (hasAccess(child.roles)) {
-                    <a 
-                      [routerLink]="child.route" 
-                      [class.active]="isActive(child.route)"
-                      (click)="closeSidenav()"
-                      class="nav-item nav-child">
-                      <mat-icon>{{ child.icon }}</mat-icon>
-                      <span>{{ child.label }}</span>
-                    </a>
-                  }
-                }
-              </div>
-            }
-          </div>
+          }
+          }
+        </div>
         }
+      </div>
+      }
       }
     </nav>
 
@@ -69,9 +55,28 @@
         </div>
       </div>
       <div class="sidenav-actions">
-        <button mat-icon-button (click)="themeService.toggle()" class="theme-toggle">
-          <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="themeMenuMobile" class="theme-toggle">
+          <mat-icon>
+            {{ themeService.isDark() ? 'dark_mode' : themeService.isCosmic() ? 'auto_awesome' : 'light_mode' }}
+          </mat-icon>
         </button>
+
+        <mat-menu #themeMenuMobile="matMenu">
+          <button mat-menu-item (click)="themeService.setTheme('light')" [class.active-theme]="themeService.isLight()">
+            <mat-icon>light_mode</mat-icon>
+            <span>Light Theme</span>
+          </button>
+          <button mat-menu-item (click)="themeService.setTheme('dark')" [class.active-theme]="themeService.isDark()">
+            <mat-icon>dark_mode</mat-icon>
+            <span>Dark Theme</span>
+          </button>
+          <button mat-menu-item (click)="themeService.setTheme('cosmic')"
+            [class.active-theme]="themeService.isCosmic()">
+            <mat-icon>auto_awesome</mat-icon>
+            <span>Cosmic Theme</span>
+          </button>
+        </mat-menu>
+
         <button mat-icon-button (click)="logout()" class="logout-button">
           <mat-icon>logout</mat-icon>
         </button>
@@ -120,10 +125,9 @@
         <span>Logout</span>
       </button>
     </mat-menu>
-    
+
     <main class="mobile-content">
       <ng-content></ng-content>
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
-

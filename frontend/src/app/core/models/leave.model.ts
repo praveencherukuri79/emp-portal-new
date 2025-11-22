@@ -29,3 +29,4 @@ export interface LeaveBalance {
   remainingDays: number;
   year: number;
 }
+

@@ -36,3 +36,4 @@ export class DashboardRouterComponent implements OnInit {
     this.router.navigate([dashboardRoute]);
   }
 }
+

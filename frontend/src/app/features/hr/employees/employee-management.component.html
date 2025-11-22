@@ -11,7 +11,7 @@
     <mat-card>
       <mat-card-content>
         <div class="filters">
-          <mat-form-field appearance="outline" class="search-field">
+          <mat-form-field appearance="fill" class="search-field">
             <mat-label>Search by name, email, or employee ID</mat-label>
             <input matInput 
                    [ngModel]="searchQuery()" 
@@ -19,7 +19,7 @@
             <mat-icon matPrefix>search</mat-icon>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
             <mat-select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
               <mat-option value="all">All</mat-option>
@@ -51,4 +51,5 @@
     </mat-card-content>
   </mat-card>
 </div>
+
 

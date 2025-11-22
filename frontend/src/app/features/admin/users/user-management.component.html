@@ -14,7 +14,7 @@
     <mat-card>
       <mat-card-content>
         <div class="filters-row">
-          <mat-form-field appearance="outline" class="search-field">
+          <mat-form-field appearance="fill" class="search-field">
             <mat-label>Search users</mat-label>
             <input matInput 
                    [ngModel]="searchQuery()" 
@@ -22,7 +22,7 @@
             <mat-icon matPrefix>search</mat-icon>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="role-filter">
+          <mat-form-field appearance="fill" class="role-filter">
             <mat-label>Filter by Role</mat-label>
             <mat-select [ngModel]="roleFilter()" (ngModelChange)="onRoleFilterChange($event)">
               <mat-option value="">All Roles</mat-option>
@@ -57,3 +57,4 @@
     </mat-card-content>
   </mat-card>
 </div>
+

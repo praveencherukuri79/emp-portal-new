@@ -17,3 +17,4 @@ export interface ApprovalRequest extends IApprovalRequest {}
 export interface TimesheetApprovalData extends ITimesheetApprovalData {}
 export interface LeaveApprovalData extends ILeaveApprovalData {}
 export interface BulkApprovalRequest extends IBulkApprovalRequest {}
+

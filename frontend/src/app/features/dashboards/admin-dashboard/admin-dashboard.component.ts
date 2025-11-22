@@ -209,3 +209,4 @@ export class AdminDashboardComponent implements OnInit {
     return iconMap[type] || 'info';
   }
 }
+

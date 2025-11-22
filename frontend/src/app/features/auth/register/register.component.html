@@ -14,7 +14,7 @@
 
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="fill" class="half-width">
             <mat-label>First Name</mat-label>
             <input matInput formControlName="firstName">
             <mat-icon matPrefix>person</mat-icon>
@@ -23,7 +23,7 @@
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="fill" class="half-width">
             <mat-label>Last Name</mat-label>
             <input matInput formControlName="lastName">
             @if (f['lastName'].invalid && f['lastName'].touched) {
@@ -32,7 +32,7 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" autocomplete="email">
           <mat-icon matPrefix>email</mat-icon>
@@ -48,14 +48,14 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Phone Number</mat-label>
           <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel">
           <mat-icon matPrefix>phone</mat-icon>
         </mat-form-field>
 
         <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="fill" class="half-width">
             <mat-label>Department</mat-label>
             <input matInput formControlName="department">
             @if (f['department'].invalid && f['department'].touched) {
@@ -63,7 +63,7 @@
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field appearance="fill" class="half-width">
             <mat-label>Designation</mat-label>
             <input matInput formControlName="designation">
             @if (f['designation'].invalid && f['designation'].touched) {
@@ -72,7 +72,7 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Role</mat-label>
           <mat-select formControlName="role">
             @for (role of userRoles; track role) {
@@ -82,7 +82,7 @@
           <mat-icon matPrefix>admin_panel_settings</mat-icon>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Password</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
           <mat-icon matPrefix>lock</mat-icon>
@@ -101,7 +101,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Confirm Password</mat-label>
           <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword">
           <mat-icon matPrefix>lock</mat-icon>
@@ -135,3 +135,4 @@
     </mat-card-content>
   </mat-card>
 </div>
+

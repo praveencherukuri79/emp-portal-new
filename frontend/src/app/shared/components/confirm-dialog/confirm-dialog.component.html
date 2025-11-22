@@ -5,7 +5,7 @@
     <p>{{ data.message }}</p>
     
     @if (data.showInput) {
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="fill" class="full-width">
         <mat-label>{{ data.inputLabel || 'Reason' }}</mat-label>
         <textarea 
           matInput 
@@ -31,3 +31,4 @@
     </button>
   </mat-dialog-actions>
 </div>
+

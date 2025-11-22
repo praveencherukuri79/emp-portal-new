@@ -278,3 +278,4 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
     this.pollingSubscription?.unsubscribe();
   }
 }
+

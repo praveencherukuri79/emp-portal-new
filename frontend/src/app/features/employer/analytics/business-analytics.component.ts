@@ -74,3 +74,4 @@ export class BusinessAnalyticsComponent implements OnInit {
     });
   }
 }
+

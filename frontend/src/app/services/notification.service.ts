@@ -77,3 +77,4 @@ export class NotificationService {
     this.getUnreadCount().subscribe();
   }
 }
+

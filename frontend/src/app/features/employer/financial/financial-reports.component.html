@@ -5,7 +5,7 @@
       <p class="subtitle">Track revenue, costs, and financial performance</p>
     </div>
     <div class="header-actions">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="fill">
         <mat-label>Period</mat-label>
         <mat-select [ngModel]="selectedPeriod()" (ngModelChange)="onPeriodChange($event)">
           <mat-option value="month">This Month</mat-option>
@@ -222,3 +222,4 @@
     </div>
   </ng-template>
 </div>
+

@@ -13,3 +13,4 @@ export class LoadingSpinnerComponent {
   @Input() message: string = 'Loading...';
   @Input() overlay: boolean = true;
 }
+

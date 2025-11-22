@@ -107,3 +107,4 @@ export class RegisterComponent {
     return this.registerForm.controls;
   }
 }
+

@@ -204,3 +204,4 @@ export class LeaveManagementComponent implements OnInit {
     return (balance.usedDays / balance.totalDays) * 100;
   }
 }
+

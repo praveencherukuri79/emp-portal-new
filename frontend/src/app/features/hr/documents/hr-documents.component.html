@@ -10,7 +10,7 @@
   <!-- Employee Selection -->
   <mat-card class="employee-selection-card">
     <mat-card-content>
-      <mat-form-field appearance="outline" class="employee-select">
+      <mat-form-field appearance="fill" class="employee-select">
         <mat-label>Select Employee</mat-label>
         <mat-select [value]="selectedEmployeeId()" (selectionChange)="onEmployeeSelected($event)">
           <mat-option [value]="null">-- Select Employee --</mat-option>
@@ -200,4 +200,5 @@
     }
   }
 </div>
+
 

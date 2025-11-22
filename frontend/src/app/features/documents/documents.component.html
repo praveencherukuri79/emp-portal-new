@@ -13,7 +13,7 @@
           <h2>Upload New Document</h2>
           <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="documents__form">
               <div class="form-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="fill" class="full-width">
                   <mat-label>Document Category</mat-label>
                   <mat-select formControlName="category">
                     <mat-option *ngFor="let category of documentCategories" [value]="category">
@@ -25,7 +25,7 @@
               </div>
 
               <div class="form-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="fill" class="full-width">
                   <mat-label>Document Title</mat-label>
                   <input matInput formControlName="title">
                   <mat-error>Document title is required</mat-error>
@@ -33,14 +33,14 @@
               </div>
 
               <div class="form-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="fill" class="full-width">
                   <mat-label>Expiry Date (Optional)</mat-label>
                   <input matInput type="date" formControlName="expiryDate">
                 </mat-form-field>
               </div>
 
               <div class="form-row">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="fill" class="full-width">
                   <mat-label>Notes (Optional)</mat-label>
                   <textarea matInput formControlName="notes" rows="3"></textarea>
                 </mat-form-field>
@@ -236,3 +236,4 @@
     </mat-tab>
   </mat-tab-group>
 </div>
+

@@ -24,3 +24,4 @@ export class DashboardService {
     return this.http.get<IApiResponse<IProspectDashboardResponse | IEmployeeDashboardResponse | ISupervisorDashboardResponse | IHRDashboardResponse | IAdminDashboardResponse | IEmployerDashboardResponse>>(this.apiUrl);
   }
 }
+

@@ -86,3 +86,4 @@ export class LeaveService {
     return this.http.get<IApiResponse<ILeaveStatisticsResponse>>(`${environment.apiUrl}${API_ENDPOINTS.LEAVES.STATISTICS}`, { params: httpParams });
   }
 }
+

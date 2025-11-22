@@ -14,7 +14,7 @@
     <mat-card>
       <mat-card-content>
         <div class="filters">
-          <mat-form-field appearance="outline" class="search-field">
+          <mat-form-field appearance="fill" class="search-field">
             <mat-label>Search by name, email, or employee ID</mat-label>
             <input matInput 
                    [(ngModel)]="searchQuery" 
@@ -22,7 +22,7 @@
             <mat-icon matPrefix>search</mat-icon>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Department</mat-label>
             <mat-select [ngModel]="selectedDepartment()" (ngModelChange)="selectedDepartment.set($event)">
               @for (dept of departments(); track dept) {
@@ -142,4 +142,5 @@
     </mat-card>
   }
 </div>
+
 

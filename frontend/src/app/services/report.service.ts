@@ -78,3 +78,4 @@ export class ReportService {
     window.URL.revokeObjectURL(url);
   }
 }
+

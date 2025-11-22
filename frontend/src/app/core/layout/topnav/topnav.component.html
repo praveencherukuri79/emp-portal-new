@@ -53,14 +53,40 @@
 
     <!-- Right Side Actions -->
     <div class="topnav__actions">
-      <!-- Theme Toggle -->
+      <!-- Theme Selector Dropdown -->
       <button 
         mat-icon-button 
-        (click)="themeService.toggle()" 
-        [attr.aria-label]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+        [matMenuTriggerFor]="themeMenu"
+        [attr.aria-label]="'Select theme'"
         class="topnav__action-button">
-        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <mat-icon>
+          {{ themeService.isDark() ? 'dark_mode' : themeService.isCosmic() ? 'auto_awesome' : 'light_mode' }}
+        </mat-icon>
       </button>
+
+      <mat-menu #themeMenu="matMenu" xPosition="before">
+        <button 
+          mat-menu-item 
+          (click)="themeService.setTheme('light')"
+          [class.active-theme]="themeService.isLight()">
+          <mat-icon>light_mode</mat-icon>
+          <span>Light Theme</span>
+        </button>
+        <button 
+          mat-menu-item 
+          (click)="themeService.setTheme('dark')"
+          [class.active-theme]="themeService.isDark()">
+          <mat-icon>dark_mode</mat-icon>
+          <span>Dark Theme</span>
+        </button>
+        <button 
+          mat-menu-item 
+          (click)="themeService.setTheme('cosmic')"
+          [class.active-theme]="themeService.isCosmic()">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Cosmic Theme</span>
+        </button>
+      </mat-menu>
 
       <!-- Notifications -->
       <app-notification-dropdown />
@@ -97,4 +123,5 @@
     </div>
   </div>
 </mat-toolbar>
+
 

@@ -62,3 +62,4 @@ export class UserService {
     return this.http.get<IApiResponse<IUserResponse[]>>(`${environment.apiUrl}${API_ENDPOINTS.USERS.TEAM}`);
   }
 }
+

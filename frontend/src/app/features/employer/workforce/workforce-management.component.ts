@@ -168,3 +168,4 @@ export class WorkforceManagementComponent implements OnInit {
     // This button could be hidden via permissions in UserTableComponent
   }
 }
+

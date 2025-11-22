@@ -1,7 +1,7 @@
 import { Injectable, Inject, signal, computed } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-export type ThemeName = 'light' | 'dark';
+export type ThemeName = 'light' | 'dark' | 'cosmic';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +9,10 @@ export type ThemeName = 'light' | 'dark';
 export class ThemeService {
   private readonly THEME_KEY = 'app.theme';
   private readonly defaultTheme: ThemeName = 'light';
-  
+
   // Signal to track current theme
   private _currentTheme = signal<ThemeName>(this.defaultTheme);
-  
+
   // Public computed signal
   public readonly currentTheme = computed(() => this._currentTheme());
 
@@ -35,25 +35,36 @@ export class ThemeService {
    */
   apply(theme: ThemeName): void {
     const root = this.document.documentElement;
-    
+
     // Remove existing theme attribute
     root.removeAttribute('data-theme');
-    
+
     // Apply new theme
     root.setAttribute('data-theme', theme);
-    
+
     // Update signal
     this._currentTheme.set(theme);
-    
+
     // Persist to localStorage
     localStorage.setItem(this.THEME_KEY, theme);
   }
 
   /**
-   * Toggle between light and dark themes
+   * Toggle between light, dark, and cosmic themes
    */
   toggle(): void {
-    const newTheme = this._currentTheme() === 'light' ? 'dark' : 'light';
+    const currentTheme = this._currentTheme();
+    let newTheme: ThemeName;
+
+    // Cycle through themes: light -> dark -> cosmic -> light
+    if (currentTheme === 'light') {
+      newTheme = 'dark';
+    } else if (currentTheme === 'dark') {
+      newTheme = 'cosmic';
+    } else {
+      newTheme = 'light';
+    }
+
     this.apply(newTheme);
   }
 
@@ -77,5 +88,13 @@ export class ThemeService {
   isLight(): boolean {
     return this._currentTheme() === 'light';
   }
+
+  /**
+   * Check if current theme is cosmic
+   */
+  isCosmic(): boolean {
+    return this._currentTheme() === 'cosmic';
+  }
 }
+
 

@@ -46,13 +46,13 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
         <div class="form-section">
           <h3>Basic Information</h3>
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>First Name</mat-label>
               <input matInput formControlName="firstName">
               <mat-error>First name is required</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Last Name</mat-label>
               <input matInput formControlName="lastName">
               <mat-error>Last name is required</mat-error>
@@ -60,13 +60,13 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Email</mat-label>
               <input matInput type="email" formControlName="email">
               <mat-error>Valid email is required</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Phone Number</mat-label>
               <input matInput formControlName="phoneNumber">
             </mat-form-field>
@@ -76,24 +76,24 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
         <div class="form-section">
           <h3>Employment Details</h3>
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Employee ID</mat-label>
               <input matInput formControlName="employeeId">
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Department</mat-label>
               <input matInput formControlName="department">
             </mat-form-field>
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Designation</mat-label>
               <input matInput formControlName="designation">
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Employment Type</mat-label>
               <mat-select formControlName="employmentType">
                 @for (type of employmentTypes; track type.value) {
@@ -104,14 +104,14 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
           </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Date of Joining</mat-label>
               <input matInput [matDatepicker]="joiningPicker" formControlName="dateOfJoining">
               <mat-datepicker-toggle matSuffix [for]="joiningPicker"></mat-datepicker-toggle>
               <mat-datepicker #joiningPicker></mat-datepicker>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Role</mat-label>
               <mat-select formControlName="role">
                 @for (role of roles; track role.value) {
@@ -125,14 +125,14 @@ import { ROLE_LABELS, EMPLOYMENT_TYPE_LABELS } from '@shared/types/constants';
         <div class="form-section">
           <h3>Personal Details</h3>
           <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Date of Birth</mat-label>
               <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth">
               <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
               <mat-datepicker #dobPicker></mat-datepicker>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Gender</mat-label>
               <mat-select formControlName="gender">
                 <mat-option value="Male">Male</mat-option>
@@ -288,4 +288,5 @@ export class EmployeeEditDialogComponent {
     }
   }
 }
+
 

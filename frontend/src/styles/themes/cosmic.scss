@@ -1,0 +1,257 @@
+/**
+ * Cosmic Purple Theme - Vibrant, Futuristic, Premium
+ * A stunning theme featuring rich purples, vibrant pinks, and cosmic gradients
+ * WCAG AA compliant contrast ratios
+ */
+
+@import '../tokens/colors.scss';
+
+:root[data-theme="cosmic"] {
+    /* Background colors - Deep cosmic backgrounds with stellar depth */
+    --background-primary: #0f0520;
+    /* Deep cosmic purple */
+    --background-secondary: #1a0b2e;
+    /* Rich dark purple */
+    --background-tertiary: #2d1b4e;
+    /* Medium purple */
+    --background-elevated: #1a0b2e;
+    --background-overlay: rgba(15, 5, 32, 0.85);
+
+    /* Premium cosmic gradient backgrounds - Purple & Pink Theme */
+    --background-gradient-primary: linear-gradient(135deg, #6a11cb 0%, #8b5cf6 50%, #a855f7 100%);
+    --background-gradient-secondary: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a78bfa 100%);
+    --background-gradient-accent: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #f9a8d4 100%);
+    --background-gradient-card: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #3d2667 100%);
+    --background-gradient-surface: linear-gradient(135deg, #0f0520 0%, #1a0b2e 50%, #2d1b4e 100%);
+    --background-gradient-hero: linear-gradient(135deg, #6a11cb 0%, #ec4899 100%);
+
+    /* Cosmic background patterns with nebula-like effects */
+    --background-pattern:
+        radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 60% 70%, rgba(244, 114, 182, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+
+    /* Colored surface backgrounds - Cosmic theme */
+    --surface-primary: #4c1d95;
+    /* Deep purple */
+    --surface-secondary: #831843;
+    /* Deep pink */
+    --surface-success: #065f46;
+    /* Deep emerald */
+    --surface-warning: #92400e;
+    /* Deep amber */
+    --surface-error: #991b1b;
+    /* Deep red */
+    --surface-info: #1e3a8a;
+    /* Deep blue */
+
+    /* Text colors - High contrast for excellent readability (WCAG AA) */
+    --text-primary: #f5f3ff;
+    /* Violet 50 - Soft white with purple tint */
+    --text-secondary: #e9d5ff;
+    /* Violet 200 */
+    --text-tertiary: #c4b5fd;
+    /* Violet 300 */
+    --text-disabled: #7c3aed;
+    /* Violet 600 */
+    --text-inverse: #1a0b2e;
+    --text-on-primary: #ffffff;
+    /* Pure white on gradients */
+    --text-accent: #f9a8d4;
+    /* Pink 300 - Bright cosmic accent */
+
+    /* Border colors - Vibrant cosmic borders */
+    --border-primary: #6b21a8;
+    /* Purple 800 */
+    --border-secondary: #581c87;
+    /* Purple 900 */
+    --border-tertiary: #4c1d95;
+    /* Violet 900 */
+    --border-focus: #a855f7;
+    /* Purple 500 - Bright focus */
+    --border-error: #fb7185;
+    /* Rose 400 */
+    --border-success: #34d399;
+    /* Emerald 400 */
+    --border-warning: #fbbf24;
+    /* Amber 400 */
+
+    /* Border width */
+    --border-default: var(--border-width-thin);
+    --border-focus-width: var(--border-width-medium);
+
+    /* Action colors - Cosmic palette for stellar interactions */
+    --action-primary: #8b5cf6;
+    /* Violet 500 - Primary actions */
+    --action-primary-hover: #a78bfa;
+    /* Violet 400 */
+    --action-primary-active: #7c3aed;
+    /* Violet 600 */
+    --action-primary-light: rgba(139, 92, 246, 0.2);
+    --action-primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+
+    /* Secondary actions - Pink for cosmic variety */
+    --action-secondary: #ec4899;
+    /* Pink 500 */
+    --action-secondary-hover: #f472b6;
+    /* Pink 400 */
+    --action-secondary-active: #db2777;
+    /* Pink 600 */
+    --action-secondary-light: rgba(236, 72, 153, 0.2);
+
+    /* Accent actions - Fuchsia for cosmic highlights */
+    --action-accent: #d946ef;
+    /* Fuchsia 500 */
+    --action-accent-hover: #e879f9;
+    /* Fuchsia 400 */
+    --action-accent-active: #c026d3;
+    /* Fuchsia 600 */
+    --action-accent-light: rgba(217, 70, 239, 0.2);
+
+    /* Neutral actions - For less important interactions */
+    --action-neutral: #a78bfa;
+    /* Violet 400 */
+    --action-neutral-hover: #c4b5fd;
+    /* Violet 300 */
+    --action-neutral-active: #8b5cf6;
+    /* Violet 500 */
+    --action-neutral-light: rgba(167, 139, 250, 0.15);
+
+    --action-disabled: #581c87;
+    /* Purple 900 */
+
+    /* Status colors - High contrast cosmic status indicators */
+    --status-success: #34d399;
+    /* Emerald 400 - Bright */
+    --status-success-light: rgba(52, 211, 153, 0.2);
+    --status-success-bg: #065f46;
+    /* Emerald 900 */
+    --status-warning: #fbbf24;
+    /* Amber 400 - Bright */
+    --status-warning-light: rgba(251, 191, 36, 0.2);
+    --status-warning-bg: #92400e;
+    /* Amber 900 */
+    --status-error: #fb7185;
+    /* Rose 400 - Bright */
+    --status-error-light: rgba(251, 113, 133, 0.2);
+    --status-error-bg: #991b1b;
+    /* Red 900 */
+    --status-info: #60a5fa;
+    /* Blue 400 - Bright */
+    --status-info-light: rgba(96, 165, 250, 0.2);
+    --status-info-bg: #1e3a8a;
+    /* Blue 900 */
+
+    /* Premium component-specific backgrounds */
+    --card-background: #1a0b2e;
+    /* Rich dark purple */
+    --card-background-hover: #2d1b4e;
+    /* Medium purple */
+    --card-background-accent: #4c1d95;
+    /* Violet accent */
+    --card-background-glass: rgba(26, 11, 46, 0.85);
+    /* Glassmorphism */
+    --input-background: #1a0b2e;
+    --input-background-focus: #2d1b4e;
+    --sidebar-background: rgba(15, 5, 32, 0.98);
+
+    /* Header - Stunning cosmic gradient */
+    --header-background: var(--background-gradient-primary);
+    --header-background-gradient: var(--background-gradient-hero);
+    --header-text: #f5f3ff;
+    /* High contrast */
+    --header-glass: rgba(26, 11, 46, 0.95);
+
+    /* Table colors */
+    --table-header-background: #2d1b4e;
+    /* Medium purple */
+    --table-row-background: #1a0b2e;
+    /* Rich dark purple */
+    --table-row-hover: #2d1b4e;
+    /* Medium purple */
+    --table-border: #4c1d95;
+    /* Violet border */
+
+    /* Premium shadow colors with cosmic depth */
+    --shadow-color-light: rgba(106, 17, 203, 0.3);
+    --shadow-color-medium: rgba(106, 17, 203, 0.4);
+    --shadow-color-dark: rgba(106, 17, 203, 0.6);
+    --shadow-color-overlay: rgba(15, 5, 32, 0.9);
+
+    /* Rich cosmic shadow overlays for stellar depth */
+    --shadow-primary-color: rgba(139, 92, 246, 0.4);
+    --shadow-primary-lg: rgba(139, 92, 246, 0.5);
+    --shadow-success-color: rgba(52, 211, 153, 0.3);
+    --shadow-error-color: rgba(251, 113, 133, 0.3);
+    --shadow-accent-color: rgba(236, 72, 153, 0.4);
+
+    /* Gradient overlays - Cosmic theme */
+    --gradient-overlay-light: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(168, 85, 247, 0.04) 100%);
+    --gradient-overlay-primary: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%);
+    --gradient-overlay-accent: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(244, 114, 182, 0.08) 100%);
+
+    /* Premium Glass Effects - Cosmic glassmorphism */
+    --glass-opacity: 0.15;
+    --glass-blur: 16px;
+    --glass-border: rgba(139, 92, 246, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(106, 17, 203, 0.4);
+
+    /* Special cosmic effects */
+    --cosmic-glow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(168, 85, 247, 0.3);
+    --cosmic-glow-pink: 0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(244, 114, 182, 0.3);
+    --cosmic-shimmer: linear-gradient(90deg,
+            rgba(139, 92, 246, 0) 0%,
+            rgba(139, 92, 246, 0.3) 50%,
+            rgba(139, 92, 246, 0) 100%);
+}
+
+/* Cosmic theme animations */
+:root[data-theme="cosmic"] {
+
+    /* Stellar pulse animation for buttons */
+    @keyframes cosmic-pulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        50% {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 40px rgba(168, 85, 247, 0.4);
+        }
+    }
+
+    /* Nebula shimmer effect */
+    @keyframes cosmic-shimmer {
+        0% {
+            background-position: -200% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    /* Floating particles effect */
+    @keyframes cosmic-float {
+
+        0%,
+        100% {
+            transform: translateY(0) translateX(0);
+        }
+
+        25% {
+            transform: translateY(-10px) translateX(5px);
+        }
+
+        50% {
+            transform: translateY(-5px) translateX(-5px);
+        }
+
+        75% {
+            transform: translateY(-15px) translateX(3px);
+        }
+    }
+}

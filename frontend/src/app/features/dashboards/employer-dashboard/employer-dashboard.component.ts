@@ -140,3 +140,4 @@ export class EmployerDashboardComponent implements OnInit {
     }).format(value);
   }
 }
+
